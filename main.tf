@@ -13,7 +13,7 @@ terraform {
     organization = "cs3219-project-ay2223s1-g22"
 
     workspaces {
-      name = "PeerPrep"
+      name = "PeerPrep-G22"
     }
   }
 }
