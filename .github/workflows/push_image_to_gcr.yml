@@ -1,15 +1,15 @@
 name: CD
 
-# Accepted inputs:
-# - matching-service
-# - frontend
-
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       service-name:
+        description: "Which service to re-build the image for"
         required: true
-        type: string
+        type: choice
+        options:
+          - matching-service
+          - frontend
 
 # Environment variables available to all jobs and steps in this workflow
 #  GKE_EMAIL: ${{ secrets.GKE_EMAIL }}
