@@ -1,4 +1,4 @@
-name: CD
+name: Push Image to GCR
 
 on:
   workflow_dispatch:
