@@ -10,6 +10,14 @@ terraform {
   }
 }
 
+cloud {
+    organization = "cs3219-project-ay2223s1-g22"
+
+    workspaces {
+      name = "PeerPrep"
+    }
+  }
+
 provider "google" {
   credentials = file("./gcp-service-account-keys.json")
   project     = "cs3219-project-ay2223s1-g22"
