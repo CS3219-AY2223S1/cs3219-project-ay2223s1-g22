@@ -2,6 +2,10 @@ name: "Deploy on GCP with Terraform"
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Push Image to GCR"]
+    types:
+      - completed
   pull_request:
 
 jobs:
@@ -70,5 +74,5 @@ jobs:
         run: exit 1
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_run')
         run: terraform apply -auto-approve -input=false
