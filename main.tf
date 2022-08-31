@@ -8,15 +8,15 @@ terraform {
       version = "3.5.0"
     }
   }
-}
 
-cloud {
+  cloud {
     organization = "cs3219-project-ay2223s1-g22"
 
     workspaces {
       name = "PeerPrep"
     }
   }
+}
 
 provider "google" {
   credentials = file("./gcp-service-account-keys.json")
