@@ -42,6 +42,22 @@ resource "google_cloud_run_service" "matching-service" {
   }
 }
 
+resource "google_cloud_run_service" "frontend" {
+  name     = "frontend"
+  location = "asia-southeast1"
+  template {
+    spec {
+      containers {
+        image = "gcr.io/cs3219-project-ay2223s1-g22/frontend"
+      }
+    }
+  }
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
+}
+
 # Create public access
 data "google_iam_policy" "noauth" {
   binding {
@@ -53,7 +69,13 @@ data "google_iam_policy" "noauth" {
 }
 
 # Enable public access on Cloud Run service
-resource "google_cloud_run_service_iam_policy" "noauth" {
+resource "google_cloud_run_service_iam_policy" "noauth-matching-service" {
+  location    = google_cloud_run_service.matching-service.location
+  project     = google_cloud_run_service.matching-service.project
+  service     = google_cloud_run_service.matching-service.name
+  policy_data = data.google_iam_policy.noauth.policy_data
+}
+resource "google_cloud_run_service_iam_policy" "noauth-frontend" {
   location    = google_cloud_run_service.matching-service.location
   project     = google_cloud_run_service.matching-service.project
   service     = google_cloud_run_service.matching-service.name
@@ -61,11 +83,12 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
 }
 
 # Return service URL
-output "url" {
+output "matching-service-url" {
   value = google_cloud_run_service.matching-service.status[0].url
+}
+output "frontend-url" {
+  value = google_cloud_run_service.frontend.status[0].url
 }
 
 # Variables stored on Terraform Cloud
 variable "GCP_KEY" { }
-
-# dummy comment

@@ -24,7 +24,4 @@ docker build --target test -t matching-service-test .
 
 # Run the test cases
 docker run --name matching-service-test-container matching-service-test
-
-# Clean up
-docker container rm matching-service-test-container
 ```

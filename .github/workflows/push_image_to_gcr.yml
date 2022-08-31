@@ -1,7 +1,15 @@
 name: CD
+
+# Accepted inputs:
+# - matching-service
+# - frontend
+
 on:
-  push:
-    branches: ["main"]
+  workflow_call:
+    inputs:
+      service-name:
+        required: true
+        type: string
 
 # Environment variables available to all jobs and steps in this workflow
 #  GKE_EMAIL: ${{ secrets.GKE_EMAIL }}
@@ -9,7 +17,7 @@ on:
 env:
   GITHUB_SHA: ${{ github.sha }}
   GITHUB_REF: ${{ github.ref }}
-  IMAGE: matching-service
+  IMAGE: ${{ inputs.service-name }}
   REGISTRY_HOSTNAME: gcr.io
   PROJECT_ID: cs3219-project-ay2223s1-g22
 
@@ -33,14 +41,14 @@ jobs:
           # via gcloud command-line tool.
           gcloud auth configure-docker
 
-      # Build the Docker image in matching service
+      # Build the Docker image
       - name: Build
         run: |
           export TAG=`echo $GITHUB_REF | awk -F/ '{print $NF}'`
           echo $TAG
           docker build -t "$REGISTRY_HOSTNAME"/$PROJECT_ID/"$IMAGE":"$TAG" \
             --build-arg GITHUB_SHA="$GITHUB_SHA" \
-            --build-arg GITHUB_REF="$GITHUB_REF" ./matching-service
+            --build-arg GITHUB_REF="$GITHUB_REF" ./${{ inputs.service-name }}
 
       # Push the Docker image to Google Container Registry
       - name: Publish
