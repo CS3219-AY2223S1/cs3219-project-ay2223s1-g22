@@ -67,5 +67,3 @@ output "url" {
 
 # Variables stored on Terraform Cloud
 variable "GCP_KEY" { }
-
-# dummy comment
