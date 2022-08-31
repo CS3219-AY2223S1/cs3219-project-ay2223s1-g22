@@ -5,12 +5,14 @@ import {
   Navigate,
 } from "react-router-dom";
 import SignupPage from "./pages/user-service/SignupPage";
+import MatchSelectionPage from "./pages/matching-service/MatchSelectionPage";
 import { Box } from "@mui/material";
+import { ChakraProvider } from "@chakra-ui/react";
 
 function App() {
   return (
-    <div className="App">
-      <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
+    <ChakraProvider>
+      <div className="App">
         <Router>
           <Routes>
             <Route
@@ -19,10 +21,11 @@ function App() {
               element={<Navigate replace to="/signup" />}
             ></Route>
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/matchselection" element={<MatchSelectionPage />} />
           </Routes>
         </Router>
-      </Box>
-    </div>
+      </div>
+    </ChakraProvider>
   );
 }
 
