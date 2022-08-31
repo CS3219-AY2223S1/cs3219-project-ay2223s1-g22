@@ -9,7 +9,7 @@ app.use(cors()); // config cors so that front-end can use
 app.options("*", cors());
 
 app.get("/", (req, res) => {
-  res.send("Hello World from matching-service");
+  res.send("Hey there from matching-service");
 });
 
 const httpServer = createServer(app);
