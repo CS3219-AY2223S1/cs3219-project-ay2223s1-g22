@@ -11,8 +11,9 @@ on:
 env:
   GITHUB_SHA: ${{ github.sha }}
   GITHUB_REF: ${{ github.ref }}
-  IMAGE: "matching-service"
+  IMAGE: matching-service
   REGISTRY_HOSTNAME: gcr.io
+  PROJECT_ID: cs3219-project-ay2223s1-g22
 
 jobs:
   setup-build-publish-deploy:
@@ -34,20 +35,20 @@ jobs:
           # via gcloud command-line tool.
           gcloud auth configure-docker
 
-      # Build the Docker image
+      # Build the Docker image in matching service
       - name: Build
         run: |
           export TAG=`echo $GITHUB_REF | awk -F/ '{print $NF}'`
           echo $TAG
-          docker build -t "$REGISTRY_HOSTNAME"/"$IMAGE":"$TAG" \
+          docker build -t "$REGISTRY_HOSTNAME"/$PROJECT_ID/"$IMAGE":"$TAG" \
             --build-arg GITHUB_SHA="$GITHUB_SHA" \
-            --build-arg GITHUB_REF="$GITHUB_REF" .
+            --build-arg GITHUB_REF="$GITHUB_REF" ./matching-service
 
       # Push the Docker image to Google Container Registry
       - name: Publish
         run: |
           export TAG=`echo $GITHUB_REF | awk -F/ '{print $NF}'`
           echo $TAG
-          docker push "$REGISTRY_HOSTNAME"/"$IMAGE":"$TAG"
-          docker tag "$REGISTRY_HOSTNAME"/"$IMAGE":"$TAG" "$REGISTRY_HOSTNAME"/"$IMAGE":latest
-          docker push "$REGISTRY_HOSTNAME"/"$IMAGE":latest
+          docker push "$REGISTRY_HOSTNAME"/$PROJECT_ID/"$IMAGE":"$TAG"
+          docker tag "$REGISTRY_HOSTNAME"/$PROJECT_ID/"$IMAGE":"$TAG" "$REGISTRY_HOSTNAME"/$PROJECT_ID/"$IMAGE":latest
+          docker push "$REGISTRY_HOSTNAME"/$PROJECT_ID/"$IMAGE":latest

@@ -7,10 +7,14 @@ on:
     branches: ["main"]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+        run: docker build --target test -t matching-service-test ./matching-service
+
+      - name: Run tests
+        run: docker run --name matching-service-test-container matching-service-test
