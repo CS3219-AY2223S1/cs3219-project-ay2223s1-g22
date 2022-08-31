@@ -66,6 +66,4 @@ output "url" {
 }
 
 # Variables
-variable "GCR_KEY" {
-  default = file("./gcp-service-account-keys.json")
-}
+variable "GCR_KEY" { }
