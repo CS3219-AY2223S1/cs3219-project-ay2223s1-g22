@@ -15,7 +15,7 @@ describe("The health check endpoint", () => {
       .end((err, res) => {
         res.should.have.status(200);
 
-        res.text.should.equal("Hello World from matching-service");
+        res.text.should.equal("Hey there from matching-service");
 
         done();
       });
