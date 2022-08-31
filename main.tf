@@ -8,10 +8,18 @@ terraform {
       version = "3.5.0"
     }
   }
+
+  cloud {
+    organization = "cs3219-project-ay2223s1-g22"
+
+    workspaces {
+      name = "PeerPrep"
+    }
+  }
 }
 
 provider "google" {
-  credentials = file("./gcp-service-account-keys.json")
+  credentials = var.GCP_KEY
   project     = "cs3219-project-ay2223s1-g22"
   region      = "asia-southeast1"
   zone        = "asia-southeast1-a"
@@ -56,3 +64,6 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
 output "url" {
   value = google_cloud_run_service.matching-service.status[0].url
 }
+
+# Variables stored on Terraform Cloud
+variable "GCP_KEY" { }
