@@ -1,4 +1,4 @@
-name: Push Image to GCR
+name: "Push Image to GCR"
 
 on:
   workflow_dispatch:
