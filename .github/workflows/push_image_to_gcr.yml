@@ -1,7 +1,15 @@
 name: CD
+
+# Accepted inputs:
+# - matching-service
+# - frontend
+
 on:
-  push:
-    branches: ["main"]
+  workflow_call:
+    inputs:
+      service-name:
+        required: true
+        type: string
 
 # Environment variables available to all jobs and steps in this workflow
 #  GKE_EMAIL: ${{ secrets.GKE_EMAIL }}
@@ -9,7 +17,7 @@ on:
 env:
   GITHUB_SHA: ${{ github.sha }}
   GITHUB_REF: ${{ github.ref }}
-  IMAGE: matching-service
+  IMAGE: ${{ inputs.service-name }}
   REGISTRY_HOSTNAME: gcr.io
   PROJECT_ID: cs3219-project-ay2223s1-g22
 
