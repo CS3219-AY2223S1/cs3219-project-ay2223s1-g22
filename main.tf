@@ -32,7 +32,7 @@ resource "google_cloud_run_service" "matching-service" {
   template {
     spec {
       containers {
-        image = "gcr.io/cs3219-project-ay2223s1-g22/matching-service"
+        image = "gcr.io/cs3219-project-ay2223s1-g22/matching-service:latest"
       }
     }
   }
@@ -48,7 +48,7 @@ resource "google_cloud_run_service" "frontend" {
   template {
     spec {
       containers {
-        image = "gcr.io/cs3219-project-ay2223s1-g22/frontend"
+        image = "gcr.io/cs3219-project-ay2223s1-g22/frontend:latest"
       }
     }
   }
