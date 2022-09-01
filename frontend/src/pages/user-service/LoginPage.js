@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   Flex,
-  Heading,
   Input,
   Button,
   InputGroup,
@@ -10,13 +9,12 @@ import {
   chakra,
   Box,
   Link,
-  Avatar,
   FormControl,
   InputRightElement,
-  Text
 } from "@chakra-ui/react";
-import { FaUserAlt, FaLock, FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { FaUserAlt, FaLock, FaRegEye, FaRegEyeSlash, FaComments } from "react-icons/fa";
 import NavBar from "../user-service/NavBar";
+import {useNavigate} from 'react-router-dom';
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -25,8 +23,9 @@ const CFaEyeSlash = chakra(FaRegEyeSlash)
 
 const App = () => {
   const [showPassword, setShowPassword] = useState(false);
-
   const handleShowClick = () => setShowPassword(!showPassword);
+  const navigate = useNavigate();
+  const handleSignUpClick = useCallback(() => navigate('/signup', {replace: true}), [navigate]);
 
   return (
     <Flex
@@ -40,8 +39,7 @@ const App = () => {
         mb="2"
         justifyContent="center"
         alignItems="center" >
-        <Avatar bg="teal.500" />
-        <Heading color="teal.400">PeerPrep</Heading>
+        <FaComments color="#66ddaa" size='80' />
         <Box minW={{ base: "90%", md: "468px" }}>
           <form>
             <Stack
@@ -55,7 +53,7 @@ const App = () => {
                   <InputLeftElement
                     pointerEvents="none"
                     children={<CFaUserAlt color="gray.300" />}
-                  />
+                    />
                   <Input type="email" placeholder="Email Address" />
                 </InputGroup>
               </FormControl>
@@ -65,11 +63,11 @@ const App = () => {
                     pointerEvents="none"
                     color="gray.300"
                     children={<CFaLock color="gray.300" />}
-                  />
+                    />
                   <Input
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
-                  />
+                    />
                   <InputRightElement width="4.5rem">
                       <Button
                         h="1.75rem" size="sm" 
@@ -81,22 +79,24 @@ const App = () => {
               </FormControl>
               <Stack direction='row'>
                   <Button
-                    borderRadius={0}
+                    borderRadius={5}
                     type="submit"
                     variant="solid"
-                    width="50%">
-                        Register
+                    width="50%"
+                    shadow='lg'
+                    onClick={handleSignUpClick} >
+                        Sign up
                   </Button>
                   <Button
-                    borderRadius={0}
+                    borderRadius={5}
                     type="submit"
                     variant="solid"
                     colorScheme="teal"
-                    width="50%">
+                    width="50%"
+                    shadow='lg'>
                         Login
                     </Button>
               </Stack>
-              
             </Stack>
           </form>
         </Box>

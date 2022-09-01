@@ -9,10 +9,9 @@ function MatchSelectionPage() {
       w="100%"
       direction="column"
       alignItems="center"
-      justifyContent="center"
-    >
+      justifyContent="center" >
+      
       <NavBar />
-
       <MatchSelector />
     </Flex>
   );

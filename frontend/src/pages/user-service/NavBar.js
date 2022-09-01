@@ -12,11 +12,11 @@ function NavBar() {
 
     return (
     <HStack w="100%" px="3%" py="1%" justifyContent="space-between">
-        <Heading>PeerPrep</Heading>
+        <Heading color="#66ddaa">PeerPrep</Heading>
         <HStack>
         <Button
             leftIcon={darkMode ? <MoonIcon/> : <SunIcon/> } 
-            variant='ghost' 
+            variant='link'
             onClick={handleDarkModeClick} />
         <Avatar name="Sasuke Uchiha" src="https://bit.ly/broken-link" />
         </HStack>
