@@ -1,7 +1,8 @@
 import { VStack, HStack, Button, Heading } from "@chakra-ui/react";
 
 function MatchSelector() {
-  return (
+
+    return (
     <VStack bg="gray.600" p="5" borderRadius="15">
       <HStack w="100%" align="left">
         <Heading as="h4" size="md" color="white">
@@ -16,7 +17,7 @@ function MatchSelector() {
         <Button colorScheme="red">Hard</Button>
       </HStack>
     </VStack>
-  );
+    );
 }
 
 export default MatchSelector;

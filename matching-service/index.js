@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import { createServer } from "http";
+import {Server} from "socket.io";
+import { checkQueue, queueSocket, makeRoom } from "./server.js";
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -13,6 +15,27 @@ app.get("/", (req, res) => {
 });
 
 const httpServer = createServer(app);
+
+const server = new Server(httpServer, {
+  cors: { origin: true }
+  }).on('connection', (socket) => {
+    console.info(`user ${ socket.id } connected`);
+
+    socket.on('level', (level) => {
+      if (checkQueue(level)) {
+        queueSocket(socket, level);
+      } else {
+        makeRoom(server, socket, level);
+      }
+    })
+
+    socket.on('send', (message, room) => {
+      console.info("sending message to room " + room);
+      socket.join(room);
+      socket.to(room).emit('receive', message);
+    })
+  });
+
 
 const PORT = 8080;
 
