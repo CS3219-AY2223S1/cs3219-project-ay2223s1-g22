@@ -6,7 +6,6 @@ import {
 } from "react-router-dom";
 import SignupPage from "./pages/user-service/SignupPage";
 import MatchSelectionPage from "./pages/matching-service/MatchSelectionPage";
-import { Box } from "@mui/material";
 import { ChakraProvider } from "@chakra-ui/react";
 
 function App() {

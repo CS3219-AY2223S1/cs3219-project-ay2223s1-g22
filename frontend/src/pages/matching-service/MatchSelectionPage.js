@@ -2,6 +2,7 @@ import { Flex } from "@chakra-ui/react";
 
 import NavBar from "../../components/NavBar";
 import MatchSelector from "./MatchSelector";
+import FindingMatchModal from "./FindingMatchModal";
 
 function MatchSelectionPage() {
   return (
@@ -14,6 +15,8 @@ function MatchSelectionPage() {
       <NavBar />
 
       <MatchSelector />
+
+      <FindingMatchModal />
     </Flex>
   );
 }
