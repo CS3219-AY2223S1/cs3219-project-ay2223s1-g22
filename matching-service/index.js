@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { createServer } from "http";
+import { initializeServer} from "./chatServer.js";
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -16,7 +17,9 @@ const httpServer = createServer(app);
 
 const PORT = 8080;
 
-httpServer.listen(8080, () => {
+const chatServerIo = initializeServer(httpServer);
+
+httpServer.listen(PORT, () => {
   console.log(`HTTP server started at port: ${PORT}`);
 });
 
