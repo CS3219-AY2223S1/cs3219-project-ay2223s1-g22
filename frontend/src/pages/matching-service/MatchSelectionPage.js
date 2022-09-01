@@ -1,6 +1,6 @@
 import { Flex } from "@chakra-ui/react";
 
-import NavBar from "../../components/NavBar";
+import NavBar from "../user-service/NavBar";
 import MatchSelector from "./MatchSelector";
 
 function MatchSelectionPage() {

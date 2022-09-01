@@ -1,45 +1,114 @@
-import React from 'react'
-import { Box, Stack, Input, InputGroup, InputLeftAddon, InputRightElement, Button, Text } from '@chakra-ui/react'
+import { useState } from "react";
+import {
+  Flex,
+  Heading,
+  Input,
+  Button,
+  InputGroup,
+  Stack,
+  InputLeftElement,
+  chakra,
+  Box,
+  Link,
+  Avatar,
+  FormControl,
+  InputRightElement,
+  Text
+} from "@chakra-ui/react";
+import { FaUserAlt, FaLock, FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import NavBar from "../user-service/NavBar";
 
+const CFaUserAlt = chakra(FaUserAlt);
+const CFaLock = chakra(FaLock);
+const CFaEye = chakra(FaRegEye)
+const CFaEyeSlash = chakra(FaRegEyeSlash)
 
-export default function LoginPage() {
-    const [show, setShow] = React.useState(false)
-    const handlePasswordButtonClick = () => setShow(!show)
+const App = () => {
+  const [showPassword, setShowPassword] = useState(false);
 
-	return (
-        <Box bg='#606060' w='100%' p={40} color='white' align='center' >
-            <Stack spacing={2} align='center' justify='center' w='50%'>
+  const handleShowClick = () => setShowPassword(!showPassword);
+
+  return (
+    <Flex
+      flexDirection="column"
+      width="100wh"
+      justifyContent="center"
+      alignItems="center">
+      <NavBar/>
+      <Stack
+        flexDir="column"
+        mb="2"
+        justifyContent="center"
+        alignItems="center" >
+        <Avatar bg="teal.500" />
+        <Heading color="teal.400">PeerPrep</Heading>
+        <Box minW={{ base: "90%", md: "468px" }}>
+          <form>
+            <Stack
+              spacing={4}
+              p="1rem"
+              backgroundColor="whiteAlpha.100"
+              boxShadow='lg' 
+              borderRadius='lg'>
+              <FormControl>
                 <InputGroup>
-                    {/* <InputLeftAddon children='Email' color='black' w='20%' bgColor='whiteAlpha.600' /> */}
-                    <Text padding='2' paddingRight='10' >Email </Text>
-                    <Input 
-                        placeholder='example@gmail.com' 
-                        _placeholder={{ color: 'inherit', opacity:'30%' }}
-                        isRequired='true' />
+                  <InputLeftElement
+                    pointerEvents="none"
+                    children={<CFaUserAlt color="gray.300" />}
+                  />
+                  <Input type="email" placeholder="Email Address" />
                 </InputGroup>
+              </FormControl>
+              <FormControl>
                 <InputGroup>
-                    {/* <InputLeftAddon children='Password' color='black' w='20%' bgColor='whiteAlpha.600' /> */}
-                    <Text padding='2'>Password</Text>
-                    <Input 
-                        placeholder='Enter password'
-                        _placeholder={{ color: 'inherit', opacity: '30%' }}
-                        isRequired='true' 
-                        type={show ? 'text' : 'password'} />
-                    <InputRightElement width='4.5rem'>
-                        <Button h='1.75rem' size='sm' onClick={handlePasswordButtonClick} color='black'>
-                            {show ? 'Hide' : 'Show'}
-                        </Button>
-                    </InputRightElement>
+                  <InputLeftElement
+                    pointerEvents="none"
+                    color="gray.300"
+                    children={<CFaLock color="gray.300" />}
+                  />
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                  />
+                  <InputRightElement width="4.5rem">
+                      <Button
+                        h="1.75rem" size="sm" 
+                        onClick={handleShowClick}
+                        variant='link'
+                        leftIcon={showPassword? <CFaEye/> : <CFaEyeSlash/>}/>
+                  </InputRightElement>
                 </InputGroup>
-                <Stack spacing='10%' direction='row' >
-                    <Button colorScheme='whiteAlpha' variant='solid' size='lg'>
+              </FormControl>
+              <Stack direction='row'>
+                  <Button
+                    borderRadius={0}
+                    type="submit"
+                    variant="solid"
+                    width="50%">
                         Register
+                  </Button>
+                  <Button
+                    borderRadius={0}
+                    type="submit"
+                    variant="solid"
+                    colorScheme="teal"
+                    width="50%">
+                        Login
                     </Button>
-                    <Button colorScheme='teal' variant='solid' size='lg' >
-                        Log In
-                    </Button>
-                </Stack>
+              </Stack>
+              
             </Stack>
+          </form>
         </Box>
-	)
-}
+      </Stack>
+      <Box>
+        Forgot Password?{" "}
+        <Link color="teal.500" href="#">
+          Click here
+        </Link>
+      </Box>
+    </Flex>
+  );
+};
+
+export default App;
