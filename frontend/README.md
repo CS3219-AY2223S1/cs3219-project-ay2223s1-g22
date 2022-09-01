@@ -24,4 +24,7 @@ docker build --target test -t frontend-test .
 
 # Run the test cases
 docker run --name frontend-test-container frontend-test
+
+# Clean up
+docker rm frontend-test-container
 ```
