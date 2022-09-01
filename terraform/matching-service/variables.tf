@@ -1,1 +1,0 @@
-variable "GCP_KEY" { }
