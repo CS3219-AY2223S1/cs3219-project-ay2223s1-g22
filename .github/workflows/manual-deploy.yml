@@ -1,17 +1,17 @@
-name: "Push Image to GCR and Re-Deploy GCP"
+name: "Push Image to GCR and Deploy GCP"
 
 on:
   workflow_dispatch:
     inputs:
       service-name:
-        description: "Which service to re-build the image for"
+        description: "Which service to deploy"
         required: true
         type: choice
         options:
           - matching-service
           - frontend
 
-# Environment variables available to all jobs and steps in this workflow
+# Environment variables available to all jobs and steps in this workflow; examples of usage:
 #  GKE_EMAIL: ${{ secrets.GKE_EMAIL }}
 #  GKE_KEY: ${{ secrets.GKE_KEY }}
 env:
@@ -22,7 +22,7 @@ env:
   PROJECT_ID: cs3219-project-ay2223s1-g22
 
 jobs:
-  setup-build-publish-deploy:
+  setup-build-publish:
     name: Setup, Build, and Publish
     runs-on: ubuntu-latest
     steps:
@@ -59,3 +59,46 @@ jobs:
           docker push "$REGISTRY_HOSTNAME"/$PROJECT_ID/"$IMAGE":"$TAG"
           docker tag "$REGISTRY_HOSTNAME"/$PROJECT_ID/"$IMAGE":"$TAG" "$REGISTRY_HOSTNAME"/$PROJECT_ID/"$IMAGE":latest
           docker push "$REGISTRY_HOSTNAME"/$PROJECT_ID/"$IMAGE":latest
+
+  deploy:
+    name: "Deploy"
+    runs-on: ubuntu-latest
+    needs: setup-build-publish
+    defaults:
+      run:
+        working-directory: ./terraform
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          # terraform_version: 0.13.0:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Plan
+        id: plan
+        if: github.event_name == 'pull_request'
+        run: terraform plan -no-color -input=false
+        continue-on-error: true
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve -input=false
