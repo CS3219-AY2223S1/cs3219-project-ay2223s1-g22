@@ -1,10 +1,15 @@
+variable "image_tag" {
+  type=string
+  default="latest"
+}
+
 resource "google_cloud_run_service" "matching-service" {
   name     = "matching-service"
   location = "asia-southeast1"
   template {
     spec {
       containers {
-        image = "gcr.io/cs3219-project-ay2223s1-g22/matching-service:latest"
+        image = "gcr.io/cs3219-project-ay2223s1-g22/matching-service:${var.image_tag}"
       }
     }
   }
