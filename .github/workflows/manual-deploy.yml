@@ -95,4 +95,4 @@ jobs:
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve -var='${{inputs.service-name}}_image_tag=${{$GITHUB_SHA}}'
+        run: terraform apply -auto-approve -var='${{inputs.service-name}}_image_tag=$GITHUB_SHA'
