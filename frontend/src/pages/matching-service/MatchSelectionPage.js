@@ -1,6 +1,6 @@
 import { Flex } from "@chakra-ui/react";
 
-import NavBar from "../../components/NavBar";
+import NavBar from "../user-service/NavBar";
 import MatchSelector from "./MatchSelector";
 
 function MatchSelectionPage() {
@@ -9,10 +9,9 @@ function MatchSelectionPage() {
       w="100%"
       direction="column"
       alignItems="center"
-      justifyContent="center"
-    >
+      justifyContent="center" >
+      
       <NavBar />
-
       <MatchSelector />
     </Flex>
   );
