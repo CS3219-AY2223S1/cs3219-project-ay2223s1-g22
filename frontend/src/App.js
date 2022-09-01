@@ -1,20 +1,32 @@
-import {BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
-import SignupPage from './components/SignupPage';
-import {Box} from "@mui/material";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import SignupPage from "./pages/user-service/SignupPage";
+import MatchSelectionPage from "./pages/matching-service/MatchSelectionPage";
+import { Box } from "@mui/material";
+import { ChakraProvider } from "@chakra-ui/react";
 
 function App() {
-    return (
-        <div className="App">
-            <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
-                <Router>
-                    <Routes>
-                        <Route exact path="/" element={<Navigate replace to="/signup" />}></Route>
-                        <Route path="/signup" element={<SignupPage/>}/>
-                    </Routes>
-                </Router>
-            </Box>
-        </div>
-    );
+  return (
+    <ChakraProvider>
+      <div className="App">
+        <Router>
+          <Routes>
+            <Route
+              exact
+              path="/"
+              element={<Navigate replace to="/signup" />}
+            ></Route>
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/matchselection" element={<MatchSelectionPage />} />
+          </Routes>
+        </Router>
+      </div>
+    </ChakraProvider>
+  );
 }
 
 export default App;
