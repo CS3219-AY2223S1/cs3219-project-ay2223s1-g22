@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { checkIfAuthenticated } from './middleware/firebase-middleware.js';
+import { createUserAccount, loginUser, logoutUser } from './controller/user-controller.js';
 
 const app = express();
 app.use(express.urlencoded({ extended: true }))
@@ -9,10 +10,13 @@ app.use(cors()) // config cors so that front-end can use
 app.options('*', cors())
 
 const router = express.Router()
-app.use(checkIfAuthenticated)
+
 // Controller will contain all the User-defined Routes
-router.get('/', (_, res) => res.send('Hello World from user-service'))
-router.get('/firebaseauth/user', (_, res) => res.send("test"))
+router.get('/', (_, res) => res.send('Hello World from user-service'));
+router.get('/firebaseauth/user', checkIfAuthenticated, (_, res) => res.send("true"));
+router.post('/firebaseauth/login', loginUser);
+router.post('/firebaseauth/signup', createUserAccount);
+router.post('/firebaseauth/logout', logoutUser);
 
 app.use('/api', router).all((_, res) => {
     res.setHeader('content-type', 'application/json')
