@@ -11,9 +11,18 @@ export function queueSocket(socket, level) {
     difficulty[level].push(socket);
 }
 
-export function checkQueue(level) {
+export function checkQueue(server, level) {
     console.info(`checking ${ level } queue`)
-    return !difficulty[level].length;
+    let nextSocket = difficulty[level][0];
+    while(difficulty[level].length) {
+        if (nextSocket["connected"]) {
+            return false;
+        }
+        console.info(`removing disconnected socket ${ nextSocket.id }`);
+        difficulty[level].shift();
+        nextSocket = difficulty[level][0];
+    }
+    return true;
 }
 
 export function makeRoom(server, socket, level) {
