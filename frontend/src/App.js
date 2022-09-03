@@ -7,6 +7,7 @@ import {
 import SignupPage from "./pages/user-service/SignupPage";
 import MatchSelectionPage from "./pages/matching-service/MatchSelectionPage";
 import LoginPage from './pages/user-service/LoginPage';
+import MatchRoomPage from './pages/matching-service/MatchRoom';
 import { ChakraProvider } from "@chakra-ui/react";
 
 function App() {
@@ -20,7 +21,8 @@ function App() {
             <Route exact path="/" element={<Navigate replace to="/login" />}/>
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/matchselection" element={<MatchSelectionPage />} />
-            <Route path="/login" element={<LoginPage />}/>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/matchroom" element={<MatchRoomPage />} />
             </Routes>
         </Router>
         </div>

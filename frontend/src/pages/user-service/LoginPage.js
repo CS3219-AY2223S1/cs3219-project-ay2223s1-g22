@@ -21,7 +21,7 @@ const CFaLock = chakra(FaLock);
 const CFaEye = chakra(FaRegEye)
 const CFaEyeSlash = chakra(FaRegEyeSlash)
 
-const App = () => {
+const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const handleShowClick = () => setShowPassword(!showPassword);
   const navigate = useNavigate();
@@ -113,4 +113,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default LoginPage;
