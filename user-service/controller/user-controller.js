@@ -7,7 +7,7 @@ export const createUserAccount = async (req, res) => {
 		await createUserWithEmailAndPassword(auth, email, password).then((userCred) => {
 			return res.status(201).json({
 				user: userCred.user,
-				token: userCred.user.stsTokenManager, 
+				token: userCred.user.stsTokenManager,
 				message: "user created!"
 			})
 		});
@@ -21,6 +21,8 @@ export const loginUser = async (req, res) => {
 		const { email, password } = req.body;
 		await signInWithEmailAndPassword(auth, email, password).then((userCred) => {
 			return res.status(200).json({
+				user: userCred.user,
+				token: userCred.user.stsTokenManager,
 				message: "user logged in!"
 			})
 		});
