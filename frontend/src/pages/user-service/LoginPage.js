@@ -113,7 +113,7 @@ const App = () => {
 									width="50%"
 									shadow='lg'
 									onClick={() => {
-										loginUser(email, password);
+										setToken(loginUser(email, password));
 									}}>
 									Login
 								</Button>)
