@@ -19,15 +19,23 @@ export const createUserAccount = async (email, password) => {
 			const token = res.data.token.accessToken;
 			if (authenticateToken(token)) {
 				return token;
+			} else {
+				return "";
 			}
 		})
 }
 
 export const loginUser = async (email, password) => {
+	console.log(email + password)
 	await axios.post(URL_FIREBASE_SVC + "/login", { email, password })
 		.then((res) => {
 			console.log(res.data.message);
-			return true;
+			const token = res.data.token.accessToken;
+			if (authenticateToken(token)) {
+				return token;
+			} else {
+				return "";
+			}
 		})
 }
 

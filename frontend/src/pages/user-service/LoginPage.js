@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import {
 	Flex,
 	Input,
@@ -58,7 +58,7 @@ const App = () => {
 									children={<CFaUserAlt color="gray.300" />}
 								/>
 								<Input
-									onChange={(e) => { setEmail(e) }}
+									onChange={(e) => { setEmail(e.target.value) }}
 									type="email"
 									placeholder="Email Address" />
 							</InputGroup>
@@ -71,7 +71,7 @@ const App = () => {
 									children={<CFaLock color="gray.300" />}
 								/>
 								<Input
-									onChange={(e) => { setPassword(e) }}
+									onChange={(e) => { setPassword(e.target.value) }}
 									type={showPassword ? "text" : "password"}
 									placeholder="Password"
 								/>
