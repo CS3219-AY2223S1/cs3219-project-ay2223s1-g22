@@ -32,7 +32,8 @@ const App = () => {
       flexDirection="column"
       width="100wh"
       justifyContent="center"
-      alignItems="center">
+      alignItems="center"
+      >
       <NavBar/>
       <Stack
         flexDir="column"
@@ -40,7 +41,8 @@ const App = () => {
         justifyContent="center"
         alignItems="center" >
         <FaComments color="#66ddaa" size='80' />
-        <Box minW={{ base: "90%", md: "468px" }}>
+        <Box 
+            minW={{ base: "90%", md: "468px" }}>
           <form>
             <Stack
               spacing={4}

@@ -20,7 +20,7 @@ function App() {
             <Route exact path="/" element={<Navigate replace to="/login" />}/>
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/matchselection" element={<MatchSelectionPage />} />
-            <Route path="/login" element={<LoginPage/>}/>
+            <Route path="/login" element={<LoginPage />}/>
             </Routes>
         </Router>
         </div>
