@@ -22,7 +22,7 @@ const server = new Server(httpServer, {
     console.info(`user ${ socket.id } connected`);
 
     socket.on('level', (level) => {
-      if (checkQueue(level)) {
+      if (checkQueue(server, level)) {
         queueSocket(socket, level);
       } else {
         makeRoom(server, socket, level);
@@ -31,8 +31,12 @@ const server = new Server(httpServer, {
 
     socket.on('send', (message, room) => {
       console.info("sending message to room " + room);
-      socket.join(room);
       socket.to(room).emit('receive', message);
+    })
+
+    socket.on('leave-match', (room) => {
+      console.info(`Evicting room: ${ room }`);
+      server.in(room).disconnectSockets();
     })
   });
 
