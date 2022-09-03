@@ -59,6 +59,8 @@ jobs:
           docker push "$REGISTRY_HOSTNAME"/$PROJECT_ID/"$IMAGE":"$TAG"
           docker tag "$REGISTRY_HOSTNAME"/$PROJECT_ID/"$IMAGE":"$TAG" "$REGISTRY_HOSTNAME"/$PROJECT_ID/"$IMAGE":latest
           docker push "$REGISTRY_HOSTNAME"/$PROJECT_ID/"$IMAGE":latest
+          docker tag "$REGISTRY_HOSTNAME"/$PROJECT_ID/"$IMAGE":latest "$REGISTRY_HOSTNAME"/$PROJECT_ID/"$IMAGE":"$GITHUB_SHA"
+          docker push "$REGISTRY_HOSTNAME"/$PROJECT_ID/"$IMAGE":"$GITHUB_SHA"
 
   deploy:
     name: "Deploy"
