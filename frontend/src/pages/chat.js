@@ -40,10 +40,10 @@ const Chat = () => {
         align='center'
         >
       <Stack>
-        <Flex 
-          h="100%" 
+        <Flex             //TODO: Change this to question.js and contain both question and chat as a stack
+          h="50vh" 
           flexDir="column" 
-          backgroundColor='whiteAlpha.100'
+          backgroundColor='whiteAlpha.500'
           borderRadius='10'>
           <Box>QUESTION BOX</Box>
           <Box>QUESTION BOX</Box>
@@ -63,7 +63,7 @@ const Chat = () => {
           <Box>QUESTION BOX</Box>
         </Flex>
         <Flex
-          h="100%" 
+          h="40vh" 
           flexDir="column" 
           backgroundColor='whiteAlpha.100'
           borderRadius='10'>

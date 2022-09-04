@@ -11,7 +11,7 @@ import MatchRoomPage from './pages/matching-service/MatchRoom';
 import { ChakraProvider } from "@chakra-ui/react";
 
 function App() {
-    document.body.style.backgroundColor = '#3e3e5b' //default bg colour
+    // document.body.style.backgroundColor = '#3e3e5b' //default bg colour
 
     return (
     <ChakraProvider>
