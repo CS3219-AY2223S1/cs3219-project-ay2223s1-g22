@@ -11,11 +11,20 @@ import {
 	Link,
 	FormControl,
 	InputRightElement,
+	Modal,
+	ModalOverlay,
+	ModalContent,
+	ModalHeader,
+	ModalCloseButton,
+	ModalBody,
+	ModalFooter,
+	useDisclosure
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock, FaRegEye, FaRegEyeSlash, FaComments } from "react-icons/fa";
 import NavBar from "../user-service/NavBar";
 import { useNavigate } from 'react-router-dom';
-import { loginUser, logoutUser } from "../../controller/user-controller";
+import { loginUser, logoutUser, deleteUserAccount, resetPassword } from "../../controller/user-controller";
+import { useLocalStorage } from "../../useLocalStorage";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -26,7 +35,10 @@ const App = () => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [token, setToken] = useState("");
+	const [token, setToken] = useLocalStorage("token", "")
+	const [user, setUser] = useLocalStorage("user", {});
+	const { isOpen, onOpen, onClose } = useDisclosure();
+
 	const handleShowClick = () => setShowPassword(!showPassword);
 	const navigate = useNavigate();
 	const handleSignUpClick = useCallback(() => navigate('/signup', { replace: true }), [navigate]);
@@ -84,50 +96,116 @@ const App = () => {
 								</InputRightElement>
 							</InputGroup>
 						</FormControl>
-						<Stack direction='row'>
-							<Button
-								borderRadius={5}
-								variant="solid"
-								width="50%"
-								shadow='lg'
-								onClick={handleSignUpClick} >
-								Sign up
-							</Button>
-							{token ? (<Button
-								borderRadius={5}
-								variant="solid"
-								colorScheme="teal"
-								width="50%"
-								shadow='lg'
-								onClick={() => {
-									if (logoutUser()) {
-										setToken("");
-									};
-								}}>
-								Logout
-							</Button>)
-								: (<Button
+						{
+							!token ? (<Stack direction='row'>
+								<Button
+									borderRadius={5}
+									variant="solid"
+									width="50%"
+									shadow='lg'
+									onClick={handleSignUpClick} >
+									Sign up
+								</Button>
+								<Button
 									borderRadius={5}
 									variant="solid"
 									colorScheme="teal"
 									width="50%"
 									shadow='lg'
 									onClick={() => {
-										setToken(loginUser(email, password));
+										const promise = loginUser(email, password);
+										promise.then((res) => {
+											if (res) {
+												setToken(res.data.accessToken);
+												setUser(res.data.user);
+											}
+										})
 									}}>
 									Login
-								</Button>)
-							}
-						</Stack>
+								</Button>
+							</Stack>)
+								: (<Stack direction='row'>
+									<Button
+										borderRadius={5}
+										variant="solid"
+										colorScheme="red"
+										onClick={() => {
+											const promise = deleteUserAccount(user);
+											promise.then((res) => {
+												if (res) {
+													setToken("");
+													setUser("");
+													console.log(res.data.message)
+												}
+											})
+										}}
+										width="50%"
+										shadow="lg">
+										Delete account
+									</Button>
+									<Button
+										borderRadius={5}
+										variant="solid"
+										colorScheme="teal"
+										onClick={() => {
+											if (logoutUser()) {
+												setToken("")
+												setUser({})
+											}
+										}}
+										width="50%"
+										shadow="lg">
+										Logout
+									</Button>
+								</Stack>)
+						}
 					</Stack>
 				</Box>
 			</Stack>
 			<Box>
 				Forgot Password?{" "}
-				<Link color="teal.500" href="#">
+				<Link color="teal.500" href="#" onClick={() => {
+					setEmail("");
+					onOpen();
+				}}>
 					Click here
 				</Link>
 			</Box>
+			<Modal
+				onClose={() => {
+					setEmail("");
+					onClose();
+				}}
+				size="md"
+				isOpen={isOpen}>
+				<ModalOverlay />
+				<ModalContent>
+					<ModalHeader>Reset Password</ModalHeader>
+					<ModalCloseButton />
+					<ModalBody>
+						<Stack direction="row">
+							<Input
+								onChange={(e) => { setEmail(e.target.value) }}
+								type="email"
+								placeholder="Email Address" />
+							<Button
+								borderRadius={5}
+								variant="solid"
+								colorScheme="teal"
+								width="20%"
+								shadow='lg'
+								onClick={() => {
+									resetPassword(email);
+								}}>
+								Send
+							</Button>
+						</Stack>
+					</ModalBody>
+					<ModalFooter>
+						<Button onClick={onClose}>Close</Button>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
 		</Flex>
 	);
 };

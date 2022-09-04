@@ -26,7 +26,6 @@ const App = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
-	const [token, setToken] = useState("");
 	const handleShowClick = () => setShowPassword(!showPassword);
 	const navigate = useNavigate();
 	const handleBackClick = useCallback(() => navigate('/login', { replace: true }), [navigate]);
@@ -129,7 +128,14 @@ const App = () => {
 								colorScheme='teal'
 								width="50%"
 								shadow='lg'
-								onClick={() => setToken(createUserAccount(email, password))}>
+								onClick={() => {
+									const promise = createUserAccount(email, password);
+									promise.then((res) => {
+										if (res) {
+											console.log(res.data.message);
+										}
+									})
+								}}>
 								Register
 							</Button>
 						</Stack>
