@@ -9,10 +9,10 @@ import { ChakraProvider } from "@chakra-ui/react";
 import SignupPage from "./pages/user-service/SignupPage";
 import MatchSelectionPage from "./pages/matching-service/MatchSelectionPage";
 import LoginPage from "./pages/user-service/LoginPage";
-import MatchPage from "./pages/matching-service/MatchPage";
+import MatchRoomPage from "./pages/matching-service/MatchRoom";
 
 function App() {
-  document.body.style.backgroundColor = "#3e3e5b"; //default bg colour
+  // document.body.style.backgroundColor = '#3e3e5b' //default bg colour
 
   return (
     <ChakraProvider>
@@ -23,7 +23,8 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/matchselection" element={<MatchSelectionPage />} />
-            <Route path="/match" element={<MatchPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/matchroom" element={<MatchRoomPage />} />
           </Routes>
         </Router>
       </div>

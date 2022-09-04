@@ -8,7 +8,6 @@ import {
   InputLeftElement,
   chakra,
   Box,
-  Link,
   FormControl,
   InputRightElement,
 } from "@chakra-ui/react";
@@ -22,7 +21,7 @@ const CFaLock = chakra(FaLock);
 const CFaEye = chakra(FaRegEye)
 const CFaEyeSlash = chakra(FaRegEyeSlash)
 
-const App = () => {
+const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const handleShowClick = () => setShowPassword(!showPassword);
   const navigate = useNavigate();
@@ -136,4 +135,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default SignupPage;
