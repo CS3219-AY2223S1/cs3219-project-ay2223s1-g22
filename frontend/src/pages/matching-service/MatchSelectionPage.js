@@ -29,7 +29,10 @@ function MatchSelectionPage() {
 
   let timer = useTimer({
     expiryTimestamp: getEndTime(),
-    onExpire: () => handleCancelRequest(),
+    onExpire: () => {
+      handleCancelRequest();
+      showTimeoutToast();
+    },
     autoStart: false,
   });
 
