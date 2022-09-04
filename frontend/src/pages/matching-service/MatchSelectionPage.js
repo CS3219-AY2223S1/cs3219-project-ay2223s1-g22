@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { Flex, Text, useDisclosure } from "@chakra-ui/react";
+import { Flex, Text, Modal, ModalOverlay } from "@chakra-ui/react";
 import { useTimer } from "react-timer-hook";
 import { useNavigate } from "react-router-dom";
 
@@ -12,11 +12,10 @@ import { SocketContext } from "./SocketContext";
 const DEFAULT_TIMEOUT_LIMIT = 30; // cancel search after 30 seconds
 
 function MatchSelectionPage() {
-  const { socket } = useContext(SocketContext);
+  const { socket, sendLevel } = useContext(SocketContext);
 
   const [isFindingMatch, setIsFindingMatch] = useState(false);
   const [isConnected, setIsConnected] = useState(socket.connected);
-  const [roomNumber, setRoomNumber] = useState(null);
 
   let navigate = useNavigate();
 
@@ -36,9 +35,8 @@ function MatchSelectionPage() {
     });
 
     socket.on("room-number", (roomNumber) => {
-      setRoomNumber(roomNumber);
       hideFindingMatchModal();
-      navigate("/match");
+      navigate("/match", { state: roomNumber });
     });
 
     return () => {
@@ -61,10 +59,6 @@ function MatchSelectionPage() {
     // TODO: send cancellation request to backend
   };
 
-  const sendLevel = (difficulty) => {
-    socket.emit("level", difficulty);
-  };
-
   const showFindingMatchModal = () => {
     setIsFindingMatch(true);
     startTimer(timer);
@@ -76,7 +70,6 @@ function MatchSelectionPage() {
   };
 
   const hasOngoingRequest = timer.isRunning;
-  const hasBeenMatched = roomNumber !== null;
 
   return (
     <Flex
@@ -92,14 +85,22 @@ function MatchSelectionPage() {
           requestMatch: handleRequestMatch,
           cancelRequest: handleCancelRequest,
           hasOngoingRequest: hasOngoingRequest,
-          hasBeenMatched: hasBeenMatched,
         }}
       >
         <MatchSelector />
 
-        {isFindingMatch && <FindingMatchModal countDown={timer.seconds} />}
-
-        {roomNumber && <Text>{roomNumber}</Text>}
+        {isFindingMatch && (
+          <Modal
+            closeOnOverlayClick={false}
+            isOpen={isFindingMatch}
+            motionPreset="slideInBottom"
+            isCentered
+          >
+            <ModalOverlay>
+              <FindingMatchModal countDown={timer.seconds} />
+            </ModalOverlay>
+          </Modal>
+        )}
       </MatchContext.Provider>
 
       <Text>{String(isConnected)}</Text>
