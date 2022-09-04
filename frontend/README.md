@@ -6,14 +6,14 @@
 
 ```bash
 # Set up
-docker build --target start -t frontend-start .
+docker build --target dev -t frontend-dev .
 
 # Start the service
-docker run -p 3000:3000 --name frontend-start-container -d frontend-start
+docker run -p 3000:3000 --name frontend-dev-container -d frontend-dev
 
 # Clean up
-docker stop frontend-start-container
-docker container rm frontend-start-container
+docker stop frontend-dev-container
+docker container rm frontend-dev-container
 ```
 
 ### Run test cases

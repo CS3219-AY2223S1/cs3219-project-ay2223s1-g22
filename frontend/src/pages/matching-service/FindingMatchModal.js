@@ -1,17 +1,10 @@
+import { useContext } from "react";
 import { Spinner, Heading, VStack, HStack, Button } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
 
-function FindingMatchModal() {
-  // Countdown timer in seconds
-  let [countDown, setCountDown] = useState(30);
+import { MatchContext } from "./MatchContext";
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCountDown(countDown - 1);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [countDown]);
+function FindingMatchModal({ countDown }) {
+  const { cancelRequest } = useContext(MatchContext);
 
   return (
     <HStack
@@ -36,7 +29,9 @@ function FindingMatchModal() {
 
         <HStack justify="space-between" w="100%">
           <Heading>{countDown}</Heading>
-          <Button colorScheme="red">Stop Search</Button>
+          <Button colorScheme="red" onClick={cancelRequest}>
+            Stop Search
+          </Button>
         </HStack>
       </VStack>
     </HStack>

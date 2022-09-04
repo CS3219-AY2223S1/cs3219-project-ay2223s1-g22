@@ -4,11 +4,11 @@ COPY package.json .
 RUN npm install --quiet
 COPY . .
 
-FROM base as test
-CMD ["npm", "run", "test"]
-
 FROM base as dev
 CMD ["npm", "run", "dev"]
 
 FROM base as build
 CMD ["npm", "run", "start"]
+
+FROM base as test
+CMD ["npm", "run", "test"]

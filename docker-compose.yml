@@ -1,0 +1,15 @@
+# For local development
+
+version: "3.8"
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      target: dev
+    ports: ["3000:3000"]
+  matching-service:
+    container_name: matching-service
+    build:
+      context: ./matching-service
+      target: dev
