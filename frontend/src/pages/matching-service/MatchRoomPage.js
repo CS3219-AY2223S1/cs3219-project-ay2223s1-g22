@@ -1,11 +1,12 @@
-import { Button, Flex, Heading, Text, VStack } from "@chakra-ui/react";
+import { Button, Flex, Text, HStack } from "@chakra-ui/react";
 import { useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import NavBar from "../user-service/NavBar";
+import Chat from "../chat";
 import { SocketContext } from "./SocketContext";
 
-function MatchPage() {
+const MatchRoomPage = () => {
   const roomNumber = useLocation().state;
   const navigate = useNavigate();
   const { sendLeaveMatch } = useContext(SocketContext);
@@ -16,23 +17,18 @@ function MatchPage() {
   };
 
   return (
-    <Flex
-      w="100%"
-      direction="column"
-      alignItems="center"
-      justifyContent="center"
-    >
+    <Flex direction="column">
       <NavBar />
+      <Chat />
 
-      <VStack spacing={5}>
-        <Heading color="yellow.300">Match Page (Work-in-Progress)</Heading>
+      <HStack justifyContent="flex-end">
         <Text color="green.300">{`Room Number: ${roomNumber}`}</Text>
         <Button colorScheme="red" onClick={handleLeaveMatch}>
           Leave Match
         </Button>
-      </VStack>
+      </HStack>
     </Flex>
   );
-}
+};
 
-export default MatchPage;
+export default MatchRoomPage;

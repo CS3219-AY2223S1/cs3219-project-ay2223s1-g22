@@ -16,7 +16,7 @@ function FindingMatchModal({ countDown }) {
   const { cancelRequest } = useContext(MatchContext);
 
   return (
-    <ModalContent bg="yellow.200" p={10} borderRadius={20}>
+    <ModalContent p={10} borderRadius={20}>
       <ModalBody>
         <HStack alignContent="center" spacing={10}>
           <Box>

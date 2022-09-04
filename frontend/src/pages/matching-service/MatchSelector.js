@@ -12,7 +12,7 @@ function MatchSelector() {
   return (
     <VStack bg="gray.600" p="5" borderRadius="15">
       <HStack w="100%" align="left">
-        <Heading as="h4" size="md" color="white">
+        <Heading as="h4" size="md">
           Start a match!
         </Heading>
       </HStack>

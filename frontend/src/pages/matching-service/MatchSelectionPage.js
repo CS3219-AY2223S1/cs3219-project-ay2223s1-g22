@@ -45,7 +45,7 @@ function MatchSelectionPage() {
     socket.on("room-number", (roomNumber) => {
       hideFindingMatchModal();
       showMatchFoundToast();
-      navigate("/match", { state: roomNumber });
+      navigate("/matchroom", { state: roomNumber });
     });
 
     return () => {
