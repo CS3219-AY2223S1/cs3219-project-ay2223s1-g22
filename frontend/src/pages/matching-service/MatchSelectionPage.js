@@ -40,6 +40,7 @@ function MatchSelectionPage() {
 
     socket.on("disconnect", () => {
       setIsConnected(false);
+      socket.connect();
     });
 
     socket.on("room-number", (roomNumber) => {
@@ -63,7 +64,6 @@ function MatchSelectionPage() {
 
   const handleCancelRequest = () => {
     hideFindingMatchModal();
-    showTimeoutToast();
 
     // TODO: send cancellation request to backend
   };
