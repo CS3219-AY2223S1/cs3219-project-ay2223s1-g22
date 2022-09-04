@@ -17,7 +17,7 @@ import FindingMatchModal from "./FindingMatchModal";
 import { MatchContext } from "./MatchContext";
 import { SocketContext } from "./SocketContext";
 
-const DEFAULT_TIMEOUT_LIMIT = 2; // cancel search after 30 seconds
+const DEFAULT_TIMEOUT_LIMIT = 30; // cancel search after 30 seconds
 
 function MatchSelectionPage() {
   const { socket, sendLevel } = useContext(SocketContext);
