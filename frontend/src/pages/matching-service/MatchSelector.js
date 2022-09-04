@@ -4,7 +4,10 @@ import { VStack, HStack, Button, Heading } from "@chakra-ui/react";
 import { MatchContext } from "./MatchContext";
 
 function MatchSelector() {
-  const { requestMatch, hasOngoingRequest } = useContext(MatchContext);
+  const { requestMatch, hasOngoingRequest, hasConnectionToMatchingService } =
+    useContext(MatchContext);
+
+  const isDisabled = hasOngoingRequest || !hasConnectionToMatchingService;
 
   return (
     <VStack bg="gray.600" p="5" borderRadius="15">
@@ -16,7 +19,7 @@ function MatchSelector() {
       <HStack mt="20%" align="center">
         <Button
           colorScheme="green"
-          disabled={hasOngoingRequest}
+          disabled={isDisabled}
           onClick={() => requestMatch("easy")}
         >
           Easy
@@ -24,7 +27,7 @@ function MatchSelector() {
 
         <Button
           colorScheme="yellow"
-          disabled={hasOngoingRequest}
+          disabled={isDisabled}
           onClick={() => requestMatch("medium")}
         >
           Medium
@@ -32,7 +35,7 @@ function MatchSelector() {
 
         <Button
           colorScheme="red"
-          disabled={hasOngoingRequest}
+          disabled={isDisabled}
           onClick={() => requestMatch("hard")}
         >
           Hard
