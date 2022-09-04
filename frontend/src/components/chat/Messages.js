@@ -9,7 +9,14 @@ const Messages = ({ messages }) => {
   };
 
   return (
-    <Flex fontSize='xs' w="100%" h="80%" overflowY="scroll" flexDirection="column" p="3">
+    <Flex
+      fontSize="xs"
+      w="100%"
+      h="80%"
+      overflowY="scroll"
+      flexDirection="column"
+      p="3"
+    >
       {messages.map((item, index) => {
         if (item.from === "me") {
           return (
@@ -20,9 +27,24 @@ const Messages = ({ messages }) => {
                 maxW="300px"
                 my="1"
                 p="2"
-                borderRadius='10'
-                >
-                <Text>{item.text}</Text>
+                borderRadius="10"
+              >
+                <Text maxWidth="100%">{item.text}</Text>
+              </Flex>
+            </Flex>
+          );
+        } else if (item.from === "matching_service") {
+          return (
+            <Flex key={index} w="100%">
+              <Flex
+                bg="yellow.300"
+                color="black"
+                maxW="300px"
+                my="1"
+                p="2"
+                borderRadius="10"
+              >
+                <Text maxWidth="100%">{item.text}</Text>
               </Flex>
             </Flex>
           );
@@ -35,9 +57,9 @@ const Messages = ({ messages }) => {
                 maxW="300px"
                 my="1"
                 p="2"
-                borderRadius='10'
-                >
-                <Text>{item.text}</Text>
+                borderRadius="10"
+              >
+                <Text maxWidth="100%">{item.text}</Text>
               </Flex>
             </Flex>
           );

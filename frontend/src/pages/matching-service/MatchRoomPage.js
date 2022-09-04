@@ -19,10 +19,9 @@ const MatchRoomPage = () => {
   return (
     <Flex direction="column">
       <NavBar />
-      <Chat />
+      <Chat roomNumber={roomNumber} />
 
       <HStack justifyContent="flex-end">
-        <Text color="green.300">{`Room Number: ${roomNumber}`}</Text>
         <Button colorScheme="red" onClick={handleLeaveMatch}>
           Leave Match
         </Button>
