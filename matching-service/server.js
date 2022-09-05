@@ -11,7 +11,7 @@ export function queueSocket(socket, level) {
     difficulty[level].push(socket);
 }
 
-export function checkQueue(server, level) {
+export function isQueueEmpty(server, level) {
     console.info(`checking ${ level } queue`)
     let nextSocket = difficulty[level][0];
     while(difficulty[level].length) {
@@ -23,6 +23,14 @@ export function checkQueue(server, level) {
         nextSocket = difficulty[level][0];
     }
     return true;
+}
+
+export function alreadyInQueue(socket, level) {
+    return difficulty[level].filter(sock => {
+        console.log("checking if already in queue")
+        console.log(sock.id);
+        return sock.id == socket.id;
+    }).length;
 }
 
 export function makeRoom(server, socket, level) {
