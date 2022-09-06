@@ -12,7 +12,6 @@ import LoginPage from "./pages/user-service/LoginPage";
 import MatchRoomPage from "./pages/matching-service/MatchRoomPage";
 
 function App() {
-  // document.body.style.backgroundColor = '#3e3e5b' //default bg colour
 
   return (
     <ChakraProvider>
