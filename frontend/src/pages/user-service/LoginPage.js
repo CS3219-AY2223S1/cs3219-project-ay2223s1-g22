@@ -19,6 +19,7 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import {
   FaUserAlt,
@@ -27,15 +28,16 @@ import {
   FaRegEyeSlash,
   FaComments,
 } from "react-icons/fa";
-import NavBar from "../user-service/NavBar";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import UserContext from "../../UserContext";
+import NavBar from "../user-service/NavBar";
 import {
   loginUser,
   logoutUser,
   deleteUserAccount,
   resetPassword,
 } from "../../controller/user-controller";
-import { useLocalStorage } from "../../useLocalStorage";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -43,19 +45,41 @@ const CFaEye = chakra(FaRegEye);
 const CFaEyeSlash = chakra(FaRegEyeSlash);
 
 const LoginPage = () => {
+  const { token, user, storeUserData, clearUserData } = useContext(UserContext);
+
+  const navigate = useNavigate();
+
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [token, setToken] = useLocalStorage("token", "");
-  const [user, setUser] = useLocalStorage("user", {});
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleShowClick = () => setShowPassword(!showPassword);
-  const navigate = useNavigate();
+
   const handleSignUpClick = useCallback(
     () => navigate("/signup", { replace: true }),
     [navigate]
   );
+
+  const loginSuccessToast = useToast();
+  const showLoginSuccessToast = () =>
+    loginSuccessToast({
+      title: "Login successful!",
+      description: "Let's gooooo.",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+
+  const loginFailureToast = useToast();
+  const showLoginFailureToast = () =>
+    loginFailureToast({
+      title: "Login unsuccessful.",
+      description: "Is your email or password correct?",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    });
 
   return (
     <Flex
@@ -141,8 +165,11 @@ const LoginPage = () => {
                     const promise = loginUser(email, password);
                     promise.then((res) => {
                       if (res) {
-                        setToken(res.data.accessToken);
-                        setUser(res.data.user);
+                        storeUserData(res.data.accessToken, res.data.user);
+                        showLoginSuccessToast();
+                        navigate("/matchselection");
+                      } else {
+                        showLoginFailureToast();
                       }
                     });
                   }}
@@ -160,8 +187,7 @@ const LoginPage = () => {
                     const promise = deleteUserAccount(user);
                     promise.then((res) => {
                       if (res) {
-                        setToken("");
-                        setUser("");
+                        clearUserData();
                         console.log(res.data.message);
                       }
                     });
@@ -177,8 +203,7 @@ const LoginPage = () => {
                   colorScheme="teal"
                   onClick={() => {
                     if (logoutUser()) {
-                      setToken("");
-                      setUser({});
+                      clearUserData();
                     }
                   }}
                   width="50%"
