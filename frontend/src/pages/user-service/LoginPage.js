@@ -19,6 +19,7 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import {
   FaUserAlt,
@@ -46,17 +47,39 @@ const CFaEyeSlash = chakra(FaRegEyeSlash);
 const LoginPage = () => {
   const { token, user, storeUserData, clearUserData } = useContext(UserContext);
 
+  const navigate = useNavigate();
+
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleShowClick = () => setShowPassword(!showPassword);
-  const navigate = useNavigate();
+
   const handleSignUpClick = useCallback(
     () => navigate("/signup", { replace: true }),
     [navigate]
   );
+
+  const loginSuccessToast = useToast();
+  const showLoginSuccessToast = () =>
+    loginSuccessToast({
+      title: "Login successful!",
+      description: "Let's gooooo.",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+
+  const loginFailureToast = useToast();
+  const showLoginFailureToast = () =>
+    loginFailureToast({
+      title: "Login unsuccessful.",
+      description: "Is your email or password correct?",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    });
 
   return (
     <Flex
@@ -143,7 +166,10 @@ const LoginPage = () => {
                     promise.then((res) => {
                       if (res) {
                         storeUserData(res.data.accessToken, res.data.user);
+                        showLoginSuccessToast();
                         navigate("/matchselection");
+                      } else {
+                        showLoginFailureToast();
                       }
                     });
                   }}
