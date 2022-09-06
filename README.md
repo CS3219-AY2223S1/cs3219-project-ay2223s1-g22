@@ -1,6 +1,8 @@
 # CS3219-AY22-23-Project
 
-# Run locally
+📝 Check out PeerPrep [here](https://frontend-pzsuad4zva-as.a.run.app/login)
+
+# To run locally
 
 ## Start up docker containers
 
