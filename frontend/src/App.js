@@ -12,6 +12,7 @@ import LoginPage from "./pages/user-service/LoginPage";
 import MatchRoomPage from "./pages/matching-service/MatchRoomPage";
 import UserContext from "./UserContext";
 import { useLocalStorage } from "./useLocalStorage";
+import Protected from "./Protected";
 
 function App() {
   const [token, setToken] = useLocalStorage("token", "");
@@ -27,6 +28,10 @@ function App() {
     setUser({});
   };
 
+  const isLoggedIn = () => {
+    return token !== "";
+  };
+
   return (
     <ChakraProvider>
       <div className="App">
@@ -36,6 +41,7 @@ function App() {
             user: user,
             storeUserData: handleStoreUserData,
             clearUserData: handleClearUserData,
+            isLoggedIn: isLoggedIn,
           }}
         >
           <Router>
@@ -47,8 +53,24 @@ function App() {
               />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
-              <Route path="/matchselection" element={<MatchSelectionPage />} />
-              <Route path="/matchroom" element={<MatchRoomPage />} />
+
+              <Route
+                path="/matchselection"
+                element={
+                  <Protected>
+                    <MatchSelectionPage />
+                  </Protected>
+                }
+              />
+
+              <Route
+                path="/matchroom"
+                element={
+                  <Protected>
+                    <MatchRoomPage />
+                  </Protected>
+                }
+              />
             </Routes>
           </Router>
         </UserContext.Provider>
