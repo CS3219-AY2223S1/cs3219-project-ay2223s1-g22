@@ -27,15 +27,16 @@ import {
   FaRegEyeSlash,
   FaComments,
 } from "react-icons/fa";
-import NavBar from "../user-service/NavBar";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import UserContext from "../../UserContext";
+import NavBar from "../user-service/NavBar";
 import {
   loginUser,
   logoutUser,
   deleteUserAccount,
   resetPassword,
 } from "../../controller/user-controller";
-import { useLocalStorage } from "../../useLocalStorage";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -43,11 +44,13 @@ const CFaEye = chakra(FaRegEye);
 const CFaEyeSlash = chakra(FaRegEyeSlash);
 
 const LoginPage = () => {
+  const { token, user, storeUserData, clearUserData } = useContext(UserContext);
+
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [token, setToken] = useLocalStorage("token", "");
-  const [user, setUser] = useLocalStorage("user", {});
+  // const [token, setToken] = useLocalStorage("token", "");
+  // const [user, setUser] = useLocalStorage("user", {});
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleShowClick = () => setShowPassword(!showPassword);
@@ -141,8 +144,9 @@ const LoginPage = () => {
                     const promise = loginUser(email, password);
                     promise.then((res) => {
                       if (res) {
-                        setToken(res.data.accessToken);
-                        setUser(res.data.user);
+                        // setToken(res.data.accessToken);
+                        // setUser(res.data.user);
+                        storeUserData(res.data.accessToken, res.data.user);
                         navigate("/matchselection");
                       }
                     });
@@ -161,8 +165,9 @@ const LoginPage = () => {
                     const promise = deleteUserAccount(user);
                     promise.then((res) => {
                       if (res) {
-                        setToken("");
-                        setUser("");
+                        // setToken("");
+                        // setUser("");
+                        clearUserData();
                         console.log(res.data.message);
                       }
                     });
@@ -178,8 +183,9 @@ const LoginPage = () => {
                   colorScheme="teal"
                   onClick={() => {
                     if (logoutUser()) {
-                      setToken("");
-                      setUser({});
+                      // setToken("");
+                      // setUser({});
+                      clearUserData();
                     }
                   }}
                   width="50%"
