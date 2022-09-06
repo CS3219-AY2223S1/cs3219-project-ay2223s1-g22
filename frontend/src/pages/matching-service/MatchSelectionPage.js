@@ -100,17 +100,6 @@ function MatchSelectionPage() {
       isClosable: true,
     });
 
-  const opponentLeftToast = useToast();
-  const showOpponentLeftToast = () => {
-    opponentLeftToast({
-      title: "Oops! You opponent left the match!",
-      description: "Queue up for another one?",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    })
-  }
-
   const hasOngoingRequest = timer.isRunning;
 
   return (

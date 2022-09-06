@@ -40,7 +40,7 @@ const server = new Server(httpServer, {
 
     socket.on('leave-match', (room) => {
       console.info(`Evicting room: ${ room }`);
-      server.in(room).emit('match-over', "Your match has ended.");
+      server.in(room).emit("match-over");
       server.in(room).disconnectSockets();
     })
   });

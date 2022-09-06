@@ -1,4 +1,4 @@
-import { Flex, Stack, Box, VStack } from "@chakra-ui/react";
+import {Flex, Stack, Box, VStack, useToast} from "@chakra-ui/react";
 import React, { useState, useContext, useEffect } from "react";
 
 import Divider from "../components/chat/Divider";
@@ -26,7 +26,7 @@ function Chat({ roomNumber }) {
   const [inputMessage, setInputMessage] = useState("");
 
   const { socket } = useContext(SocketContext);
-  const navigate = useNavigate();
+
   useEffect(() => {
     socket.on("connect", () => {
       // setIsConnected(true);
@@ -34,7 +34,7 @@ function Chat({ roomNumber }) {
 
     socket.on("disconnect", () => {
       // setIsConnected(false);
-      socket.connect();
+      // socket.connect();
     });
 
     socket.on("receive", (message) => {
@@ -43,10 +43,6 @@ function Chat({ roomNumber }) {
         { from: "PLACEHOLDER_USERNAME", text: message },
       ]);
     });
-
-    socket.on("match-over", (message) => {
-      navigate("/matchselection", { state: true });
-    })
 
     return () => {
       socket.off("connect");
