@@ -1,5 +1,10 @@
-const URI_USER_SVC = process.env.URI_USER_SVC || 'http://localhost:8000'
+// URL for User Service endpoint
+const USER_SERVICE_DOMAIN =
+  process.env.REACT_APP_USER_SERVICE_DOMAIN || "http://localhost:8000";
+const USER_SERVICE_PREFIX = "/api/firebaseauth";
+export const USER_SERVICE_URL = USER_SERVICE_DOMAIN + USER_SERVICE_PREFIX;
 
-const PREFIX_FIREBASE_SVC = '/api/firebaseauth'
-
-export const URL_FIREBASE_SVC = URI_USER_SVC + PREFIX_FIREBASE_SVC
+// URL for Matching Service endpoint
+const MATCHING_SERVICE_DOMAIN =
+  process.env.REACT_APP_MATCHING_SERVICE_DOMAIN || "http://localhost:8080";
+export const MATCHING_SERVICE_URL = MATCHING_SERVICE_DOMAIN;

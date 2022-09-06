@@ -1,7 +1,7 @@
 import { createContext } from "react";
 import io from "socket.io-client";
 
-import { MATCHING_SERVICE_URL } from "../../configs";
+import { MATCHING_SERVICE_URL } from "../../config/configs";
 
 let socket = io(MATCHING_SERVICE_URL);
 
