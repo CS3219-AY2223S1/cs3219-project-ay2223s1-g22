@@ -9,3 +9,9 @@ module "matching-service" {
 
   image_tag = var.matching-service_image_tag
 }
+
+module "user-service" {
+  source = "./modules/user-service"
+
+  image_tag = var.user-service_image_tag
+}
