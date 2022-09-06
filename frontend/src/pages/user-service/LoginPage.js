@@ -143,6 +143,7 @@ const LoginPage = () => {
                       if (res) {
                         setToken(res.data.accessToken);
                         setUser(res.data.user);
+                        navigate("/matchselection");
                       }
                     });
                   }}
