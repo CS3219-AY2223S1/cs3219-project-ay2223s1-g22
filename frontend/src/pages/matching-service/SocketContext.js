@@ -11,6 +11,8 @@ const sendLevel = (difficulty) => {
 
 const sendLeaveMatch = (roomNumber) => {
   socket.emit("leave-match", roomNumber);
+  socket.disconnect();
+  socket.connect();
 };
 
 export const SocketContext = createContext({

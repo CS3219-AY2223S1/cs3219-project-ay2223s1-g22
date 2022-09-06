@@ -21,7 +21,6 @@ const DEFAULT_TIMEOUT_LIMIT = 30; // cancel search after 30 seconds
 
 function MatchSelectionPage() {
   const { socket, sendLevel } = useContext(SocketContext);
-
   const [isFindingMatch, setIsFindingMatch] = useState(false);
   const [isConnected, setIsConnected] = useState(socket.connected);
 

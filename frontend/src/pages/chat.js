@@ -1,4 +1,4 @@
-import { Flex, Stack, Box, VStack } from "@chakra-ui/react";
+import {Flex, Stack, Box, VStack, useToast} from "@chakra-ui/react";
 import React, { useState, useContext, useEffect } from "react";
 
 import Divider from "../components/chat/Divider";
@@ -6,6 +6,7 @@ import Footer from "../components/chat/Footer";
 import Header from "../components/chat/Header";
 import Messages from "../components/chat/Messages";
 import { SocketContext } from "./matching-service/SocketContext";
+import { useNavigate } from "react-router-dom";
 
 function Chat({ roomNumber }) {
   const [messages, setMessages] = useState([
@@ -33,7 +34,7 @@ function Chat({ roomNumber }) {
 
     socket.on("disconnect", () => {
       // setIsConnected(false);
-      socket.connect();
+      // socket.connect();
     });
 
     socket.on("receive", (message) => {
