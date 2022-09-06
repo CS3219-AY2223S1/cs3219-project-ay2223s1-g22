@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import { createServer } from "http";
 import {Server} from "socket.io";
-import { checkQueue, queueSocket, makeRoom } from "./server.js";
+import {isQueueEmpty, queueSocket, makeRoom, alreadyInQueue} from "./server.js";
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -22,10 +22,14 @@ const server = new Server(httpServer, {
     console.info(`user ${ socket.id } connected`);
 
     socket.on('level', (level) => {
-      if (checkQueue(server, level)) {
-        queueSocket(socket, level);
-      } else {
-        makeRoom(server, socket, level);
+      if (!alreadyInQueue(socket, level)) {
+        if (isQueueEmpty(server, level)) {
+          if (!alreadyInQueue(socket, level)) {
+            queueSocket(socket, level);
+          }
+        } else {
+          makeRoom(server, socket, level);
+        }
       }
     })
 

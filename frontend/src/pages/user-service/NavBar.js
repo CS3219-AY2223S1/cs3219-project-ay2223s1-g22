@@ -1,9 +1,20 @@
-import { HStack, Heading, Avatar, useColorMode, Button, 
-    Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverCloseButton, PopoverBody } from "@chakra-ui/react";
+import {
+	HStack,
+	Heading,
+	Avatar,
+	useColorMode,
+	Button,
+	Popover,
+	PopoverTrigger,
+	PopoverContent,
+	PopoverArrow,
+	PopoverCloseButton,
+	PopoverBody
+} from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from '@chakra-ui/icons'
 
 function NavBar() {
-    const { colorMode, toggleColorMode } = useColorMode();
+	const { colorMode, toggleColorMode } = useColorMode();
 
     return (
     <HStack w="100%" px="3%" py="1%" justifyContent="space-between">

@@ -7,3 +7,8 @@ variable "frontend_image_tag" {
 	type=string
 	default="latest"
 }
+
+variable "user-service_image_tag" {
+	type=string
+	default="latest"
+}
