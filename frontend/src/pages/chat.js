@@ -6,6 +6,7 @@ import Footer from "../components/chat/Footer";
 import Header from "../components/chat/Header";
 import Messages from "../components/chat/Messages";
 import { SocketContext } from "./matching-service/SocketContext";
+import { useNavigate } from "react-router-dom";
 
 function Chat({ roomNumber }) {
   const [messages, setMessages] = useState([
@@ -25,7 +26,7 @@ function Chat({ roomNumber }) {
   const [inputMessage, setInputMessage] = useState("");
 
   const { socket } = useContext(SocketContext);
-
+  const navigate = useNavigate();
   useEffect(() => {
     socket.on("connect", () => {
       // setIsConnected(true);
@@ -42,6 +43,10 @@ function Chat({ roomNumber }) {
         { from: "PLACEHOLDER_USERNAME", text: message },
       ]);
     });
+
+    socket.on("match-over", (message) => {
+      navigate("/matchselection", { state: true });
+    })
 
     return () => {
       socket.off("connect");

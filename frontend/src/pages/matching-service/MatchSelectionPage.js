@@ -21,7 +21,6 @@ const DEFAULT_TIMEOUT_LIMIT = 30; // cancel search after 30 seconds
 
 function MatchSelectionPage() {
   const { socket, sendLevel } = useContext(SocketContext);
-
   const [isFindingMatch, setIsFindingMatch] = useState(false);
   const [isConnected, setIsConnected] = useState(socket.connected);
 
@@ -100,6 +99,17 @@ function MatchSelectionPage() {
       duration: 3000,
       isClosable: true,
     });
+
+  const opponentLeftToast = useToast();
+  const showOpponentLeftToast = () => {
+    opponentLeftToast({
+      title: "Oops! You opponent left the match!",
+      description: "Queue up for another one?",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    })
+  }
 
   const hasOngoingRequest = timer.isRunning;
 
