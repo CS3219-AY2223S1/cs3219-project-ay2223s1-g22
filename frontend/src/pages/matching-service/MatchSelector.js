@@ -12,7 +12,7 @@ function MatchSelector() {
   return (
     <VStack bg="gray.600" p="5" borderRadius="15">
       <HStack w="100%" align="left">
-        <Heading as="h4" size="md">
+        <Heading as="h4" size="md" color='white'>
           Start a match!
         </Heading>
       </HStack>
@@ -21,6 +21,7 @@ function MatchSelector() {
           colorScheme="green"
           disabled={isDisabled}
           onClick={() => requestMatch("easy")}
+          color='black'
         >
           Easy
         </Button>
@@ -29,6 +30,7 @@ function MatchSelector() {
           colorScheme="yellow"
           disabled={isDisabled}
           onClick={() => requestMatch("medium")}
+          color='black'
         >
           Medium
         </Button>
@@ -37,6 +39,7 @@ function MatchSelector() {
           colorScheme="red"
           disabled={isDisabled}
           onClick={() => requestMatch("hard")}
+          color='black'
         >
           Hard
         </Button>
