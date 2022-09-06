@@ -49,8 +49,6 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // const [token, setToken] = useLocalStorage("token", "");
-  // const [user, setUser] = useLocalStorage("user", {});
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleShowClick = () => setShowPassword(!showPassword);
@@ -144,8 +142,6 @@ const LoginPage = () => {
                     const promise = loginUser(email, password);
                     promise.then((res) => {
                       if (res) {
-                        // setToken(res.data.accessToken);
-                        // setUser(res.data.user);
                         storeUserData(res.data.accessToken, res.data.user);
                         navigate("/matchselection");
                       }
@@ -165,8 +161,6 @@ const LoginPage = () => {
                     const promise = deleteUserAccount(user);
                     promise.then((res) => {
                       if (res) {
-                        // setToken("");
-                        // setUser("");
                         clearUserData();
                         console.log(res.data.message);
                       }
@@ -183,8 +177,6 @@ const LoginPage = () => {
                   colorScheme="teal"
                   onClick={() => {
                     if (logoutUser()) {
-                      // setToken("");
-                      // setUser({});
                       clearUserData();
                     }
                   }}
