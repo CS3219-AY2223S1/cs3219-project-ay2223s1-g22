@@ -7,8 +7,6 @@ services:
     build:
       context: ./frontend
       target: dev
-    environment:
-      - MATCHING_SERVICE_DOMAIN="http://matching-service:8080"
     ports:
       - 3000:3000
   matching-service:
@@ -18,3 +16,10 @@ services:
       target: dev
     ports:
       - 8080:8080
+  user-service:
+    container_name: user-service
+    build:
+      context: ./user-service
+      target: dev
+    ports:
+      - 8081:8080
