@@ -116,7 +116,34 @@ TODO - Requirement Prioritization table (refer to slide 42 of Lecture 2)
 
 # Development Process
 
-TODO
+## Continuous Integration
+
+The project uses a workflow script to perform testing using Github Actions.
+
+When a pull-request to the `main` branch is created, the workflow will runs unit tests for each of the services by:
+
+- building a Docker image from the `test` stage of its Dockerfile
+- starting a container from the image
+- after the container has been successfully created, the command to execute the unit tests is invoked
+
+If at least one unit test from any service fails, the workflow ends with a `failed` status. When all unit tests have been executed without any failures, the workflow ends with a `completed` status.
+
+- The completion status of the workflow is reflected in the page of the pull-request on GitHub.
+
+## Deployment
+
+For Milestone 1, the team decided to manually deploy updates to the production environment with Github Actions and Terraform.
+
+When a new feature is introduced to a service and the code merged into the `main` branch, the team would invoke a deployment workflow and specify the service to be updated. This would trigger the deployment workflow to run.
+
+When the deployment workflow runs, the following happens:
+
+- A Docker image is built from the `build` stage of the target service's Dockerfile.
+  - The image is tagged with the a unique hash value, which is associated with the current run of the workflow.
+- After creation, the image is uploaded to the Google Container Repository.
+- The tag of the latest image is passed to the next phase of the workflow, which updates the production environment with Terraform, which:
+  - Shuts down all containers in the production environment that are currently running the service
+  - Creates new containers using the new Docker image
 
 # Design Patterns
 
