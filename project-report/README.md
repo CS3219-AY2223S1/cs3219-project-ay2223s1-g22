@@ -112,7 +112,7 @@ TODO - Requirement Prioritization table (refer to slide 42 of Lecture 2)
 
 # Solution Architecture
 
-TODO
+![PeerPrep-Solution-Architecture](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/PeerPrep-Architecture-V1.png?raw=true)
 
 # Development Process
 
