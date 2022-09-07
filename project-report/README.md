@@ -120,23 +120,24 @@ TODO - Requirement Prioritization table (refer to slide 42 of Lecture 2)
 
 The project uses a workflow script to perform testing using Github Actions.
 
-When a pull-request to the `main` branch is created, the workflow will runs unit tests for each of the services by:
+When a pull-request to the `main` branch is created, the workflow will run unit tests for each of the services by:
 
-- building a Docker image from the `test` stage of its Dockerfile
+- building a Docker image from the `test` stage of the service's Dockerfile
 - starting a container from the image
-- after the container has been successfully created, the command to execute the unit tests is invoked
+- invoking the command to execute the unit tests for the service
 
-If at least one unit test from any service fails, the workflow ends with a `failed` status. When all unit tests have been executed without any failures, the workflow ends with a `completed` status.
+When all unit tests have been executed without any failures, the workflow ends with a `completed` status.
 
+- If at least one unit test from any service fails, the workflow ends with a `failed` status.
 - The completion status of the workflow is reflected in the page of the pull-request on GitHub.
 
 ## Deployment
 
-For Milestone 1, the team decided to manually deploy updates to the production environment with Github Actions and Terraform.
+For Milestone 1, the team decided to deploy updates manually to the production environment with Github Actions and Terraform.
 
-When a new feature is introduced to a service and the code merged into the `main` branch, the team would invoke a deployment workflow and specify the service to be updated. This would trigger the deployment workflow to run.
+When a new feature is introduced to a service, and the code has been merged into the `main` branch, the team would invoke a deployment workflow and specify the service to be updated. This would trigger the deployment workflow to run.
 
-When the deployment workflow runs, the following happens:
+When the deployment workflow runs, the following steps are taken:
 
 - A Docker image is built from the `build` stage of the target service's Dockerfile.
   - The image is tagged with the a unique hash value, which is associated with the current run of the workflow.
@@ -144,6 +145,21 @@ When the deployment workflow runs, the following happens:
 - The tag of the latest image is passed to the next phase of the workflow, which updates the production environment with Terraform, which:
   - Shuts down all containers in the production environment that are currently running the service
   - Creates new containers using the new Docker image
+
+## Infrastructure as Code
+
+To better manage the production environment, the team has defined the infrastructure components required for each service in Terraform module configuration files.
+
+This makes updating infrastructure easier:
+
+- to add, modify or remove a component for a service, the team would modify the Terraform configuration file for the service
+- A request would then be made to Terraform to automatically update the infrastructure with the updated configuration file in the following manner:
+  - deploy component(s) added to the configuration file.
+  - re-deploy any component(s) whose configurations have been modified
+    - eg: the target Docker image of the container
+  - shut down component(s) removed from the configuration file
+
+Managing infrastructure in a declarative manner using Terraform configuration files also allows the team to keep track of changes made to the infrastructure over time.
 
 # Design Patterns
 
