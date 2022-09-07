@@ -39,27 +39,29 @@ In building PeerPrep, we seek to achieve the following objectives:
 
 ## Question Service
 
-| ID     | Description | Priority |
-| ------ | ----------- | -------- |
-| F-QU-1 | TODO        | TODO     |
+| ID     | Description                                                         | Priority |
+| ------ | ------------------------------------------------------------------- | -------- |
+| F-QU-1 | The system should store a list of questions, indexed by difficulty. | High     |
+| F-QU-2 | The system should allow users to retrieve a question by difficulty. | High     |
+| F-QU-3 | The system should allow administrators to add additional questions. | High     |
 
 ## Collaboration Service
 
-| ID     | Description | Priority |
-| ------ | ----------- | -------- |
-| F-CO-1 | TODO        | TODO     |
+| ID     | Description                                                                                               | Priority |
+| ------ | --------------------------------------------------------------------------------------------------------- | -------- |
+| F-CO-1 | The system should provide a text-editor that is synced in near real-time between users in the same match. | High     |
 
 ## Chat Service
 
-| ID     | Description | Priority |
-| ------ | ----------- | -------- |
-| F-CH-1 | TODO        | TODO     |
+| ID     | Description                                                                                                | Priority |
+| ------ | ---------------------------------------------------------------------------------------------------------- | -------- |
+| F-CH-1 | The system should provide a chat box that allows users in the same match to communicate via text messages. | High     |
 
-## Application Service
+## Frontend Service
 
-| ID     | Description | Priority |
-| ------ | ----------- | -------- |
-| F-AP-1 | TODO        | TODO     |
+| ID     | Description                                                                                     | Priority |
+| ------ | ----------------------------------------------------------------------------------------------- | -------- |
+| F-AP-1 | The system should provide the user with the files necessary to run the client in a web browser. | High     |
 
 # Non-Functional Requirements
 
@@ -79,9 +81,10 @@ TODO - Requirement Prioritization table (refer to slide 42 of Lecture 2)
 
 ## Performance Requirements
 
-| ID     | Description | Priority |
-| ------ | ----------- | -------- |
-| N-PE-1 | TODO        | TODO     |
+| ID     | Description                                                                                                              | Priority |
+| ------ | ------------------------------------------------------------------------------------------------------------------------ | -------- |
+| N-PE-1 | The collaborative text editor should display changes made by a user to other users in the same match in below 5 seconds. | High     |
+| N-PE-2 | Messages sent through the chat box should be received by users in below 5 seconds.                                       | High     |
 
 ## Robustness Requirements
 
@@ -109,7 +112,7 @@ TODO - Requirement Prioritization table (refer to slide 42 of Lecture 2)
 
 # Solution Architecture
 
-TODO
+![PeerPrep-Solution-Architecture](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/PeerPrep-Architecture-V1.png?raw=true)
 
 # Development Process
 
