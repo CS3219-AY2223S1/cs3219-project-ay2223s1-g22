@@ -1,10 +1,10 @@
 import React from "react";
-import { Flex, Input, Button, InputGroup, InputRightElement } from "@chakra-ui/react";
+import { Flex, Input, Button, InputGroup, InputRightElement, Spacer } from "@chakra-ui/react";
 
 const Footer = ({ inputMessage, setInputMessage, handleSendMessage }) => {
   return (
     <Flex w="100%" mt="2">
-      <InputGroup>
+      <InputGroup paddingBottom='1' paddingLeft='1'>
         <Input
           placeholder="Type Something..."
           borderRadius="10"

@@ -9,7 +9,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import SignupPage from "./pages/user-service/SignupPage";
 import MatchSelectionPage from "./pages/matching-service/MatchSelectionPage";
 import LoginPage from "./pages/user-service/LoginPage";
-import MatchRoomPage from "./pages/matching-service/MatchRoomPage";
+import MatchRoomPage from "./pages/matching-service/MatchRoomPage2";
 import UserContext from "./UserContext";
 import { useLocalStorage } from "./useLocalStorage";
 import Protected from "./Protected";

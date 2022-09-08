@@ -1,4 +1,4 @@
-import {Button, Flex, Text, HStack, useToast} from "@chakra-ui/react";
+import {Button, Flex, HStack, useToast} from "@chakra-ui/react";
 import {useContext, useEffect, useRef, useState} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
