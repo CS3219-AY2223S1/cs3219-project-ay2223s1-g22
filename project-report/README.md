@@ -18,50 +18,63 @@ In building PeerPrep, we seek to achieve the following objectives:
 
 ## User Service
 
-| ID     | Description                                                                                       | Priority |
-| ------ | ------------------------------------------------------------------------------------------------- | -------- |
-| F-US-1 | The system should allow users to create an account with username and password.                    | High     |
-| F-US-2 | The system should ensure that every account created has a unique username.                        | High     |
-| F-US-3 | The system should allow users to log into their accounts by entering their username and password. | High     |
-| F-US-4 | The system should allow users to log out of their account.                                        | High     |
-| F-US-5 | The system should allow users to delete their account.                                            | High     |
-| F-US-6 | The system should allow users to change their password.                                           | Medium   |
+| ID     | Description                                                                            | Priority |
+|--------|----------------------------------------------------------------------------------------|----------|
+| F-US-1 | The system should allow users to create an account with a username and password.       | High     |
+| F-US-2 | The system should ensure that every account created has a unique username.             | High     |
+| F-US-3 | The system should allow users to log into their accounts with a username and password. | High     |
+| F-US-4 | The system should allow users to log out of their account.                             | High     |
+| F-US-5 | The system should allow users to delete their account.                                 | High     |
+| F-US-6 | The system should allow users to change their password.                                | Medium   |
 
 ## Matching Service
 
 | ID     | Description                                                                                                        | Priority |
-| ------ | ------------------------------------------------------------------------------------------------------------------ | -------- |
+|--------|--------------------------------------------------------------------------------------------------------------------|----------|
 | F-MA-1 | The system should allow users to select the difficulty level of the questions they wish to attempt.                | High     |
 | F-MA-2 | The system should be able to match two waiting users with similar difficulty levels and put them in the same room. | High     |
-| F-MA-3 | If there is a valid match, the system should match the users within 30s.                                           | High     |
-| F-MA-4 | The system should inform the users that no match is available if a match cannot be found within 30 seconds.        | High     |
-| F-MA-5 | The system should provide a means for the user to leave a room once matched.                                       | Medium   |
+| F-MA-3 | If there is a valid match, the system should match the users within a reasonable amount of time.                   | High     |
+| F-MA-4 | The system should provide a means for the user to leave a room once matched.                                       | Medium   |
 
 ## Question Service
 
 | ID     | Description                                                         | Priority |
-| ------ | ------------------------------------------------------------------- | -------- |
+|--------|---------------------------------------------------------------------|----------|
 | F-QU-1 | The system should store a list of questions, indexed by difficulty. | High     |
 | F-QU-2 | The system should allow users to retrieve a question by difficulty. | High     |
 | F-QU-3 | The system should allow administrators to add additional questions. | High     |
 
 ## Collaboration Service
 
-| ID     | Description                                                                                               | Priority |
-| ------ | --------------------------------------------------------------------------------------------------------- | -------- |
-| F-CO-1 | The system should provide a text-editor that is synced in near real-time between users in the same match. | High     |
+| ID     | Description                                                                                                        | Priority |
+|--------|--------------------------------------------------------------------------------------------------------------------|----------|
+| F-CO-1 | The system should provide a text-editor that is synced between users in the same match.                            | High     |
+| F-CO-2 | The system should allow peers to see each other's cursors and highlights.                                          | Low      |
 
-## Chat Service
+## Execution Service
 
-| ID     | Description                                                                                                | Priority |
-| ------ | ---------------------------------------------------------------------------------------------------------- | -------- |
-| F-CH-1 | The system should provide a chat box that allows users in the same match to communicate via text messages. | High     |
+| ID     | Description                                                                    | Priority |
+|--------|--------------------------------------------------------------------------------|----------|
+| F-EX-1 | The system should provide a compiler for Java and C programs.                  | Medium   |
+| F-EX-2 | The system should provide the execution output of Java, C and Python programs. | Medium   |
 
-## Frontend Service
 
-| ID     | Description                                                                                     | Priority |
-| ------ | ----------------------------------------------------------------------------------------------- | -------- |
-| F-AP-1 | The system should provide the user with the files necessary to run the client in a web browser. | High     |
+## Frontend
+
+| ID      | Description                                                                                                        | Priority |
+|---------|--------------------------------------------------------------------------------------------------------------------|----------|
+| F-FR-1  | The system should provide the user with a login page.                                                              | High     |
+| F-FR-2  | The system should provide the user with a registration page.                                                       | High     |
+| F-FR-3  | The system should not allow unauthorized users to only access login and registration page.                         | High     |
+| F-FR-4  | The system should allow toggling between light and dark mode for all pages.                                        | Low      |
+| F-FR-5  | The chat box should provide a list of prompts for the "interviewer" to ask the "interviewee".                      | High     |
+| F-FR-6  | The system should provide a chat box that allows users in the same match to communicate via text messages.         | High     |
+| F-FR-7  | The system should provide the user with a text editor.                                                             | High     |
+| F-FR-8  | The text editor should handle syntax highlight for programming language of choice.                                 | Medium   |
+| F-FR-9  | The text editor should handle syntax formatting for programming language of choice.                                | Medium   |
+| F-FR-10 | The text editor should allow the user to choose between Java, C and Python as their programming language of choice | High     |
+| F-FR-11 | The system should provide a non-interactive terminal to display the output of the executed program.                | Medium   |
+| F-FR-12 | The system should inform the users that no match is available if a match cannot be found within 30 seconds.        | High     |
 
 # Non-Functional Requirements
 
@@ -69,46 +82,38 @@ TODO - Requirement Prioritization table (refer to slide 42 of Lecture 2)
 
 ## Availability Requirements
 
-| ID     | Description | Priority |
-| ------ | ----------- | -------- |
-| N-AV-1 | TODO        | TODO     |
-
-## Integrity Requirements
-
-| ID     | Description | Priority |
-| ------ | ----------- | -------- |
-| N-IN-1 | TODO        | TODO     |
+| ID     | Description                                                                        s | Priority |
+|--------|--------------------------------------------------------------------------------------|----------|
+| N-AV-1 | The system shall be at least 95% available between 6am and 12am Singapore time.      | High     |
 
 ## Performance Requirements
 
 | ID     | Description                                                                                                              | Priority |
-| ------ | ------------------------------------------------------------------------------------------------------------------------ | -------- |
+|--------|--------------------------------------------------------------------------------------------------------------------------|----------|
 | N-PE-1 | The collaborative text editor should display changes made by a user to other users in the same match in below 5 seconds. | High     |
 | N-PE-2 | Messages sent through the chat box should be received by users in below 5 seconds.                                       | High     |
+| N-PE-3 | The system should display the output of the executed programs in under 10 seconds.                                       | Medium   |
+| N-PE-4 | If there is a valid match, the system should match the users within 30s.                                                 | High     |
 
 ## Robustness Requirements
 
-| ID     | Description | Priority |
-| ------ | ----------- | -------- |
-| N-RO-1 | TODO        | TODO     |
+| ID     | Description                                                                              | Priority |
+|--------|------------------------------------------------------------------------------------------|----------|
+| N-RO-1 | The system should not evict the user from the match when the user refreshes the browser. | High     |
 
 ## Security Requirements
 
 | ID     | Description                                                            | Priority |
-| ------ | ---------------------------------------------------------------------- | -------- |
+|--------|------------------------------------------------------------------------|----------|
 | N-SE-1 | Users' passwords should be hashed and salted before storing in the DB. | Medium   |
-
-## Usability Requirements
-
-| ID     | Description | Priority |
-| ------ | ----------- | -------- |
-| N-US-1 | TODO        | TODO     |
+| N-SE-2 | The system should only grant authorized users access to all pages.     | High     |
+| N-SE-3 | The system should expire access tokens after 1 hour.                   | High     |
 
 ## Scalability Requirements
 
-| ID     | Description | Priority |
-| ------ | ----------- | -------- |
-| N-SC-1 | TODO        | TODO     |
+| ID     | Description                                                     | Priority |
+|--------|-----------------------------------------------------------------|----------|
+| N-SC-1 | The system should be able to handle at least 100 users at once. | Low      |
 
 # Solution Architecture
 
@@ -118,7 +123,7 @@ TODO - Requirement Prioritization table (refer to slide 42 of Lecture 2)
 
 ## Continuous Integration
 
-The project uses a workflow script to perform testing using Github Actions.
+The project uses a workflow script to perform testing using GitHub Actions.
 
 When a pull-request to the `main` branch is created, the workflow will run unit tests for each of the services by:
 
