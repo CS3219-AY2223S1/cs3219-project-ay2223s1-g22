@@ -39,27 +39,29 @@ In building PeerPrep, we seek to achieve the following objectives:
 
 ## Question Service
 
-| ID     | Description | Priority |
-| ------ | ----------- | -------- |
-| F-QU-1 | TODO        | TODO     |
+| ID     | Description                                                         | Priority |
+| ------ | ------------------------------------------------------------------- | -------- |
+| F-QU-1 | The system should store a list of questions, indexed by difficulty. | High     |
+| F-QU-2 | The system should allow users to retrieve a question by difficulty. | High     |
+| F-QU-3 | The system should allow administrators to add additional questions. | High     |
 
 ## Collaboration Service
 
-| ID     | Description | Priority |
-| ------ | ----------- | -------- |
-| F-CO-1 | TODO        | TODO     |
+| ID     | Description                                                                                               | Priority |
+| ------ | --------------------------------------------------------------------------------------------------------- | -------- |
+| F-CO-1 | The system should provide a text-editor that is synced in near real-time between users in the same match. | High     |
 
 ## Chat Service
 
-| ID     | Description | Priority |
-| ------ | ----------- | -------- |
-| F-CH-1 | TODO        | TODO     |
+| ID     | Description                                                                                                | Priority |
+| ------ | ---------------------------------------------------------------------------------------------------------- | -------- |
+| F-CH-1 | The system should provide a chat box that allows users in the same match to communicate via text messages. | High     |
 
-## Application Service
+## Frontend Service
 
-| ID     | Description | Priority |
-| ------ | ----------- | -------- |
-| F-AP-1 | TODO        | TODO     |
+| ID     | Description                                                                                     | Priority |
+| ------ | ----------------------------------------------------------------------------------------------- | -------- |
+| F-AP-1 | The system should provide the user with the files necessary to run the client in a web browser. | High     |
 
 # Non-Functional Requirements
 
@@ -79,9 +81,10 @@ TODO - Requirement Prioritization table (refer to slide 42 of Lecture 2)
 
 ## Performance Requirements
 
-| ID     | Description | Priority |
-| ------ | ----------- | -------- |
-| N-PE-1 | TODO        | TODO     |
+| ID     | Description                                                                                                              | Priority |
+| ------ | ------------------------------------------------------------------------------------------------------------------------ | -------- |
+| N-PE-1 | The collaborative text editor should display changes made by a user to other users in the same match in below 5 seconds. | High     |
+| N-PE-2 | Messages sent through the chat box should be received by users in below 5 seconds.                                       | High     |
 
 ## Robustness Requirements
 
@@ -109,11 +112,54 @@ TODO - Requirement Prioritization table (refer to slide 42 of Lecture 2)
 
 # Solution Architecture
 
-TODO
+![PeerPrep-Solution-Architecture](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/PeerPrep-Architecture-V1.png?raw=true)
 
 # Development Process
 
-TODO
+## Continuous Integration
+
+The project uses a workflow script to perform testing using Github Actions.
+
+When a pull-request to the `main` branch is created, the workflow will run unit tests for each of the services by:
+
+- building a Docker image from the `test` stage of the service's Dockerfile
+- starting a container from the image
+- invoking the command to execute the unit tests for the service
+
+When all unit tests have been executed without any failures, the workflow ends with a `completed` status.
+
+- If at least one unit test from any service fails, the workflow ends with a `failed` status.
+- The completion status of the workflow is reflected in the page of the pull-request on GitHub.
+
+## Deployment
+
+For Milestone 1, the team decided to deploy updates manually to the production environment with Github Actions and Terraform.
+
+When a new feature is introduced to a service, and the code has been merged into the `main` branch, the team would invoke a deployment workflow and specify the service to be updated. This would trigger the deployment workflow to run.
+
+When the deployment workflow runs, the following steps are taken:
+
+- A Docker image is built from the `build` stage of the target service's Dockerfile.
+  - The image is tagged with the a unique hash value, which is associated with the current run of the workflow.
+- After creation, the image is uploaded to the Google Container Repository.
+- The tag of the latest image is passed to the next phase of the workflow, which updates the production environment with Terraform, which:
+  - Shuts down all containers in the production environment that are currently running the service
+  - Creates new containers using the new Docker image
+
+## Infrastructure as Code
+
+To better manage the production environment, the team has defined the infrastructure components required for each service in Terraform module configuration files.
+
+This makes updating infrastructure easier:
+
+- to add, modify or remove a component for a service, the team would modify the Terraform configuration file for the service
+- A request would then be made to Terraform to automatically update the infrastructure with the updated configuration file in the following manner:
+  - deploy component(s) added to the configuration file.
+  - re-deploy any component(s) whose configurations have been modified
+    - eg: the target Docker image of the container
+  - shut down component(s) removed from the configuration file
+
+Managing infrastructure in a declarative manner using Terraform configuration files also allows the team to keep track of changes made to the infrastructure over time.
 
 # Design Patterns
 
