@@ -1,4 +1,4 @@
-import {Flex, Stack, Box, VStack, useToast} from "@chakra-ui/react";
+import {Flex, Stack, Box, VStack, useToast, systemProps} from "@chakra-ui/react";
 import React, { useState, useContext, useEffect } from "react";
 
 import Divider from "../components/chat/Divider";
@@ -68,63 +68,22 @@ function Chat({ roomNumber }) {
   };
 
   return (
-    <Flex w="100%" h="100%" justify="flex-start" align="center">
-      <Stack>
-        <Flex //TODO: Change this to question.js and contain both question and chat as a stack
-          h="50vh"
-          flexDir="column"
-          backgroundColor="whiteAlpha.500"
-          borderRadius="10"
-        >
-          <Box>QUESTION BOX</Box>
-          <Box>QUESTION BOX</Box>
-          <Box>QUESTION BOX</Box>
-          <Box>QUESTION BOX</Box>
-          <Box>QUESTION BOX</Box>
-          <Box>QUESTION BOX</Box>
-          <Box>QUESTION BOX</Box>
-          <Box>QUESTION BOX</Box>
-          <Box>QUESTION BOX</Box>
-          <Box>QUESTION BOX</Box>
-          <Box>QUESTION BOX</Box>
-          <Box>QUESTION BOX</Box>
-          <Box>QUESTION BOX</Box>
-          <Box>QUESTION BOX</Box>
-          <Box>QUESTION BOX</Box>
-          <Box>QUESTION BOX</Box>
-        </Flex>
-        <Flex
-          h="40vh"
-          flexDir="column"
-          backgroundColor="whiteAlpha.100"
-          borderRadius="10"
-        >
-          <Header />
-          <Divider />
-          <Messages messages={messages} />
-          <Divider />
-          <Footer
-            inputMessage={inputMessage}
-            setInputMessage={setInputMessage}
-            handleSendMessage={handleSendMessage}
-          />
-        </Flex>
-      </Stack>
-      <VStack w="100%">
-        <Box bg="whiteAlpha.300" w="100%" p={4}>
-          This will be the code editor + output terminal
-        </Box>
-        <Box bg="whiteAlpha.300" w="100%" p={4}>
-          This will be the code editor + output terminal
-        </Box>
-        <Box bg="whiteAlpha.300" w="100%" p={4}>
-          This will be the code editor + output terminal
-        </Box>
-        <Box bg="whiteAlpha.300" w="100%" p={4}>
-          This will be the code editor + output terminal
-        </Box>
-      </VStack>
-    </Flex>
+      <Flex
+        h="100%"
+        flexDir="column"
+        backgroundColor="whiteAlpha.100"
+        borderRadius="10"
+      >
+        <Header />
+        <Divider />
+        <Messages messages={messages} />
+        <Divider />
+        <Footer
+          inputMessage={inputMessage}
+          setInputMessage={setInputMessage}
+          handleSendMessage={handleSendMessage}
+        />
+      </Flex>
   );
 }
 
