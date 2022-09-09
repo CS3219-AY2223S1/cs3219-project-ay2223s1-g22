@@ -75,7 +75,7 @@ const MatchRoomPage = () => {
         <Question/>
       </GridItem>
       <GridItem rowSpan={4} colSpan={2} rowStart={7} border='2px' borderRadius='10' borderColor='blackAlpha.300'>
-        <Chat/>
+        <Chat roomNumber={roomNumber}/>
       </GridItem>
       <GridItem rowSpan={7} colSpan={4}>
         <CodeEditor/>
@@ -84,6 +84,7 @@ const MatchRoomPage = () => {
         Terminal
       </GridItem>
     </Grid>
+    
     // <Flex direction="column">
     //   <NavBar />
     //   <Chat roomNumber={roomNumber} />
