@@ -1,6 +1,23 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./Editor.css";
 
+// external dependencies imported via <script> tags in public/index.html
+const Firebase = window.firebase;
+const CodeMirror = window.CodeMirror;
+const Firepad = window.Firepad;
+
+// temporary firebase API key
+const config = {
+  apiKey: "AIzaSyCxYyuY2qWbab4z8U0zxy3PgyEVtVYMrGk",
+  authDomain: "cs3219-project-ay2223s1-g22.firebaseapp.com",
+  databaseURL: "https://cs3219-project-ay2223s1-g22.firebaseio.com/",
+  projectId: "cs3219-project-ay2223s1-g22",
+  storageBucket: "cs3219-project-ay2223s1-g22.appspot.com",
+  messagingSenderId: "733243007424",
+  appId: "1:733243007424:web:ebec765f20de1a1d81e825",
+  measurementId: "G-FTQMLTKRB8",
+};
+
 function CodeEditor() {
   const [programmingLanguage, setProgrammingLanguage] = useState("text/x-java");
   const dbRef = useRef(null);
@@ -8,37 +25,25 @@ function CodeEditor() {
   const firepadRef = useRef(null);
 
   useEffect(() => {
-    //// Initialize Firebase.
-    // firebase configuration details here
-    const config = {
-      apiKey: "AIzaSyCxYyuY2qWbab4z8U0zxy3PgyEVtVYMrGk",
-      authDomain: "cs3219-project-ay2223s1-g22.firebaseapp.com",
-      databaseURL: "https://cs3219-project-ay2223s1-g22.firebaseio.com/",
-      projectId: "cs3219-project-ay2223s1-g22",
-      storageBucket: "cs3219-project-ay2223s1-g22.appspot.com",
-      messagingSenderId: "733243007424",
-      appId: "1:733243007424:web:ebec765f20de1a1d81e825",
-      measurementId: "G-FTQMLTKRB8",
-    };
+    /* Initialize Firebase */
+    if (!Firebase.apps.length) {
+      // initialize the firebase app
+      Firebase.initializeApp(config);
 
-    if (!window.firebase.apps.length) {
-      window.firebase.initializeApp(config);
-
-      //// Get Firebase Database reference.
+      // create a table that stores the code-editor data for the current match
       dbRef.current = createRoom();
     }
 
-    //// Create CodeMirror editor.
+    /* Create CodeMirror editor instance */
     if (!codeMirrorRef.current) {
-      codeMirrorRef.current = window.CodeMirror(
+      codeMirrorRef.current = CodeMirror(
         document.getElementById("firepad-container"),
         {
-          lineNumbers: true,
           theme: "material",
           mode: programmingLanguage,
+          lineNumbers: true,
           indentWithTabs: true,
           smartIndent: true,
-          lineNumbers: true,
           lineWrapping: true,
           matchBrackets: true,
           autofocus: true,
@@ -46,13 +51,15 @@ function CodeEditor() {
       );
     }
 
-    //// Create Firepad
-    firepadRef.current = window.Firepad.fromCodeMirror(
+    /* Create Firepad instance */
+    // TODO: remove hardcoded userId and change to user's name
+    const userId = "2";
+    firepadRef.current = Firepad.fromCodeMirror(
       dbRef.current,
       codeMirrorRef.current,
       {
         defaultText: "Type some stuff here!",
-        userId: "2",
+        userId: userId,
       }
     );
 
@@ -61,19 +68,25 @@ function CodeEditor() {
     });
   }, []);
 
-  // change syntax highlighting
+  /* To change syntax highlighting. */
   useEffect(() => {
     codeMirrorRef.current.setOption("mode", programmingLanguage);
   }, [programmingLanguage]);
 
-  // Helper function to create a room based on some pre-determined string (perhaps two users?)
+  /* Helper function to create a new database table to hold the data in the code editor for this match */
   function createRoom() {
-    var ref = window.firebase.database().ref();
-    var hash = "peer01";
-    ref = ref.child(hash);
-    if (typeof console !== "undefined") {
-      console.log("Firebase data: ", ref.toString());
-    }
+    // get a reference to the firebase realtime database
+    var ref = Firebase.database().ref();
+
+    // create a new "table" in the database with the roomId as the name
+    // TODO: remove hardcoded roomId and change to room's id
+    var roomId = "peer01";
+    ref = ref.child(roomId);
+
+    // print data in the table (for debugging purposes)
+    // if (typeof console !== "undefined") {
+    //   console.log("Firebase data: ", ref.toString());
+    // }
     return ref;
   }
 
