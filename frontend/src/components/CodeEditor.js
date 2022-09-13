@@ -58,7 +58,7 @@ function CodeEditor() {
       dbRef.current,
       codeMirrorRef.current,
       {
-        defaultText: "Type some stuff here!",
+        defaultText: "Type your code here!",
         userId: userId,
       }
     );
@@ -90,6 +90,19 @@ function CodeEditor() {
     return ref;
   }
 
+  /* Helper function to get code from the editor */
+  function getCode() {
+    if (!firepadRef.current) {
+      console.log("Firepad not initialized!");
+      return;
+    }
+
+    const code = firepadRef.current.getText();
+    console.log(code);
+
+    return code;
+  }
+
   return (
     <div>
       <div>
@@ -109,6 +122,7 @@ function CodeEditor() {
             </select>
           </label>
         </form>
+        <button onClick={getCode}>Print code to console</button>
       </div>
       <div id="firepad-container"></div>
     </div>
