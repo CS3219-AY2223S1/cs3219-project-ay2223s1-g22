@@ -1,7 +1,3 @@
----
-layout: page
-title: Project Report (AY2223S1-G22)
----
 
 ## Table of Contents
 
