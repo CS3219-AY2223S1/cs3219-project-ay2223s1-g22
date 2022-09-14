@@ -1,6 +1,7 @@
 # CS3219-AY22-23-Project
 
-📝 Check out PeerPrep [here](https://frontend-pzsuad4zva-as.a.run.app/login)
+* 🎉 Try our app [here](https://frontend-pzsuad4zva-as.a.run.app/login)
+* 📝 Check out our [Developer Guide](https://cs3219-ay2223s1.github.io/cs3219-project-ay2223s1-g22/)
 
 # To run locally
 
