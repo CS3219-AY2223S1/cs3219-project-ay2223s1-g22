@@ -1,4 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
+import {
+  Box,
+  FormControl,
+  FormLabel,
+  Select,
+  Button,
+  ButtonGroup,
+  VStack,
+} from "@chakra-ui/react";
 import "./Editor.css";
 
 // external dependencies imported via <script> tags in public/index.html
@@ -98,34 +107,30 @@ function CodeEditor() {
     }
 
     const code = firepadRef.current.getText();
-    console.log(code);
 
     return code;
   }
 
   return (
-    <div>
-      <div>
-        <form>
-          <label>
-            Language:
-            <select
-              value={programmingLanguage}
-              onChange={(e) => setProgrammingLanguage(e.target.value)}
-            >
-              <option value="text/x-java">Java</option>
-              <option value="python">Python</option>
-              <option value="javascript">JavaScript</option>
-              <option value="some-language-that-doesn't-exist">
-                Turn off syntax highlighting
-              </option>
-            </select>
-          </label>
-        </form>
-        <button onClick={getCode}>Print code to console</button>
-      </div>
-      <div id="firepad-container"></div>
-    </div>
+    <VStack h="100%" w="100%">
+      <FormControl>
+        <FormLabel>Language:</FormLabel>
+        <Select onChange={(e) => setProgrammingLanguage(e.target.value)}>
+          <option value="text/x-java">Java</option>
+          <option value="python">Python</option>
+          <option value="javascript">JavaScript</option>
+          <option value="some-language-that-doesn't-exist">
+            Turn off syntax highlighting
+          </option>
+        </Select>
+      </FormControl>
+      <Box h="100%" w="100%">
+        <div id="firepad-container"></div>
+      </Box>
+      <ButtonGroup justifyContent="flex-end" width="100%">
+        <Button onClick={() => alert(getCode())}>Test</Button>
+      </ButtonGroup>
+    </VStack>
   );
 }
 export default CodeEditor;

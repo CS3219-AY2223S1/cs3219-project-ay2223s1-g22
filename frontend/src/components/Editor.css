@@ -1,5 +1,5 @@
 #firepad-container {
-  width: 900px;
-  height: 500px;
+  width: inherit;
+  height: inherit;
   margin: auto;
 }
