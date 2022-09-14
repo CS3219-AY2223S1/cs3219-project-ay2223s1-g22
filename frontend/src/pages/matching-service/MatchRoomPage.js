@@ -4,10 +4,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 import NavBar from "../user-service/NavBar";
 import Chat from "../chat";
-import Question from "../../components/Question"
-import CodeEditor from "../../components/CodeEditor"
+import Question from "../../components/Question";
+import CodeEditor from "../../components/CodeEditor";
 import { SocketContext } from "./SocketContext";
-
 
 const MatchRoomPage = () => {
   const roomNumber = useLocation().state;
@@ -23,8 +22,10 @@ const MatchRoomPage = () => {
 
   const handleLeaveMatch = () => {
     if (socket.connected) {
-      console.info(`socket ${socket.id} is still connected, sending leave match.`);
-      onClose()
+      console.info(
+        `socket ${socket.id} is still connected, sending leave match.`
+      );
+      onClose();
       sendLeaveMatch(roomNumber);
     } else {
       socket.connect();
@@ -40,39 +41,52 @@ const MatchRoomPage = () => {
       status: "error",
       duration: 3000,
       isClosable: true,
-    })
-  }
+    });
+  };
 
   useEffect(() => {
     socket.on("match-over", (message) => {
       console.log(`got match over event from server: socket -> ${socket.id}`);
       showOpponentLeftToast();
-    })
+    });
     return () => {
       socket.off("match-over");
-    }
+    };
   }, []);
 
   return (
     <Grid
-      h='100vh'
-      templateRows='repeat(10, 1fr)'
-      templateColumns='repeat(6, 1fr)'
+      h="100vh"
+      templateRows="repeat(10, 1fr)"
+      templateColumns="repeat(6, 1fr)"
       gap={4}
-      >
+    >
       <GridItem rowSpan={1} colSpan={6}>
-        <NavBar/>
+        <NavBar />
       </GridItem>
-      <GridItem rowSpan={5} colSpan={2} border='2px' borderRadius='10' borderColor='blackAlpha.300'>
-        <Question/>
+      <GridItem
+        rowSpan={5}
+        colSpan={2}
+        border="2px"
+        borderRadius="10"
+        borderColor="blackAlpha.300"
+      >
+        <Question />
       </GridItem>
-      <GridItem rowSpan={4} colSpan={2} rowStart={7} border='2px' borderRadius='10' borderColor='blackAlpha.300'>
-        <Chat roomNumber={roomNumber}/>
+      <GridItem
+        rowSpan={4}
+        colSpan={2}
+        rowStart={7}
+        border="2px"
+        borderRadius="10"
+        borderColor="blackAlpha.300"
+      >
+        <Chat roomNumber={roomNumber} />
       </GridItem>
       <GridItem rowSpan={7} colSpan={4}>
-        <CodeEditor/>
+        <CodeEditor roomNumber={roomNumber} />
       </GridItem>
-      <GridItem rowSpan={2} colSpan={4} bg='green.400'>
+      <GridItem rowSpan={2} colSpan={4} bg="green.400">
         Terminal
       </GridItem>
     </Grid>

@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
+/* eslint-disable no-useless-escape */
+import React, { useEffect, useState, useRef, useContext } from "react";
 import {
   Box,
   FormControl,
@@ -8,6 +9,9 @@ import {
   ButtonGroup,
   VStack,
 } from "@chakra-ui/react";
+
+import UserContext from "../UserContext";
+
 import "./Editor.css";
 
 // external dependencies imported via <script> tags in public/index.html
@@ -27,11 +31,13 @@ const config = {
   measurementId: "G-FTQMLTKRB8",
 };
 
-function CodeEditor() {
+function CodeEditor({ roomNumber }) {
   const [programmingLanguage, setProgrammingLanguage] = useState("text/x-java");
   const dbRef = useRef(null);
   const codeMirrorRef = useRef(null);
   const firepadRef = useRef(null);
+
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
     /* Initialize Firebase */
@@ -62,7 +68,7 @@ function CodeEditor() {
 
     /* Create Firepad instance */
     // TODO: remove hardcoded userId and change to user's name
-    const userId = "2";
+    const userId = getUserEmail(user);
     firepadRef.current = Firepad.fromCodeMirror(
       dbRef.current,
       codeMirrorRef.current,
@@ -82,24 +88,25 @@ function CodeEditor() {
     codeMirrorRef.current.setOption("mode", programmingLanguage);
   }, [programmingLanguage]);
 
-  /* Helper function to create a new database table to hold the data in the code editor for this match */
+  //// Helper Functions
+  /* Create a new database table to hold the data in the code editor for this match */
   function createRoom() {
     // get a reference to the firebase realtime database
     var ref = Firebase.database().ref();
 
     // create a new "table" in the database with the roomId as the name
-    // TODO: remove hardcoded roomId and change to room's id
-    var roomId = "peer01";
+    var roomId = roomNumber || "peer01";
     ref = ref.child(roomId);
 
     // print data in the table (for debugging purposes)
     // if (typeof console !== "undefined") {
     //   console.log("Firebase data: ", ref.toString());
     // }
+    // test
     return ref;
   }
 
-  /* Helper function to get code from the editor */
+  /* Get code from the editor */
   function getCode() {
     if (!firepadRef.current) {
       console.log("Firepad not initialized!");
@@ -109,6 +116,31 @@ function CodeEditor() {
     const code = firepadRef.current.getText();
 
     return code;
+  }
+
+  /* Get username of logged-in user from email */
+  function getUserEmail(user) {
+    if (!user || !user.email) {
+      return "default-user";
+    }
+
+    const email = user.email;
+    // TODO: move the logic of obtaining the username from the email
+    // to somewhere more suitable
+    const username = email.split("@")[0];
+
+    // remove restricted characters from username
+    // TODO: find a better way to remove ALL dots from a string
+    const splitUsernameByDotsList = username.split(".");
+    const usernameWithoutDots = splitUsernameByDotsList.join("");
+
+    const filteredUsername = usernameWithoutDots
+      .replace("#", "")
+      .replace("$", "")
+      .replace("[", "")
+      .replace("]", "");
+
+    return filteredUsername;
   }
 
   return (
