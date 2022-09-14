@@ -1,8 +1,3 @@
----
-layout: page
-title: Project Report
----
-
 ## Table of Contents
 
 - [Introduction](#introduction)
