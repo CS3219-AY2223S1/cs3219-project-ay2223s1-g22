@@ -33,6 +33,8 @@ const config = {
 
 function CodeEditor({ roomNumber }) {
   const [programmingLanguage, setProgrammingLanguage] = useState("text/x-java");
+  const [dbCreated, setDbCreated] = useState(false);
+
   const dbRef = useRef(null);
   const codeMirrorRef = useRef(null);
   const firepadRef = useRef(null);
@@ -44,9 +46,13 @@ function CodeEditor({ roomNumber }) {
     if (!Firebase.apps.length) {
       // initialize the firebase app
       Firebase.initializeApp(config);
+    }
 
+    if (!dbRef.current) {
       // create a table that stores the code-editor data for the current match
       dbRef.current = createRoom();
+
+      setDbCreated(true);
     }
 
     /* Create CodeMirror editor instance */
@@ -65,23 +71,35 @@ function CodeEditor({ roomNumber }) {
         }
       );
     }
-
-    /* Create Firepad instance */
-    // TODO: remove hardcoded userId and change to user's name
-    const userId = getUserEmail(user);
-    firepadRef.current = Firepad.fromCodeMirror(
-      dbRef.current,
-      codeMirrorRef.current,
-      {
-        defaultText: "Type your code here!",
-        userId: userId,
-      }
-    );
-
-    firepadRef.current.on("ready", () => {
-      console.log("Firepad is ready");
-    });
   }, []);
+
+  useEffect(() => {
+    /* Create Firepad instance */
+    const userId = getUserEmail(user);
+
+    // TODO: remove this alert
+    if (codeMirrorRef.current === null) {
+      alert("codeMirrorRef is null");
+    }
+
+    if (
+      firepadRef.current === null &&
+      dbRef.current !== null &&
+      codeMirrorRef.current !== null
+    ) {
+      firepadRef.current = Firepad.fromCodeMirror(
+        dbRef.current,
+        codeMirrorRef.current,
+        {
+          userId: userId,
+        }
+      );
+
+      firepadRef.current.on("ready", () => {
+        console.log("Firepad is ready");
+      });
+    }
+  }, [dbCreated, user]);
 
   /* To change syntax highlighting. */
   useEffect(() => {
