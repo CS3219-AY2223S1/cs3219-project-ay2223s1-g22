@@ -37,7 +37,7 @@ const config = {
 function CodeEditor({ roomNumber }) {
   const [programmingLanguage, setProgrammingLanguage] = useState("text/x-java");
   const [isDbCreated, setIsDbCreated] = useState(false);
-  const [isFirepadSynced, setIsFirepadSynced] = useState(false);
+  const [isFirepadSynced, setIsFirepadSynced] = useState(null);
 
   const dbRef = useRef(null);
   const codeMirrorRef = useRef(null);
@@ -170,43 +170,44 @@ function CodeEditor({ roomNumber }) {
   }
 
   return (
-    <VStack h="100%" w="100%">
-      <Box>
-        <HStack bg="gray.600" p={3} borderRadius={10} m={5}>
-          {isFirepadSynced ? (
-            <>
-              <Heading as="h5" size="sm" color="white">
-                Changes saved
-              </Heading>
-              <CheckCircleIcon color="green.300" />
-            </>
-          ) : (
-            <>
-              <Heading as="h5" size="sm" color="white">
-                Saving your changes
-              </Heading>
-              <WarningTwoIcon color="orange.300" />
-            </>
-          )}
-        </HStack>
-      </Box>
-      <FormControl>
-        <FormLabel>Language:</FormLabel>
-        <Select onChange={(e) => setProgrammingLanguage(e.target.value)}>
-          <option value="text/x-java">Java</option>
-          <option value="python">Python</option>
-          <option value="javascript">JavaScript</option>
-          <option value="some-language-that-doesn't-exist">
-            Turn off syntax highlighting
-          </option>
-        </Select>
-      </FormControl>
+    <VStack h="100%" w="100%" p="2">
       <Box h="100%" w="100%">
         <div id="firepad-container"></div>
       </Box>
-      <ButtonGroup justifyContent="flex-end" width="100%">
-        <Button onClick={() => alert(getCode())}>Test</Button>
-      </ButtonGroup>
+      <HStack w="100%">
+        <FormControl>
+          <Select onChange={(e) => setProgrammingLanguage(e.target.value)}>
+            <option value="text/x-java">Java</option>
+            <option value="python">Python</option>
+            <option value="javascript">JavaScript</option>
+            <option value="some-language-that-doesn't-exist">
+              Turn off syntax highlighting
+            </option>
+          </Select>
+        </FormControl>
+        <HStack justifyContent="flex-end" width="100%">
+          {isFirepadSynced !== null && (
+            <HStack p={3}>
+              {isFirepadSynced ? (
+                <>
+                  <Heading as="h5" size="sm" color="white">
+                    Changes saved
+                  </Heading>
+                  <CheckCircleIcon color="green.300" />
+                </>
+              ) : (
+                <>
+                  <Heading as="h5" size="sm" color="white">
+                    Saving your changes
+                  </Heading>
+                  <WarningTwoIcon color="orange.300" />
+                </>
+              )}
+            </HStack>
+          )}
+          <Button onClick={() => alert(getCode())}>Run</Button>
+        </HStack>
+      </HStack>
     </VStack>
   );
 }
