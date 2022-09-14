@@ -4,6 +4,9 @@ theme: minima
 
 markdown: kramdown
 
+header_pages:
+  - README.md
+
 repository: "CS3219-AY2223S1/cs3219-project-ay2223s1-g22"
 github_icon: "images/github-icon.png"
 
