@@ -8,7 +8,10 @@ import {
   Button,
   ButtonGroup,
   VStack,
+  HStack,
+  Heading,
 } from "@chakra-ui/react";
+import { CheckCircleIcon, WarningTwoIcon } from "@chakra-ui/icons";
 
 import UserContext from "../UserContext";
 
@@ -33,7 +36,8 @@ const config = {
 
 function CodeEditor({ roomNumber }) {
   const [programmingLanguage, setProgrammingLanguage] = useState("text/x-java");
-  const [dbCreated, setDbCreated] = useState(false);
+  const [isDbCreated, setIsDbCreated] = useState(false);
+  const [isFirepadSynced, setIsFirepadSynced] = useState(false);
 
   const dbRef = useRef(null);
   const codeMirrorRef = useRef(null);
@@ -52,7 +56,7 @@ function CodeEditor({ roomNumber }) {
       // create a table that stores the code-editor data for the current match
       dbRef.current = createRoom();
 
-      setDbCreated(true);
+      setIsDbCreated(true);
     }
 
     /* Create CodeMirror editor instance */
@@ -98,8 +102,12 @@ function CodeEditor({ roomNumber }) {
       firepadRef.current.on("ready", () => {
         console.log("Firepad is ready");
       });
+
+      firepadRef.current.on("synced", (isSynced) => {
+        setIsFirepadSynced(isSynced);
+      });
     }
-  }, [dbCreated, user]);
+  }, [isDbCreated, user]);
 
   /* To change syntax highlighting. */
   useEffect(() => {
@@ -163,6 +171,25 @@ function CodeEditor({ roomNumber }) {
 
   return (
     <VStack h="100%" w="100%">
+      <Box>
+        <HStack bg="gray.600" p={3} borderRadius={10} m={5}>
+          {isFirepadSynced ? (
+            <>
+              <Heading as="h5" size="sm" color="white">
+                Changes saved
+              </Heading>
+              <CheckCircleIcon color="green.300" />
+            </>
+          ) : (
+            <>
+              <Heading as="h5" size="sm" color="white">
+                Saving your changes
+              </Heading>
+              <WarningTwoIcon color="orange.300" />
+            </>
+          )}
+        </HStack>
+      </Box>
       <FormControl>
         <FormLabel>Language:</FormLabel>
         <Select onChange={(e) => setProgrammingLanguage(e.target.value)}>
