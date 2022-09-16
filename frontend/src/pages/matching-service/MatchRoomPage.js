@@ -1,4 +1,4 @@
-import { useToast, Grid, GridItem } from "@chakra-ui/react";
+import { useToast, Grid, GridItem, Text, Heading } from "@chakra-ui/react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -67,6 +67,8 @@ const MatchRoomPage = () => {
       <GridItem
         rowSpan={5}
         colSpan={2}
+        marginLeft={2}
+        marginBottom={2}
         border="2px"
         borderRadius="10"
         borderColor="blackAlpha.300"
@@ -77,17 +79,24 @@ const MatchRoomPage = () => {
         rowSpan={4}
         colSpan={2}
         rowStart={7}
+        marginLeft={2}
+        marginBottom={2}
         border="2px"
         borderRadius="10"
         borderColor="blackAlpha.300"
       >
         <Chat roomNumber={roomNumber} />
       </GridItem>
-      <GridItem rowSpan={7} colSpan={4}>
+      <GridItem
+        rowSpan={10}
+        colSpan={4}
+        marginBottom={2}
+        border="2px"
+        borderRadius="10"
+        borderColor="blackAlpha.300"
+        backgroundColor="blackAlpha.800"
+      >
         <CodeEditor roomNumber={roomNumber} />
-      </GridItem>
-      <GridItem rowSpan={2} colSpan={4} bg="green.400">
-        Terminal
       </GridItem>
     </Grid>
   );
