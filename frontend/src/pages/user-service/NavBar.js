@@ -21,9 +21,8 @@ import LeaveRoomOverlay from "../matching-service/LeaveRoomOverlay";
 function NavBar({}) {
   const location = useLocation();
   const { colorMode, toggleColorMode } = useColorMode();
-
   // const { token, user, storeUserData, clearUserData }
-  const user = useContext(UserContext);
+  const { user, token } = useContext(UserContext);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -40,6 +39,20 @@ function NavBar({}) {
     setIsOpen(e);
   };
 
+  /* ======== Helper Functions ================================================================================*/
+  function getUsernameFromEmail(user) {
+    console.log(user);
+    if (!user || !user.email) {
+      return "NO USERNAME FOUND";
+    }
+
+    const email = user.email;
+    const username = email.split("@")[0];
+
+    console.log(username);
+
+    return username;
+  }
   return (
     <HStack w="100%" px="3%" py="1%" justifyContent="space-between">
       <LeaveRoomOverlay isVisible={isOpen} toggleOverlay={toggleOverlay} />
@@ -64,13 +77,16 @@ function NavBar({}) {
         </Button>
         <Popover>
           <PopoverTrigger>
-            <Avatar name="Sasuke Uchiha" src="https://bit.ly/broken-link" />
+            <Avatar
+              name={getUsernameFromEmail(user)}
+              src="https://bit.ly/broken-link"
+            />
           </PopoverTrigger>
           <PopoverContent width="30">
             <PopoverArrow />
             <PopoverCloseButton />
             <PopoverBody>
-              {user.token ? (
+              {token ? (
                 <Button colorScheme="teal" onClick={handleLogout}>
                   Logout
                 </Button>
