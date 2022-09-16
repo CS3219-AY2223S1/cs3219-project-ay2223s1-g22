@@ -198,7 +198,6 @@ function CodeEditor({ roomNumber }) {
               )}
             </HStack>
           )}
-          <Button onClick={() => alert(getCode())}>Run</Button>
         </HStack>
       </HStack>
     </VStack>
