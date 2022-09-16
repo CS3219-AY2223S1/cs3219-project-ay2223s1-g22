@@ -12,18 +12,16 @@ import {
   PopoverBody
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
-import { useEffect, useContext, useState } from "react";
-import { logoutUser } from "../../controller/user-controller";
+import { useContext, useState } from "react";
 import UserContext from "../../UserContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import LeaveRoomOverlay from "../matching-service/LeaveRoomOverlay";
 
-function NavBar({}) {
+function NavBar() {
     const location = useLocation()
     const { colorMode, toggleColorMode } = useColorMode();
 
-  // const { token, user, storeUserData, clearUserData }
-    const user = useContext(UserContext);
+    const { idToken, clearUserData } = useContext(UserContext);
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
 
@@ -32,15 +30,13 @@ function NavBar({}) {
     };
 
     const handleLogout = () => {
-        user.clearUserData();
+        clearUserData();
         navigate("/");
     };
 
     const toggleOverlay = (e) => {
         setIsOpen(e);
     }
-    
-    console.log(user.token);
 
     return (
         <HStack w="100%" px="3%" py="1%" justifyContent="space-between">
@@ -70,7 +66,7 @@ function NavBar({}) {
                 <PopoverArrow />
                 <PopoverCloseButton />
                 <PopoverBody>
-                {user.token ? (
+                {idToken ? (
                     <Button colorScheme="teal" onClick={handleLogout}>
                     Logout
                     </Button>
