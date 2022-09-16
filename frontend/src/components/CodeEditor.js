@@ -3,10 +3,8 @@ import React, { useEffect, useState, useRef, useContext } from "react";
 import {
   Box,
   FormControl,
-  FormLabel,
   Select,
   Button,
-  ButtonGroup,
   VStack,
   HStack,
   Heading,
@@ -106,7 +104,7 @@ function CodeEditor({ roomNumber }) {
   }
 
   function initializeFirepad() {
-    const userId = getUserEmail(user);
+    const userId = getFilteredUsernameFromEmail(user);
 
     const firePadInstance = Firepad.fromCodeMirror(
       dbRef.current,
@@ -140,7 +138,7 @@ function CodeEditor({ roomNumber }) {
   }
 
   /* Get username of logged-in user from email */
-  function getUserEmail(user) {
+  function getFilteredUsernameFromEmail(user) {
     if (!user || !user.email) {
       return "default-user";
     }
@@ -200,7 +198,6 @@ function CodeEditor({ roomNumber }) {
               )}
             </HStack>
           )}
-          <Button onClick={() => alert(getCode())}>Run</Button>
         </HStack>
       </HStack>
     </VStack>
