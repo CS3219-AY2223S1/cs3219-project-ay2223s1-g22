@@ -94,7 +94,7 @@ const MatchRoomPage = () => {
         border="2px"
         borderRadius="10"
         borderColor="blackAlpha.300"
-        backgroundColor="linkedin.900"
+        backgroundColor="linkedin.700"
       >
         <CodeEditor roomNumber={roomNumber} />
       </GridItem>
