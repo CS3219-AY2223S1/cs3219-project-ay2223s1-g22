@@ -75,29 +75,31 @@ function NavBar({}) {
             <MoonIcon color="blue.800" />
           )}
         </Button>
-        <Popover>
-          <PopoverTrigger>
-            <Avatar
-              name={getUsernameFromEmail(user)}
-              src="https://bit.ly/broken-link"
-            />
-          </PopoverTrigger>
-          <PopoverContent width="30">
-            <PopoverArrow />
-            <PopoverCloseButton />
-            <PopoverBody>
-              {token ? (
-                <Button colorScheme="teal" onClick={handleLogout}>
-                  Logout
-                </Button>
-              ) : (
-                <Button colorScheme="teal" onClick={handleLogin}>
-                  Login
-                </Button>
-              )}
-            </PopoverBody>
-          </PopoverContent>
-        </Popover>
+        {token && (
+          <Popover>
+            <PopoverTrigger>
+              <Avatar
+                name={getUsernameFromEmail(user)}
+                src="https://bit.ly/broken-link"
+              />
+            </PopoverTrigger>
+            <PopoverContent width="30">
+              <PopoverArrow />
+              <PopoverCloseButton />
+              <PopoverBody>
+                {token ? (
+                  <Button colorScheme="teal" onClick={handleLogout}>
+                    Logout
+                  </Button>
+                ) : (
+                  <Button colorScheme="teal" onClick={handleLogin}>
+                    Login
+                  </Button>
+                )}
+              </PopoverBody>
+            </PopoverContent>
+          </Popover>
+        )}
       </HStack>
     </HStack>
   );
