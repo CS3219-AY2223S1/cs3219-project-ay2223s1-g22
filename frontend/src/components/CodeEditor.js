@@ -17,7 +17,8 @@ import UserContext from "../UserContext";
 
 import "./Editor.css";
 
-// external dependencies imported via <script> tags in public/index.html
+// note: these are external dependencies that are
+//    imported via <script> tags in public/index.html
 const Firebase = window.firebase;
 const CodeMirror = window.CodeMirror;
 const Firepad = window.Firepad;
@@ -36,7 +37,6 @@ const config = {
 
 function CodeEditor({ roomNumber }) {
   const [programmingLanguage, setProgrammingLanguage] = useState("text/x-java");
-  const [isDbCreated, setIsDbCreated] = useState(false);
   const [isFirepadSynced, setIsFirepadSynced] = useState(null);
 
   const dbRef = useRef(null);
@@ -45,76 +45,37 @@ function CodeEditor({ roomNumber }) {
 
   const { user } = useContext(UserContext);
 
+  // Initialize firebase, database, editor and firepad on initial render
   useEffect(() => {
-    /* Initialize Firebase */
+    /* Initialize firebase */
     if (!Firebase.apps.length) {
-      // initialize the firebase app
       Firebase.initializeApp(config);
     }
 
+    /* Initialize realtime database */
     if (!dbRef.current) {
       // create a table that stores the code-editor data for the current match
       dbRef.current = createRoom();
-
-      setIsDbCreated(true);
     }
 
-    /* Create CodeMirror editor instance */
+    /* Initialize codemirror editor instance */
     if (!codeMirrorRef.current) {
-      codeMirrorRef.current = CodeMirror(
-        document.getElementById("firepad-container"),
-        {
-          theme: "material",
-          mode: programmingLanguage,
-          lineNumbers: true,
-          indentWithTabs: true,
-          smartIndent: true,
-          lineWrapping: true,
-          matchBrackets: true,
-          autofocus: true,
-        }
-      );
+      codeMirrorRef.current = createEditor(programmingLanguage);
+    }
+
+    /* Initialize firepad */
+    if (!firepadRef.current) {
+      firepadRef.current = initializeFirepad();
     }
   }, []);
 
-  useEffect(() => {
-    /* Create Firepad instance */
-    const userId = getUserEmail(user);
-
-    // TODO: remove this alert
-    if (codeMirrorRef.current === null) {
-      alert("codeMirrorRef is null");
-    }
-
-    if (
-      firepadRef.current === null &&
-      dbRef.current !== null &&
-      codeMirrorRef.current !== null
-    ) {
-      firepadRef.current = Firepad.fromCodeMirror(
-        dbRef.current,
-        codeMirrorRef.current,
-        {
-          userId: userId,
-        }
-      );
-
-      firepadRef.current.on("ready", () => {
-        console.log("Firepad is ready");
-      });
-
-      firepadRef.current.on("synced", (isSynced) => {
-        setIsFirepadSynced(isSynced);
-      });
-    }
-  }, [isDbCreated, user]);
-
-  /* To change syntax highlighting. */
+  // Update syntax highlighting settings in the editor when user selects
+  //    a different programming language
   useEffect(() => {
     codeMirrorRef.current.setOption("mode", programmingLanguage);
   }, [programmingLanguage]);
 
-  //// Helper Functions
+  /* ======== Helper Functions ================================================================================*/
   /* Create a new database table to hold the data in the code editor for this match */
   function createRoom() {
     // get a reference to the firebase realtime database
@@ -124,12 +85,46 @@ function CodeEditor({ roomNumber }) {
     var roomId = roomNumber || "peer01";
     ref = ref.child(roomId);
 
-    // print data in the table (for debugging purposes)
-    // if (typeof console !== "undefined") {
-    //   console.log("Firebase data: ", ref.toString());
-    // }
-    // test
     return ref;
+  }
+
+  function createEditor(programmingLanguage) {
+    const divEl = document.getElementById("firepad-container");
+
+    const EDITOR_SETTINGS = {
+      theme: "material",
+      mode: programmingLanguage,
+      lineNumbers: true,
+      indentWithTabs: true,
+      smartIndent: true,
+      lineWrapping: true,
+      matchBrackets: true,
+      autofocus: true,
+    };
+
+    return CodeMirror(divEl, EDITOR_SETTINGS);
+  }
+
+  function initializeFirepad() {
+    const userId = getUserEmail(user);
+
+    const firePadInstance = Firepad.fromCodeMirror(
+      dbRef.current,
+      codeMirrorRef.current,
+      {
+        userId: userId,
+      }
+    );
+
+    firePadInstance.on("ready", () => {
+      console.log("Firepad is ready");
+    });
+
+    firePadInstance.on("synced", (isSynced) => {
+      setIsFirepadSynced(isSynced);
+    });
+
+    return firePadInstance;
   }
 
   /* Get code from the editor */
