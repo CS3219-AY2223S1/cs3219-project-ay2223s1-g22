@@ -72,6 +72,7 @@ function Chat({ roomNumber }) {
       flexDir="column"
       backgroundColor="whiteAlpha.100"
       borderRadius="10"
+      padding="2"
     >
       <Header />
       <Divider />
