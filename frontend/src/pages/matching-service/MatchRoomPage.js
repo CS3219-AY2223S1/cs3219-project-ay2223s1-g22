@@ -3,7 +3,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import NavBar from "../user-service/NavBar";
-import Chat from "../chat";
+import Chat from "../Chat";
 import Question from "../../components/Question";
 import CodeEditor from "../../components/CodeEditor";
 import { SocketContext } from "./SocketContext";
