@@ -1,12 +1,11 @@
-import {Flex, Stack, Box, VStack, useToast, systemProps} from "@chakra-ui/react";
-import React, { useState, useContext, useEffect } from "react";
+import { Flex } from "@chakra-ui/react";
+import { useState, useContext, useEffect } from "react";
 
 import Divider from "../components/chat/Divider";
 import Footer from "../components/chat/Footer";
 import Header from "../components/chat/Header";
 import Messages from "../components/chat/Messages";
 import { SocketContext } from "./matching-service/SocketContext";
-import { useNavigate } from "react-router-dom";
 
 function Chat({ roomNumber }) {
   const [messages, setMessages] = useState([
@@ -68,22 +67,22 @@ function Chat({ roomNumber }) {
   };
 
   return (
-      <Flex
-        h="100%"
-        flexDir="column"
-        backgroundColor="whiteAlpha.100"
-        borderRadius="10"
-      >
-        <Header />
-        <Divider />
-        <Messages messages={messages} />
-        <Divider />
-        <Footer
-          inputMessage={inputMessage}
-          setInputMessage={setInputMessage}
-          handleSendMessage={handleSendMessage}
-        />
-      </Flex>
+    <Flex
+      h="100%"
+      flexDir="column"
+      backgroundColor="whiteAlpha.100"
+      borderRadius="10"
+    >
+      <Header />
+      <Divider />
+      <Messages messages={messages} />
+      <Divider />
+      <Footer
+        inputMessage={inputMessage}
+        setInputMessage={setInputMessage}
+        handleSendMessage={handleSendMessage}
+      />
+    </Flex>
   );
 }
 
