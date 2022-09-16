@@ -1,0 +1,25 @@
+@startuml abc
+!include style.puml
+
+actor "User" as User
+
+box User Service USER_SERVICE_COLOR_T1
+	participant "User Service" as UserService
+end box
+
+box Matching Service MATCHING_SERVICE_COLOR_T1
+	participant "Matching Service" as MatchingService
+end box
+
+User -> UserService : Log In
+activate UserService
+
+User <-- UserService : access_token
+
+@enduml
+
+'========= ADDITIONAL COMMANDS ============='
+'=== TO CREATE A NEW CLASS ==='
+' create CommandResult
+' activate CommandResult
+' deactivate CommandResult
