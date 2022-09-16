@@ -1,8 +1,8 @@
 import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
+	BrowserRouter as Router,
+	Routes,
+	Route,
+	Navigate,
 } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 
@@ -13,70 +13,94 @@ import MatchRoomPage from "./pages/matching-service/MatchRoomPage";
 import UserContext from "./UserContext";
 import { useLocalStorage } from "./useLocalStorage";
 import Protected from "./Protected";
+import { isUserLoggedIn, refreshAccessToken, revokeRefreshToken } from "./controller/token-controller";
 
 function App() {
-  const [token, setToken] = useLocalStorage("token", "");
-  const [user, setUser] = useLocalStorage("user", {});
+	const [idToken, setIdToken] = useLocalStorage("idToken", "");
+	const [refreshToken, setRefreshToken] = useLocalStorage("refreshToken", "");
+	const [user, setUser] = useLocalStorage("user", {});
 
-  const handleStoreUserData = (token, user) => {
-    setToken(token);
-    setUser(user);
-  };
+	const handleStoreUserData = (idToken, refreshToken, user) => {
+		setIdToken(idToken);
+		setRefreshToken(refreshToken);
+		setUser(user);
+	};
 
-  const handleClearUserData = () => {
-    setToken("");
-    setUser({});
-  };
+	const handleClearUserData = () => {
+		const resp = revokeRefreshToken(user.uid);
+		resp.then((res) => {
+			if (res) {
+				setIdToken("");
+				setRefreshToken("");
+				setUser({});
+				return true;
+			}
+			return false;
+		})
+	};
 
-  const isLoggedIn = () => {
-    return token !== "";
-  };
+	const isLoggedIn = () => {
+		return isUserLoggedIn(idToken);
+	};
 
-  return (
-    <ChakraProvider>
-      <div className="App">
-        <UserContext.Provider
-          value={{
-            token: token,
-            user: user,
-            storeUserData: handleStoreUserData,
-            clearUserData: handleClearUserData,
-            isLoggedIn: isLoggedIn,
-          }}
-        >
-          <Router>
-            <Routes>
-              <Route
-                exact
-                path="/"
-                element={<Navigate replace to="/login" />}
-              />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
+	const handleRefreshIdToken = (refreshToken) => {
+		const resp = refreshAccessToken(refreshToken);
+		resp.then((res) => {
+			if (res) {
+				setIdToken(res.data.id_token);
+				return true;
+			}
+			return false;
+		})
+	}
 
-              <Route
-                path="/matchselection"
-                element={
-                  <Protected>
-                    <MatchSelectionPage />
-                  </Protected>
-                }
-              />
+	return (
+		<ChakraProvider>
+			<div className="App">
+				<UserContext.Provider
+					value={{
+						idToken: idToken,
+						refreshToken: refreshToken,
+						user: user,
+						storeUserData: handleStoreUserData,
+						clearUserData: handleClearUserData,
+						isLoggedIn: isLoggedIn,
+						refreshIdToken: handleRefreshIdToken
+					}}
+				>
+					<Router>
+						<Routes>
+							<Route
+								exact
+								path="/"
+								element={<Navigate replace to="/login" />}
+							/>
+							<Route path="/login" element={<LoginPage />} />
+							<Route path="/signup" element={<SignupPage />} />
 
-              <Route
-                path="/matchroom"
-                element={
-                  <Protected>
-                    <MatchRoomPage />
-                  </Protected>
-                }
-              />
-            </Routes>
-          </Router>
-        </UserContext.Provider>
-      </div>
-    </ChakraProvider>
-  );
+							<Route
+								path="/matchselection"
+								element={
+									<Protected>
+										<MatchSelectionPage />
+									</Protected>
+								}
+							/>
+
+							<Route
+								path="/matchroom"
+								element={
+									<Protected>
+										<MatchRoomPage />
+									</Protected>
+								}
+							/>
+						</Routes>
+					</Router>
+				</UserContext.Provider>
+			</div>
+		</ChakraProvider>
+	);
 }
 
 export default App;
