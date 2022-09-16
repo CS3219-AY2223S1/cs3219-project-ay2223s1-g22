@@ -12,7 +12,7 @@ import {
 const Footer = ({ inputMessage, setInputMessage, handleSendMessage }) => {
   return (
     <Flex w="100%" mt="2">
-      <HStack paddingBottom="1">
+      <HStack paddingBottom="1" w="100%" alignContent="space-between">
         <Input
           placeholder="Type Something..."
           borderRadius="10"
