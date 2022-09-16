@@ -106,7 +106,7 @@ function CodeEditor({ roomNumber }) {
   }
 
   function initializeFirepad() {
-    const userId = getUserEmail(user);
+    const userId = getFilteredUsernameFromEmail(user);
 
     const firePadInstance = Firepad.fromCodeMirror(
       dbRef.current,
@@ -140,7 +140,7 @@ function CodeEditor({ roomNumber }) {
   }
 
   /* Get username of logged-in user from email */
-  function getUserEmail(user) {
+  function getFilteredUsernameFromEmail(user) {
     if (!user || !user.email) {
       return "default-user";
     }
