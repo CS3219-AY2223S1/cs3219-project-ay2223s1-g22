@@ -35,8 +35,8 @@ function App() {
     setUser({});
   };
 
-  const isLoggedIn = () => {
-    return isUserLoggedIn(idToken);
+  const isLoggedIn = async () => {
+    return await isUserLoggedIn(idToken);
   };
 
   const handleRefreshIdToken = (refreshToken) => {
@@ -73,11 +73,19 @@ function App() {
               />
               <Route
                 path="/login"
-                element={isLoggedIn() ? <MatchSelectionPage /> : <LoginPage />}
+                element={
+                  isLoggedIn() === true ? <MatchSelectionPage /> : <LoginPage />
+                }
               />
               <Route
                 path="/signup"
-                element={isLoggedIn() ? <MatchSelectionPage /> : <SignupPage />}
+                element={
+                  isLoggedIn() === true ? (
+                    <MatchSelectionPage />
+                  ) : (
+                    <SignupPage />
+                  )
+                }
               />
 
               <Route
