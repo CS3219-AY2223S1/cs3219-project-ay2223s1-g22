@@ -13,7 +13,10 @@ import MatchRoomPage from "./pages/matching-service/MatchRoomPage";
 import UserContext from "./UserContext";
 import { useLocalStorage } from "./useLocalStorage";
 import Protected from "./Protected";
-import { isUserLoggedIn, refreshAccessToken } from "./controller/token-controller";
+import {
+	isUserLoggedIn,
+	refreshAccessToken,
+} from "./controller/token-controller";
 
 function App() {
 	const [idToken, setIdToken] = useLocalStorage("idToken", "");
@@ -30,7 +33,7 @@ function App() {
 		setIdToken("");
 		setRefreshToken("");
 		setUser({});
-	}
+	};
 
 	const isLoggedIn = () => {
 		return isUserLoggedIn(idToken);
