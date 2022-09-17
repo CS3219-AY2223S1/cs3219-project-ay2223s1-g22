@@ -17,9 +17,8 @@ export const getUser = async (idToken) => {
 	}
 }
 
-export const deleteUserAccount = async (user) => {
+export const deleteUserAccount = async (uid) => {
 	try {
-		const uid = user.uid;
 		return await axios.post(USER_SERVICE_URL + "/deleteuser", { uid });
 	} catch (error) {
 		console.log(error.response.data.message);
