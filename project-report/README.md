@@ -1,5 +1,6 @@
 # PeerPrep
 
+- [PeerPrep](#peerprep)
 - [Introduction](#introduction)
   - [Background](#background)
   - [Purpose](#purpose)
@@ -21,6 +22,8 @@
   - [Continuous Integration](#continuous-integration)
   - [Deployment](#deployment)
   - [Infrastructure as Code](#infrastructure-as-code)
+  - [Design Decisions](#design-decisions)
+    - [Searching for a Peer](#searching-for-a-peer)
 - [Design Patterns](#design-patterns)
 - [Possible Enhancements](#possible-enhancements)
 - [Reflections and Learning Points](#reflections-and-learning-points)
@@ -204,6 +207,12 @@ This makes updating infrastructure easier:
   - shut down component(s) removed from the configuration file
 
 Managing infrastructure in a declarative manner using Terraform configuration files also allows the team to keep track of changes made to the infrastructure over time.
+
+## Design Decisions
+
+### Searching for a Peer
+
+![matching-request](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/match-request.png?raw=true)
 
 # Design Patterns
 
