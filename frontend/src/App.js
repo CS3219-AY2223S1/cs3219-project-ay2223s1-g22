@@ -1,8 +1,8 @@
 import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
+	BrowserRouter as Router,
+	Routes,
+	Route,
+	Navigate,
 } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 
@@ -14,103 +14,89 @@ import UserContext from "./UserContext";
 import { useLocalStorage } from "./useLocalStorage";
 import Protected from "./Protected";
 import {
-  isUserLoggedIn,
-  refreshAccessToken,
+	isUserLoggedIn,
+	refreshAccessToken,
 } from "./controller/token-controller";
 
 function App() {
-  const [idToken, setIdToken] = useLocalStorage("idToken", "");
-  const [refreshToken, setRefreshToken] = useLocalStorage("refreshToken", "");
-  const [user, setUser] = useLocalStorage("user", {});
+	const [idToken, setIdToken] = useLocalStorage("idToken", "");
+	const [refreshToken, setRefreshToken] = useLocalStorage("refreshToken", "");
+	const [user, setUser] = useLocalStorage("user", {});
 
-  const handleStoreUserData = (idToken, refreshToken, user) => {
-    setIdToken(idToken);
-    setRefreshToken(refreshToken);
-    setUser(user);
-  };
+	const handleStoreUserData = (idToken, refreshToken, user) => {
+		setIdToken(idToken);
+		setRefreshToken(refreshToken);
+		setUser(user);
+	};
 
-  const handleClearUserData = () => {
-    setIdToken("");
-    setRefreshToken("");
-    setUser({});
-  };
+	const handleClearUserData = () => {
+		setIdToken("");
+		setRefreshToken("");
+		setUser({});
+	};
 
-  const isLoggedIn = async () => {
-    return await isUserLoggedIn(idToken);
-  };
+	const isLoggedIn = () => {
+		return isUserLoggedIn(idToken);
+	};
 
-  const handleRefreshIdToken = (refreshToken) => {
-    const resp = refreshAccessToken(refreshToken);
-    resp.then((res) => {
-      if (res) {
-        setIdToken(res.data.id_token);
-        return true;
-      }
-      return false;
-    });
-  };
+	const handleRefreshIdToken = (refreshToken) => {
+		const resp = refreshAccessToken(refreshToken);
+		resp.then((res) => {
+			if (res) {
+				setIdToken(res.data.id_token);
+				return true;
+			}
+			return false;
+		})
+	}
 
-  return (
-    <ChakraProvider>
-      <div className="App">
-        <UserContext.Provider
-          value={{
-            idToken: idToken,
-            refreshToken: refreshToken,
-            user: user,
-            storeUserData: handleStoreUserData,
-            clearUserData: handleClearUserData,
-            isLoggedIn: isLoggedIn,
-            refreshIdToken: handleRefreshIdToken,
-          }}
-        >
-          <Router>
-            <Routes>
-              <Route
-                exact
-                path="/"
-                element={<Navigate replace to="/login" />}
-              />
-              <Route
-                path="/login"
-                element={
-                  isLoggedIn() === true ? <MatchSelectionPage /> : <LoginPage />
-                }
-              />
-              <Route
-                path="/signup"
-                element={
-                  isLoggedIn() === true ? (
-                    <MatchSelectionPage />
-                  ) : (
-                    <SignupPage />
-                  )
-                }
-              />
+	return (
+		<ChakraProvider>
+			<div className="App">
+				<UserContext.Provider
+					value={{
+						idToken: idToken,
+						refreshToken: refreshToken,
+						user: user,
+						storeUserData: handleStoreUserData,
+						clearUserData: handleClearUserData,
+						isLoggedIn: isLoggedIn,
+						refreshIdToken: handleRefreshIdToken
+					}}
+				>
+					<Router>
+						<Routes>
+							<Route
+								exact
+								path="/"
+								element={<Navigate replace to="/login" />}
+							/>
+							<Route path="/login" element={<LoginPage />} />
+							<Route path="/signup" element={<SignupPage />} />
 
-              <Route
-                path="/matchselection"
-                element={
-                  <Protected>
-                    <MatchSelectionPage />
-                  </Protected>
-                }
-              />
+							<Route
+								path="/matchselection"
+								element={
+									<Protected>
+										<MatchSelectionPage />
+									</Protected>
+								}
+							/>
 
-              <Route
-                path="/matchroom"
-                element={
-                  <Protected>
-                    <MatchRoomPage />
-                  </Protected>
-                }
-              />
-            </Routes>
-          </Router>
-        </UserContext.Provider>
-      </div>
-    </ChakraProvider>
-  );
+							<Route
+								path="/matchroom"
+								element={
+									<Protected>
+										<MatchRoomPage />
+									</Protected>
+								}
+							/>
+						</Routes>
+					</Router>
+				</UserContext.Provider>
+			</div>
+		</ChakraProvider>
+	);
 }
 
 export default App;

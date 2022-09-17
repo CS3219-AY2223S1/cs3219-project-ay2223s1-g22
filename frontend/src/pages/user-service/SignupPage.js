@@ -23,7 +23,7 @@ import { AtSignIcon } from "@chakra-ui/icons";
 import NavBar from "../user-service/NavBar";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
-import { createUserAccount } from "../../controller/user-controller";
+import { createUserAccount, sendEmailVerification } from "../../controller/user-controller";
 import UserContext from "../../UserContext";
 
 const CFaUserAlt = chakra(FaUserAlt);
@@ -45,11 +45,30 @@ const SignupPage = () => {
 		[navigate]
 	);
 
+	const handleSignup = () => {
+		const promise = createUserAccount(email, password);
+		promise.then((res) => {
+			if (res) {
+				storeUserData(res.data.accessToken, res.data.refreshToken, res.data.user);
+				const resp = sendEmailVerification(res.data.accessToken);
+				resp.then((output) => {
+					if (output) {
+						showSignupSuccessToast();
+						navigate("/matchselection");
+						return;
+					}
+				});
+			} else {
+				showSignupFailureToast();
+			}
+		});
+	};
+
 	const signupSuccessToast = useToast();
 	const showSignupSuccessToast = () =>
 		signupSuccessToast({
 			title: "Sign up successful!",
-			description: "Let's gooooo.",
+			description: "An email verification has been sent.",
 			status: "success",
 			duration: 3000,
 			isClosable: true,
@@ -172,18 +191,7 @@ const SignupPage = () => {
 									colorScheme="teal"
 									width="50%"
 									shadow="lg"
-									onClick={() => {
-										const promise = createUserAccount(email, password);
-										promise.then((res) => {
-											if (res) {
-												storeUserData(res.data.accessToken, res.data.refreshToken, res.data.user);
-												showSignupSuccessToast();
-												navigate("/matchselection");
-											} else {
-												showSignupFailureToast();
-											}
-										});
-									}}
+									onClick={handleSignup}
 								>
 									Register
 								</Button>

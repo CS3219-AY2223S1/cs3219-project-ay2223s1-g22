@@ -23,14 +23,13 @@ export const createUserAccount = async (req, res) => {
 
 export const getUser = async (req, res) => {
 	try {
-		const { idToken } = req.body;
-		const endpoint = "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyDeJkEKRIYJg1p2iP9-ybSlPl8Ye-7ZqjU";
+		const { uid } = req.body;
 		const payload = {
-			idToken: idToken
+			uid: uid
 		}
-		await axios.post(endpoint, payload).then((resp) => {
-			return res.status(200).json(resp.data.users[0]);
-		})
+		await admin.auth().getUser(uid).then((resp) => {
+			return res.status(200).json(resp);
+		});
 	} catch (error) {
 		return res.status(400).json({
 			message: error.message

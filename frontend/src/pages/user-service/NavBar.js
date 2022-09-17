@@ -18,7 +18,8 @@ import {
 	AlertDialogContent,
 	AlertDialogOverlay,
 	useDisclosure,
-	useToast
+	useToast,
+	Badge
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { useContext, useState, useRef } from "react";
@@ -26,6 +27,7 @@ import UserContext from "../../UserContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import LeaveRoomOverlay from "../matching-service/LeaveRoomOverlay";
 import { deleteUserAccount } from "../../controller/user-controller";
+import { revokeRefreshToken } from "../../controller/token-controller";
 
 function NavBar() {
 	const location = useLocation();
@@ -41,7 +43,7 @@ function NavBar() {
 	const showDeleteSuccessToast = () =>
 		deleteSuccessToast({
 			title: "Account deletion successful",
-			description: "Why u have to delete :(",
+			description: "Nooooooooo :(",
 			status: "success",
 			duration: 3000,
 			isClosable: true,
@@ -51,7 +53,27 @@ function NavBar() {
 	const showDeleteFailureToast = () =>
 		deleteFailureToast({
 			title: "Account deletetion unsuccessful",
-			description: "Something went wrong, please try again later",
+			description: "Something went wrong, please try again later.",
+			status: "error",
+			duration: 3000,
+			isClosable: true,
+		});
+
+	const logoutSuccessToast = useToast();
+	const showLogoutSuccessToast = () =>
+		logoutSuccessToast({
+			title: "Logout successful",
+			description: "Goodbye, see you again!",
+			status: "success",
+			duration: 3000,
+			isClosable: true,
+		});
+
+	const logoutFailureToast = useToast();
+	const showLogoutFailureToast = () =>
+		logoutFailureToast({
+			title: "Logout unsuccessful",
+			description: "Something went wrong, please try again later.",
 			status: "error",
 			duration: 3000,
 			isClosable: true,
@@ -62,8 +84,16 @@ function NavBar() {
 	};
 
 	const handleLogout = () => {
-		clearUserData();
-		navigate("/");
+		const resp = revokeRefreshToken(user.uid);
+		resp.then((res) => {
+			if (res) {
+				showLogoutSuccessToast();
+				clearUserData();
+				navigate("/");
+			} else {
+				showLogoutFailureToast();
+			}
+		})
 	};
 
 	const handleDeleteAccount = () => {
@@ -94,6 +124,7 @@ function NavBar() {
 		const username = email.split("@")[0];
 		return username;
 	}
+
 	return (
 		<HStack w="100%" px="3%" py="1%" justifyContent="space-between">
 			<LeaveRoomOverlay isVisible={isOverlayOpen} toggleOverlay={toggleOverlay} />
@@ -109,6 +140,13 @@ function NavBar() {
 						Leave Match
 					</Button>
 				)}
+				{
+					idToken && (user.emailVerified ? (
+						<Badge variant="solid" colorScheme="green">verified</Badge>
+					) : (
+						<Badge variant="solid" colorScheme="red">Not verified</Badge>
+					))
+				}
 				<Button variant="link" onClick={() => toggleColorMode()}>
 					{colorMode === "dark" ? (
 						<SunIcon color="orange.200" />
