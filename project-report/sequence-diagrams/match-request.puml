@@ -26,9 +26,10 @@ activate UserService
 alt access token is valid
 	User <-- UserService : httpStatusCode: 200
 	User -> MatchingService : requestMatch(difficultyLevel)
-
+	activate MatchingService
 	opt found peer within 30 seconds
-		User <-- MatchingService : matchRoomNumber	
+		User <-- MatchingService : matchRoomNumber
+		deactivate MatchingService
 	end
 else else
 	User <-- UserService : httpStatusCode: 401
