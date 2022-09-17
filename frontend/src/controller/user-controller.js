@@ -9,9 +9,9 @@ export const sendEmailVerification = async (idToken) => {
 	}
 }
 
-export const getUser = async (idToken) => {
+export const getUser = async (uid) => {
 	try {
-		return await axios.post(USER_SERVICE_URL + "/getuser", { idToken })
+		return await axios.post(USER_SERVICE_URL + "/getuser", { uid })
 	} catch (error) {
 		console.log(error.response.message);
 	}
