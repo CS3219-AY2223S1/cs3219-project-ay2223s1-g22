@@ -34,5 +34,5 @@ export const authenticateWebSocketProxies = (server, wsProxies) => {
 
 const isAuthenticated = (req) => {
   // TODO: replace dummy validation logic with actual JWT token
-  return req.headers.token && req.headers.token !== "abc";
+  return req.headers.token && req.headers.token === "abc";
 };
