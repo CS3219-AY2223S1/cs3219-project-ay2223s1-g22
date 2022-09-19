@@ -69,7 +69,6 @@ function MatchSelectionPage() {
 	const refreshUserInfo = () => {
 		const promise = getUser(user.uid);
 		promise.then((res) => {
-			console.log(res.data);
 			storeUserData(idToken, refreshToken, res.data);
 		})
 	}
@@ -127,23 +126,27 @@ function MatchSelectionPage() {
 		>
 			<NavBar />
 
-			<HStack bg="gray.600" p={3} borderRadius={10} m={5}>
+			<HStack bg="gray.600" p={3} borderRadius={10} m={5} minHeight="100px">
 				{!isVerified ? (
 					<VStack
 						divider={<StackDivider borderColor='white.100' />}
-						spacing={1}>
+						spacing={2}>
 						<HStack>
 							<Heading as="h5" size="md" color="white">
 								Email account not verified
 							</Heading>
-							<WarningTwoIcon color="red.300" />
+							<WarningTwoIcon color="red.200" />
 						</HStack>
 						<HStack
 							spacing={2}>
 							<Text fontSize="14px">Please verify your email before refreshing</Text>
 							<Button
 								variant="solid"
-								colorScheme="green"
+								border='2px'
+  								borderColor='green.300'
+								width="60px"
+								height="35px"
+								fontSize="14px"
 								onClick={refreshUserInfo}>
 									Refresh
 							</Button>
