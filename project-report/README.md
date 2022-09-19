@@ -1,5 +1,6 @@
 # PeerPrep
 
+- [PeerPrep](#peerprep)
 - [Introduction](#introduction)
   - [Background](#background)
   - [Purpose](#purpose)
@@ -17,9 +18,10 @@
   - [Security Requirements](#security-requirements)
   - [Scalability Requirements](#scalability-requirements)
 - [Solution Architecture](#solution-architecture)
+  - [Service Instance per Container](#service-instance-per-container)
 - [Development Process](#development-process)
   - [Continuous Integration](#continuous-integration)
-  - [Deployment](#deployment)
+  - [Manual Deployment](#manual-deployment)
   - [Infrastructure as Code](#infrastructure-as-code)
 - [Design Patterns](#design-patterns)
 - [Possible Enhancements](#possible-enhancements)
@@ -156,6 +158,14 @@ TODO - Requirement Prioritization table (refer to slide 42 of Lecture 2)
 
 # Solution Architecture
 
+## Service Instance per Container
+
+Each microservice is packaged into a Docker container image and deployed in a distinct container using Cloud Run on Google Cloud Platform.
+
+By deploying service instances in separate containers, each microservice can be scaled up or down separately as needed as demand fluctuates, leading to better cost efficiency.
+
+Also, by deploying the service instances in containers instead of virtual machines, start up time is reduced.
+
 ![PeerPrep-Solution-Architecture](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/PeerPrep-Architecture-V1.png?raw=true)
 
 # Development Process
@@ -175,7 +185,7 @@ When all unit tests have been executed without any failures, the workflow ends w
 - If at least one unit test from any service fails, the workflow ends with a `failed` status.
 - The completion status of the workflow is reflected in the page of the pull-request on GitHub.
 
-## Deployment
+## Manual Deployment
 
 For Milestone 1, the team decided to deploy updates manually to the production environment with Github Actions and Terraform.
 
