@@ -12,7 +12,7 @@ export const setupWebSocketProxy = (app) => {
     target: MATCHING_SERVICE_CLOUD_RUN_URL,
     ws: true,
     changeOrigin: true,
-    pathRewrite: { [`^/get-match`]: "socket.io" },
+    pathRewrite: { [`^/get-match`]: "/socket.io" },
   });
 
   app.use(wsProxy);
