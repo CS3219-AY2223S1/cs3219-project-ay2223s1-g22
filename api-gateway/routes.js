@@ -3,7 +3,7 @@ export const MATCHING_SERVICE_CLOUD_RUN_URL =
 export const USER_SERVICE_CLOUD_RUN_URL =
   "https://user-service-pzsuad4zva-as.a.run.app";
 
-export const ROUTES = [
+export const HTTP_ROUTES = [
   {
     auth: true,
     url: "/premium",
@@ -13,6 +13,18 @@ export const ROUTES = [
       pathRewrite: {
         [`^/premium`]: "",
       },
+    },
+  },
+];
+
+export const WEBSOCKET_ROUTES = [
+  {
+    url: "/get-match",
+    proxy: {
+      target: MATCHING_SERVICE_CLOUD_RUN_URL,
+      ws: true,
+      changeOrigin: true,
+      pathRewrite: { [`^/get-match`]: "/socket.io" },
     },
   },
 ];

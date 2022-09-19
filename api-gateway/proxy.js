@@ -1,33 +1,38 @@
 import { createProxyMiddleware } from "http-proxy-middleware";
-import { MATCHING_SERVICE_CLOUD_RUN_URL, ROUTES } from "./routes.js";
+import { HTTP_ROUTES, WEBSOCKET_ROUTES } from "./routes.js";
 
 export const setupHttpProxies = (app) => {
-  ROUTES.forEach((r) => {
+  HTTP_ROUTES.forEach((r) => {
     app.use(createProxyMiddleware(r.url, r.proxy));
   });
 };
 
-export const setupWebSocketProxy = (app) => {
-  const wsProxy = createProxyMiddleware({
-    target: MATCHING_SERVICE_CLOUD_RUN_URL,
-    ws: true,
-    changeOrigin: true,
-    pathRewrite: { [`^/get-match`]: "/socket.io" },
+export const setupWebSocketProxies = (app) => {
+  const wsProxies = [];
+
+  WEBSOCKET_ROUTES.forEach((r) => {
+    const wsProxy = createProxyMiddleware(r.proxy);
+    app.use(wsProxy);
+    wsProxies.push(wsProxy);
   });
 
-  app.use(wsProxy);
-
-  return wsProxy;
+  return wsProxies;
 };
 
-export const authenticateWebSocketConnectionRequests = (server, wsProxy) => {
-  server.on("upgrade", (req, socket, head) => {
-    // TODO: replace dummy validation logic with actual JWT token
-    if (!req.headers.token || req.headers.token !== "abc") {
-      socket.destroy();
-      return;
-    }
-
-    wsProxy.upgrade(req, socket, head);
+export const authenticateWebSocketProxies = (server, wsProxies) => {
+  wsProxies.forEach((p) => {
+    server.on("upgrade", (req, socket, head) => {
+      if (isAuthenticated(req)) {
+        p.upgrade(req, socket, head);
+      } else {
+        // reject connection request if not authenticated
+        socket.destroy();
+      }
+    });
   });
+};
+
+const isAuthenticated = (req) => {
+  // TODO: replace dummy validation logic with actual JWT token
+  return req.headers.token && req.headers.token !== "abc";
 };
