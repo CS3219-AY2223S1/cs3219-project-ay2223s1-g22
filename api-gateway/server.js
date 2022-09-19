@@ -28,22 +28,3 @@ const server = app.listen(port, () => {
 // check that connection requests to WebSocket routes
 //	contain a valid JWT token before allowing connection
 authenticateWebSocketProxies(server, wsProxies);
-
-/* ============= THIS WORKS ============= */
-
-// var proxyToMatchingService = new httpProxy.createProxyServer({
-//   target: "https://matching-service-pzsuad4zva-as.a.run.app",
-//   ws: true,
-//   changeOrigin: true,
-// });
-
-// server.on("upgrade", (req, socket, head) => {
-//   console.log(req.headers.token);
-//   console.log(ip.address());
-//   if (req.headers.token !== "abc") {
-//     socket.destroy();
-//     return;
-//   }
-
-//   proxyToMatchingService.ws(req, socket);
-// });
