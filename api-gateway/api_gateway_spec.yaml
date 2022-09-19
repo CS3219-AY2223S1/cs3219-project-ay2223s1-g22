@@ -1,0 +1,19 @@
+swagger: "2.0"
+info:
+  title: peerprep-api-gateway
+  description: API Gateway for PeerPrep
+  version: 1.0.0
+schemes:
+  - https
+produces:
+  - application/json
+paths:
+  /v1/user-service-health-check:
+    get:
+      summary: User-Service Health Check
+      operationId: user-service-health-check-v1
+      x-google-backend:
+        address: https://user-service-pzsuad4zva-as.a.run.app:443/api
+      responses:
+        "200":
+          description: User Service is up
