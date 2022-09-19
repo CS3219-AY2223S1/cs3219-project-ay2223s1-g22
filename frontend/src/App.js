@@ -35,7 +35,7 @@ function App() {
 		setUser({});
 	};
 
-	const isLoggedIn = () => {
+	const isLoggedIn =  () => {
 		return isUserLoggedIn(idToken);
 	};
 

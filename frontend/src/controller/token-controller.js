@@ -1,7 +1,7 @@
 import axios from "axios";
 import { USER_SERVICE_URL } from "../config/configs.js";
 
-export const isUserLoggedIn = async (idToken) => {
+export const isUserLoggedIn = (idToken) => {
 	if (idToken === "") {
 		// user is not logged in
 		return false;
