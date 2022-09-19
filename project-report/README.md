@@ -1,5 +1,6 @@
 # PeerPrep
 
+- [PeerPrep](#peerprep)
 - [Introduction](#introduction)
   - [Background](#background)
   - [Purpose](#purpose)
@@ -19,7 +20,7 @@
 - [Solution Architecture](#solution-architecture)
 - [Development Process](#development-process)
   - [Continuous Integration](#continuous-integration)
-  - [Deployment](#deployment)
+  - [Manual Deployment](#manual-deployment)
   - [Infrastructure as Code](#infrastructure-as-code)
 - [Design Patterns](#design-patterns)
 - [Possible Enhancements](#possible-enhancements)
@@ -175,7 +176,7 @@ When all unit tests have been executed without any failures, the workflow ends w
 - If at least one unit test from any service fails, the workflow ends with a `failed` status.
 - The completion status of the workflow is reflected in the page of the pull-request on GitHub.
 
-## Deployment
+## Manual Deployment
 
 For Milestone 1, the team decided to deploy updates manually to the production environment with Github Actions and Terraform.
 
