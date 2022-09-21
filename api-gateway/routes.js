@@ -39,6 +39,17 @@ export const HTTP_ROUTES = [
   },
   {
     auth: true,
+    url: "/authenticate",
+    proxy: {
+      target: USER_SERVICE_CLOUD_RUN_URL + "/authenticate",
+      changeOrigin: true,
+      pathRewrite: {
+        [`^/authenticate`]: "",
+      },
+    },
+  },
+  {
+    auth: true,
     url: "/getuser",
     proxy: {
       target: USER_SERVICE_CLOUD_RUN_URL + "/getuser",

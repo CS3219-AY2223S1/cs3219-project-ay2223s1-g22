@@ -47,7 +47,7 @@ export const authenticateWebSocketProxies = (server, wsProxies) => {
   });
 };
 
-const checkAuthentication = (req, res, next) => {
+const checkAuthentication = async (req, res, next) => {
   // this header will have the format 'Bearer <ACCESS_TOKEN>'
   const authHeader = req.headers["authorization"];
 
@@ -58,11 +58,30 @@ const checkAuthentication = (req, res, next) => {
   // get the <ACCESS_TOKEN>
   const accessToken = authHeader.split(" ")[1];
 
-  if (!accessToken || !isValidAccessToken(accessToken)) {
+  if (!accessToken || !(await isValidAccessToken(accessToken))) {
     return res.sendStatus(401);
   }
 
   next();
+};
+
+const isAuthenticatedWebSocketRequest = async (req) => {
+  const authHeader = req.headers["authorization"];
+
+  if (!authHeader) {
+    return false;
+  }
+
+  const accessToken = authHeader.split(" ")[1];
+
+  if (!accessToken) {
+    return false;
+  }
+
+  let isValid = false;
+  await isValidAccessToken(accessToken).then((val) => (isValid = val));
+
+  return isValid;
 };
 
 const isValidAccessToken = async (accessToken) => {
@@ -83,23 +102,4 @@ const isValidAccessToken = async (accessToken) => {
   }
 
   return tokenIsValid;
-};
-
-const isAuthenticatedWebSocketRequest = async (req) => {
-  const authHeader = req.headers["authorization"];
-
-  if (!authHeader) {
-    return false;
-  }
-
-  const accessToken = authHeader.split(" ")[1];
-
-  if (!accessToken) {
-    return false;
-  }
-
-  let isValid = false;
-  await isValidAccessToken(accessToken).then((val) => (isValid = val));
-
-  return isValid;
 };
