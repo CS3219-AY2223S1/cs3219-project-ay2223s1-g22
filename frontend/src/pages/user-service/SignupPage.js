@@ -11,7 +11,6 @@ import {
 	FormControl,
 	InputRightElement,
 	useToast,
-	FormHelperText,
 	FormErrorMessage
 } from "@chakra-ui/react";
 import {
@@ -34,7 +33,6 @@ const CFaEye = chakra(FaRegEye);
 const CFaEyeSlash = chakra(FaRegEyeSlash);
 
 const SignupPage = () => {
-	const { storeUserData } = useContext(UserContext);
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -53,7 +51,9 @@ const SignupPage = () => {
 	);
 
 	const handleConfirmPassword = () => {
-		password === confirmPassword ? setIsRequiredConfirmPassword(false) : setIsRequiredConfirmPassword(true);
+		(confirmPassword !== "") && (password === confirmPassword)
+			? setIsRequiredConfirmPassword(false)
+			: setIsRequiredConfirmPassword(true);
 	}
 
 	const handleRequiredFields = () => {
@@ -93,16 +93,15 @@ const SignupPage = () => {
 
 	const handleSignup = () => {
 		if (handleRequiredFields()) {
-			const promise = createUserAccount(email, password);
+			const promise = createUserAccount(name, email, password);
 			promise.then((res) => {
 				if (res.data) {
-					storeUserData(res.data.accessToken, res.data.refreshToken, res.data.user);
 					const resp = sendEmailVerification(res.data.accessToken);
 					resp.then((output) => {
 						if (output) {
 							handleResetStates();
 							showSignupSuccessToast();
-							navigate("/matchselection");
+							navigate("/login");
 							return;
 						}
 					});
