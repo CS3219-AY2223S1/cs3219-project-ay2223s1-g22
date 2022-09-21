@@ -8,6 +8,7 @@ import Messages from "../components/chat/Messages";
 import { SocketContext } from "./matching-service/SocketContext";
 
 function Chat({ roomNumber }) {
+
   const [messages, setMessages] = useState([
     {
       from: "matching_service",
@@ -24,16 +25,14 @@ function Chat({ roomNumber }) {
   ]);
   const [inputMessage, setInputMessage] = useState("");
 
-  const { socket } = useContext(SocketContext);
+  const { socket, rejoinRoom } = useContext(SocketContext);
 
   useEffect(() => {
     socket.on("connect", () => {
-      // setIsConnected(true);
+      rejoinRoom(roomNumber);
     });
 
     socket.on("disconnect", () => {
-      // setIsConnected(false);
-      // socket.connect();
     });
 
     socket.on("receive", (message) => {

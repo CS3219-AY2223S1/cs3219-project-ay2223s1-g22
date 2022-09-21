@@ -19,9 +19,14 @@ const sendUserId = (userId) => {
   socket.emit("user-id", userId);
 }
 
+const rejoinRoom = (roomNum) => {
+  socket.emit("rejoin-room", roomNum);
+}
+
 export const SocketContext = createContext({
   socket: socket,
   sendLevel: sendLevel,
   sendLeaveMatch: sendLeaveMatch,
   sendUserId: sendUserId,
+  rejoinRoom: rejoinRoom,
 });

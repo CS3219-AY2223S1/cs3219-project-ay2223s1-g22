@@ -161,7 +161,7 @@ function MatchSelectionPage() {
 						</HStack>
 						<HStack
 							spacing={2}>
-							<Text fontSize="14px">Please verify your email before refreshing</Text>
+							<Text color="white" fontSize="14px">Please verify your email before refreshing</Text>
 							{isLoading ? (
 								<IconButton
 									isLoading

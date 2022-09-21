@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import { createServer } from "http";
 import {Server} from "socket.io";
-import {isQueueEmpty, queueSocket, makeRoom, alreadyInQueue, addUser} from "./server.js";
+import {isQueueEmpty, queueSocket, makeRoom, alreadyInQueue, addUser, rejoinSocket} from "./server.js";
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -23,6 +23,10 @@ const server = new Server(httpServer, {
 
     socket.on('user-id', (userId) => {
       addUser(server, socket, userId);
+    })
+
+    socket.on('rejoin-room', (roomNum) => {
+      rejoinSocket(server, socket, roomNum);
     })
 
     socket.on('level', (level) => {
