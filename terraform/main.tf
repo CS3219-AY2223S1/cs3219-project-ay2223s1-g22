@@ -4,6 +4,12 @@ module "frontend" {
   image_tag = var.frontend_image_tag
 }
 
+module "api-gateway" {
+  source = "./modules/api-gateway"
+
+  image_tag = var.api-gateway_image_tag
+}
+
 module "matching-service" {
   source = "./modules/matching-service"
 
