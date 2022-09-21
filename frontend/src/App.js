@@ -17,6 +17,7 @@ import {
 	isUserLoggedIn,
 	refreshAccessToken,
 } from "./controller/token-controller";
+import LoginProtected from "./LoginProtected";
 
 function App() {
 	const [idToken, setIdToken] = useLocalStorage("idToken", "");
@@ -35,8 +36,11 @@ function App() {
 		setUser({});
 	};
 
-	const isLoggedIn =  () => {
-		return isUserLoggedIn(idToken);
+	const isLoggedIn = () => {
+		return isUserLoggedIn({
+			idToken: idToken,
+			refreshToken: refreshToken
+		}, handleStoreUserData);
 	};
 
 	const handleRefreshIdToken = (refreshToken) => {
@@ -69,9 +73,16 @@ function App() {
 							<Route
 								exact
 								path="/"
-								element={<Navigate replace to="/login" />}
-							/>
-							<Route path="/login" element={<LoginPage />} />
+								element={
+									isLoggedIn() ? <Navigate replace to="/matchselection" />
+										: <Navigate replace to="/login" />
+								} />
+
+							<Route path="/login" element={
+								<LoginProtected>
+									<LoginPage />
+								</LoginProtected>} />
+
 							<Route path="/signup" element={<SignupPage />} />
 
 							<Route

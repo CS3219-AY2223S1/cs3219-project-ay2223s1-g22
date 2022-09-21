@@ -24,9 +24,6 @@ export const createUserAccount = async (req, res) => {
 export const getUser = async (req, res) => {
 	try {
 		const { uid } = req.body;
-		const payload = {
-			uid: uid
-		}
 		await admin.auth().getUser(uid).then((resp) => {
 			return res.status(200).json(resp);
 		});
@@ -110,8 +107,8 @@ export const refreshAccessToken = async (req, res) => {
 		await axios.post(endpoint, payload).then((resp) => {
 			return res.status(200).json({
 				user_id: resp.data.user_id,
-				id_token: resp.data.id_token,
-				refresh_token: resp.data.refresh_token
+				idToken: resp.data.id_token,
+				refreshToken: resp.data.refresh_token
 			});
 		});
 	} catch (error) {

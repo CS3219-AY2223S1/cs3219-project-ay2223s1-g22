@@ -9,7 +9,7 @@ import {
 	Text,
 	VStack,
 	StackDivider,
-	Button
+	IconButton
 } from "@chakra-ui/react";
 import { CheckCircleIcon, WarningTwoIcon, RepeatIcon } from "@chakra-ui/icons";
 import { useTimer } from "react-timer-hook";
@@ -30,6 +30,7 @@ function MatchSelectionPage() {
 	const { user, idToken, refreshToken, storeUserData } = useContext(UserContext);
 	const [isFindingMatch, setIsFindingMatch] = useState(false);
 	const [isConnected, setIsConnected] = useState(socket.connected);
+	const [isLoading, setIsLoading] = useState(false);
 	const isVerified = user.emailVerified;
 
 	let navigate = useNavigate();
@@ -64,13 +65,15 @@ function MatchSelectionPage() {
 			socket.off("disconnect");
 			socket.off("room-number");
 		};
-	}, []);
+	});
 
 	const refreshUserInfo = () => {
+		setIsLoading(true);
 		const promise = getUser(user.uid);
 		promise.then((res) => {
-			console.log(res.data);
+			console.log(res);
 			storeUserData(idToken, refreshToken, res.data);
+			setIsLoading(false);
 		})
 	}
 
@@ -131,22 +134,34 @@ function MatchSelectionPage() {
 				{!isVerified ? (
 					<VStack
 						divider={<StackDivider borderColor='white.100' />}
-						spacing={1}>
+						spacing={2}>
 						<HStack>
 							<Heading as="h5" size="md" color="white">
 								Email account not verified
 							</Heading>
-							<WarningTwoIcon color="red.300" />
+							<WarningTwoIcon color="red.200" />
 						</HStack>
 						<HStack
 							spacing={2}>
 							<Text fontSize="14px">Please verify your email before refreshing</Text>
-							<Button
-								variant="solid"
-								colorScheme="green"
-								onClick={refreshUserInfo}>
-									Refresh
-							</Button>
+							{isLoading ? (
+								<IconButton
+									isLoading
+									variant='solid'
+									colorScheme='teal'
+									aria-label='Refresh user'
+									size="md"
+									icon={<RepeatIcon />}
+									onClick={refreshUserInfo} />
+							)
+								: (<IconButton
+									variant='solid'
+									colorScheme='teal'
+									aria-label='Refresh user'
+									size="md"
+									icon={<RepeatIcon />}
+									onClick={refreshUserInfo} />)
+							}
 						</HStack>
 					</VStack>
 				) : (isConnected ? (
