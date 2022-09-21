@@ -46,6 +46,9 @@ function MatchSelectionPage() {
 	});
 
 	useEffect(() => {
+		if (socket.connected) {
+			sendUserId(user.uid);
+		}
 		socket.on("connect", () => {
 			setIsConnected(true);
 			console.log("emitting user-id event");
@@ -58,6 +61,7 @@ function MatchSelectionPage() {
 		});
 
 		socket.on("connection-error", (message) => {
+			console.log("got connection error event!")
 			setIsAlreadyConnected(true);
 			showAlreadyConnectedToast();
 		});
@@ -74,7 +78,7 @@ function MatchSelectionPage() {
 			socket.off("connection-error");
 			socket.off("room-number");
 		};
-	});
+	}, []);
 
 	const refreshUserInfo = () => {
 		setIsLoading(true);
