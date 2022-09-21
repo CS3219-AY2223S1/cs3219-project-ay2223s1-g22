@@ -6,17 +6,6 @@ import axios from "axios";
 export const createUserAccount = async (req, res) => {
 	try {
 		const { name, email, password } = req.body;
-		// await admin.getAuth().createUser({
-		// 	email: email,
-		// 	emailVerified: true,
-		// 	phoneNumber: "",
-		// 	password: password,
-		// 	displayName: "test",
-		// 	photoURL: "",
-		// 	disabled: false
-		// }).then((userRecord) => {
-		// 	return res.status(201).json({userRecord})
-		// })
 		await createUserWithEmailAndPassword(auth, email, password)
 			.then((userCred) => {
 				updateProfile(userCred.user, {
@@ -26,12 +15,6 @@ export const createUserAccount = async (req, res) => {
 						message: "user created!"
 					});
 				});
-				// return res.status(201).json({
-				// 	user: userCred.user,
-				// 	accessToken: userCred.user.stsTokenManager.accessToken,
-				// 	refreshToken: userCred.user.stsTokenManager.refreshToken,
-				// 	message: "user created!"
-				// })
 			});
 	} catch (error) {
 		return res.status(400).json({
