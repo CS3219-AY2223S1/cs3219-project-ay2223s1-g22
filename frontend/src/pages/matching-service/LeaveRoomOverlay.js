@@ -16,8 +16,7 @@ import {
 
 const LeaveRoomOverlay = (props) => {
 
-	const { sendLeaveMatch } = useContext(SocketContext);
-	const { socket } = useContext(SocketContext);
+	const { socket, sendLeaveMatch } = useContext(SocketContext);
 	const cancelRef = useRef();
 	const onClose = () => { 
 		props.toggleOverlay(false);
