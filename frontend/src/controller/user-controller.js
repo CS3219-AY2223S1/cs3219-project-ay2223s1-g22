@@ -25,16 +25,17 @@ export const deleteUserAccount = async (uid) => {
 	}
 };
 
-export const createUserAccount = async (email, password) => {
+export const createUserAccount = async (name, email, password) => {
 	try {
 		const payload = {
+			name: name,
 			email: email,
 			password: password
 		};
 		return await axios.post(USER_SERVICE_URL + "/signup", payload);
 	} catch (error) {
-		console.log(error.message);
-		return error;
+		console.log(error.response.data);
+		return error.response.data;
 	}
 };
 

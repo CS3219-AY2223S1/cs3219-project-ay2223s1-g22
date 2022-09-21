@@ -1,25 +1,38 @@
 import { auth } from "../config/firebase-config.js"
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail, updateProfile } from "firebase/auth";
 import admin from "../config/firebase-service.js";
 import axios from "axios";
 
 export const createUserAccount = async (req, res) => {
 	try {
 		const { name, email, password } = req.body;
-		await createUserWithEmailAndPassword(auth, email, password).then((userCred) => {
-			const endpoint = "https://peerprep-eacee-default-rtdb.asia-southeast1.firebasedatabase.app/users/" + userCred.user.uid + ".json";
-			const user = {
-				name: name,
-				email: email
-			};
-			axios.put(endpoint, user);
-			return res.status(201).json({
-				user: userCred.user,
-				accessToken: userCred.user.stsTokenManager.accessToken,
-				refreshToken: userCred.user.stsTokenManager.refreshToken,
-				message: "user created!"
-			})
-		});
+		// await admin.getAuth().createUser({
+		// 	email: email,
+		// 	emailVerified: true,
+		// 	phoneNumber: "",
+		// 	password: password,
+		// 	displayName: "test",
+		// 	photoURL: "",
+		// 	disabled: false
+		// }).then((userRecord) => {
+		// 	return res.status(201).json({userRecord})
+		// })
+		await createUserWithEmailAndPassword(auth, email, password)
+			.then((userCred) => {
+				updateProfile(userCred.user, {
+					displayName: name
+				}).then(() => {
+					return res.status(201).json({
+						message: "user created!"
+					});
+				});
+				// return res.status(201).json({
+				// 	user: userCred.user,
+				// 	accessToken: userCred.user.stsTokenManager.accessToken,
+				// 	refreshToken: userCred.user.stsTokenManager.refreshToken,
+				// 	message: "user created!"
+				// })
+			});
 	} catch (error) {
 		return res.status(400).json({
 			message: error.message
@@ -43,9 +56,7 @@ export const getUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
 	try {
 		const { uid } = req.body;
-		const endpoint = "https://peerprep-eacee-default-rtdb.asia-southeast1.firebasedatabase.app/users/" + uid + ".json";
 		await admin.auth().deleteUser(uid).then(() => {
-			axios.delete(endpoint);
 			return res.status(200).json({
 				message: "user deleted!"
 			})
@@ -129,7 +140,7 @@ export const refreshAccessToken = async (req, res) => {
 export const revokeRefreshToken = async (req, res) => {
 	try {
 		const { uid } = req.body;
-		admin.auth().revokeRefreshTokens(uid).then(() => {
+		await admin.auth().revokeRefreshTokens(uid).then(() => {
 			return res.status(200).json({
 				message: "refresh token revoked"
 			});
