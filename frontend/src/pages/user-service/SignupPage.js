@@ -77,7 +77,7 @@ const SignupPage = () => {
 
 		handleConfirmPassword();
 
-		return isRequiredName && isRequiredEmail && isRequiredPassword && isRequiredConfirmPassword;
+		return !isRequiredName && !isRequiredEmail && !isRequiredPassword && !isRequiredConfirmPassword;
 	}
 
 	const handleResetStates = () => {
@@ -95,7 +95,7 @@ const SignupPage = () => {
 		if (handleRequiredFields()) {
 			const promise = createUserAccount(email, password);
 			promise.then((res) => {
-				if (res) {
+				if (res.data) {
 					storeUserData(res.data.accessToken, res.data.refreshToken, res.data.user);
 					const resp = sendEmailVerification(res.data.accessToken);
 					resp.then((output) => {
@@ -106,8 +106,10 @@ const SignupPage = () => {
 							return;
 						}
 					});
+				} else if (res.message.includes("auth/email-already-in-use")) {
+					showSignupFailureToast("Email is already in use!");
 				} else {
-					showSignupFailureToast();
+					showSignupFailureToast("Something went wrong, please try again later!");
 				}
 			});
 		} else {
