@@ -15,8 +15,13 @@ const sendLeaveMatch = (roomNumber) => {
   socket.connect();
 };
 
+const sendUserId = (userId) => {
+  socket.emit("user-id", userId);
+}
+
 export const SocketContext = createContext({
   socket: socket,
   sendLevel: sendLevel,
   sendLeaveMatch: sendLeaveMatch,
+  sendUserId: sendUserId,
 });

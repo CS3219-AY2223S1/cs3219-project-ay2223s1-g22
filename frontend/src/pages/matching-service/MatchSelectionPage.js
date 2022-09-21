@@ -26,11 +26,12 @@ import { getUser } from "../../controller/user-controller";
 const DEFAULT_TIMEOUT_LIMIT = 30; // cancel search after 30 seconds
 
 function MatchSelectionPage() {
-	const { socket, sendLevel } = useContext(SocketContext);
+	const { socket, sendLevel, sendUserId } = useContext(SocketContext);
 	const { user, idToken, refreshToken, storeUserData } = useContext(UserContext);
 	const [isFindingMatch, setIsFindingMatch] = useState(false);
 	const [isConnected, setIsConnected] = useState(socket.connected);
 	const [isLoading, setIsLoading] = useState(false);
+	const [isAlreadyConnected, setIsAlreadyConnected] = useState(false);
 	const isVerified = user.emailVerified;
 
 	let navigate = useNavigate();
@@ -47,11 +48,18 @@ function MatchSelectionPage() {
 	useEffect(() => {
 		socket.on("connect", () => {
 			setIsConnected(true);
+			console.log("emitting user-id event");
+			sendUserId(user.uid);
 		});
 
 		socket.on("disconnect", () => {
 			setIsConnected(false);
 			socket.connect();
+		});
+
+		socket.on("connection-error", (message) => {
+			setIsAlreadyConnected(true);
+			showAlreadyConnectedToast();
 		});
 
 		socket.on("room-number", (roomNumber) => {
@@ -63,6 +71,7 @@ function MatchSelectionPage() {
 		return () => {
 			socket.off("connect");
 			socket.off("disconnect");
+			socket.off("connection-error");
 			socket.off("room-number");
 		};
 	});
@@ -118,6 +127,15 @@ function MatchSelectionPage() {
 			duration: 3000,
 			isClosable: true,
 		});
+	const alreadyConnectedToast = useToast();
+	const showAlreadyConnectedToast = () =>
+		alreadyConnectedToast({
+			title: "Connected refused.",
+			description: "You are already connected on another window! Please use that connection or close it!",
+			status: "error",
+			duration: 3000,
+			isClosable: true,
+		});
 
 	const hasOngoingRequest = timer.isRunning;
 
@@ -164,7 +182,7 @@ function MatchSelectionPage() {
 							}
 						</HStack>
 					</VStack>
-				) : (isConnected ? (
+				) : (isConnected && !isAlreadyConnected ? (
 					<>
 						<Heading as="h5" size="md" color="white">
 							Connected to matching service
@@ -185,7 +203,7 @@ function MatchSelectionPage() {
 				value={{
 					requestMatch: handleRequestMatch,
 					cancelRequest: handleCancelRequest,
-					hasConnectionToMatchingService: isConnected,
+					hasConnectionToMatchingService: isConnected && !isAlreadyConnected,
 					hasEmailVerified: isVerified,
 					hasOngoingRequest: hasOngoingRequest,
 				}}
