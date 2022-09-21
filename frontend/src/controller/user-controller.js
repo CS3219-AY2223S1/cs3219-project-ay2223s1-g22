@@ -33,7 +33,8 @@ export const createUserAccount = async (email, password) => {
 		};
 		return await axios.post(USER_SERVICE_URL + "/signup", payload);
 	} catch (error) {
-		console.log(error.response.message);
+		console.log(error.message);
+		return error;
 	}
 };
 
