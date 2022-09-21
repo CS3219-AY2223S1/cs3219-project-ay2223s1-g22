@@ -23,6 +23,10 @@ export function addUser(server, socket, userId) {
     }
 }
 
+export function rejoinSocket(server, socket, roomNum) {
+    socket.join(roomNum);
+}
+
 export function queueSocket(socket, level) {
     console.info(`socket ${ socket.id } added to ${ level } queue.`)
     difficulty[level].push(socket);
