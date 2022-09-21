@@ -5,8 +5,14 @@ import axios from "axios";
 
 export const createUserAccount = async (req, res) => {
 	try {
-		const { email, password } = req.body;
+		const { name, email, password } = req.body;
 		await createUserWithEmailAndPassword(auth, email, password).then((userCred) => {
+			const endpoint = "https://peerprep-eacee-default-rtdb.asia-southeast1.firebasedatabase.app/users/" + userCred.user.uid + ".json";
+			const user = {
+				name: name,
+				email: email
+			};
+			axios.put(endpoint, user);
 			return res.status(201).json({
 				user: userCred.user,
 				accessToken: userCred.user.stsTokenManager.accessToken,
@@ -37,7 +43,9 @@ export const getUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
 	try {
 		const { uid } = req.body;
+		const endpoint = "https://peerprep-eacee-default-rtdb.asia-southeast1.firebasedatabase.app/users/" + uid + ".json";
 		await admin.auth().deleteUser(uid).then(() => {
+			axios.delete(endpoint);
 			return res.status(200).json({
 				message: "user deleted!"
 			})
