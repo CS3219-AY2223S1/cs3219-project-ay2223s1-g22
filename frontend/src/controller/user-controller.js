@@ -13,7 +13,7 @@ export const getUser = async (uid) => {
 	try {
 		return await axios.post(USER_SERVICE_URL + "/getuser", { uid })
 	} catch (error) {
-		console.log(error.response.message);
+		console.log(error.message);
 	}
 }
 

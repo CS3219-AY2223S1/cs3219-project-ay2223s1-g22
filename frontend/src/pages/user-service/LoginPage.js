@@ -225,7 +225,6 @@ const LoginPage = () => {
 						</Stack>
 					</ModalBody>
 					<ModalFooter>
-						<Button onClick={onClose}>Close</Button>
 					</ModalFooter>
 				</ModalContent>
 			</Modal>

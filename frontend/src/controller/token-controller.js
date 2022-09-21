@@ -1,13 +1,26 @@
 import axios from "axios";
 import { USER_SERVICE_URL } from "../config/configs.js";
 
-export const isUserLoggedIn = (idToken) => {
-	if (idToken === "") {
+export const isUserLoggedIn = (data, storeUserData) => {
+	if (data.idToken === "") {
 		// user is not logged in
 		return false;
 	}
-	
-	return authenticateToken(idToken);
+
+	if (authenticateToken(data.idToken)) {
+		return true;
+	} else {
+		const promise = refreshAccessToken(data.refreshToken);
+		promise.then((res) => {
+			if (res) {
+				console.log("expired!");
+				console.log(res.data);
+				storeUserData(res.data.idToken, res.data.refreshToken, data.user)
+				return true;
+			}
+			return false;
+		})
+	}
 }
 
 export const authenticateToken = async (token) => {
