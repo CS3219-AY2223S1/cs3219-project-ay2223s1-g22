@@ -11,6 +11,8 @@ import {
 	FormControl,
 	InputRightElement,
 	useToast,
+	FormHelperText,
+	FormErrorMessage
 } from "@chakra-ui/react";
 import {
 	FaUserAlt,
@@ -33,9 +35,14 @@ const CFaEyeSlash = chakra(FaRegEyeSlash);
 
 const SignupPage = () => {
 	const { storeUserData } = useContext(UserContext);
-
+	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState("");
+	const [isRequiredName, setIsRequiredName] = useState(false);
+	const [isRequiredEmail, setIsRequiredEmail] = useState(false);
+	const [isRequiredPassword, setIsRequiredPassword] = useState(false);
+	const [isRequiredConfirmPassword, setIsRequiredConfirmPassword] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const handleShowClick = () => setShowPassword(!showPassword);
 	const navigate = useNavigate();
@@ -45,23 +52,67 @@ const SignupPage = () => {
 		[navigate]
 	);
 
+	const handleConfirmPassword = () => {
+		password === confirmPassword ? setIsRequiredConfirmPassword(false) : setIsRequiredConfirmPassword(true);
+	}
+
+	const handleRequiredFields = () => {
+		if (email === "") {
+			setIsRequiredEmail(true);
+		} else {
+			setIsRequiredEmail(false);
+		}
+
+		if (name === "") {
+			setIsRequiredName(true);
+		} else {
+			setIsRequiredName(false);
+		}
+
+		if (password === "") {
+			setIsRequiredPassword(true);
+		} else {
+			setIsRequiredPassword(false);
+		}
+
+		handleConfirmPassword();
+
+		return isRequiredName && isRequiredEmail && isRequiredPassword && isRequiredConfirmPassword;
+	}
+
+	const handleResetStates = () => {
+		setName("");
+		setEmail("");
+		setPassword("");
+		setConfirmPassword("");
+		setIsRequiredName(false);
+		setIsRequiredEmail(false);
+		setIsRequiredPassword(false);
+		setIsRequiredConfirmPassword(false);
+	}
+
 	const handleSignup = () => {
-		const promise = createUserAccount(email, password);
-		promise.then((res) => {
-			if (res) {
-				storeUserData(res.data.accessToken, res.data.refreshToken, res.data.user);
-				const resp = sendEmailVerification(res.data.accessToken);
-				resp.then((output) => {
-					if (output) {
-						showSignupSuccessToast();
-						navigate("/matchselection");
-						return;
-					}
-				});
-			} else {
-				showSignupFailureToast();
-			}
-		});
+		if (handleRequiredFields()) {
+			const promise = createUserAccount(email, password);
+			promise.then((res) => {
+				if (res) {
+					storeUserData(res.data.accessToken, res.data.refreshToken, res.data.user);
+					const resp = sendEmailVerification(res.data.accessToken);
+					resp.then((output) => {
+						if (output) {
+							handleResetStates();
+							showSignupSuccessToast();
+							navigate("/matchselection");
+							return;
+						}
+					});
+				} else {
+					showSignupFailureToast();
+				}
+			});
+		} else {
+			showSignupFailureToast("Missing required fields!");
+		}
 	};
 
 	const signupSuccessToast = useToast();
@@ -75,10 +126,10 @@ const SignupPage = () => {
 		});
 
 	const signupFailureToast = useToast();
-	const showSignupFailureToast = () =>
+	const showSignupFailureToast = (desc) =>
 		signupFailureToast({
 			title: "Sign up unsuccessful.",
-			description: "Something went wrong.",
+			description: desc,
 			status: "error",
 			duration: 3000,
 			isClosable: true,
@@ -108,16 +159,24 @@ const SignupPage = () => {
 							boxShadow="lg"
 							borderRadius="lg"
 						>
-							<FormControl>
+							<FormControl isInvalid={isRequiredName}>
 								<InputGroup>
 									<InputLeftElement
 										pointerEvents="none"
 										children={<CFaUserAlt color="gray.500" />}
 									/>
-									<Input type="text" placeholder="Full name" />
+									<Input
+										onChange={(e) => setName(e.target.value)}
+										type="text"
+										placeholder="Full name" />
 								</InputGroup>
+								{!isRequiredName ? (
+									<></>
+								) : (
+									<FormErrorMessage>Name is required.</FormErrorMessage>
+								)}
 							</FormControl>
-							<FormControl>
+							<FormControl isInvalid={isRequiredEmail}>
 								<InputGroup>
 									<InputLeftElement
 										pointerEvents="none"
@@ -129,8 +188,13 @@ const SignupPage = () => {
 										placeholder="Email address"
 									/>
 								</InputGroup>
+								{!isRequiredEmail ? (
+									<></>
+								) : (
+									<FormErrorMessage>Email is required.</FormErrorMessage>
+								)}
 							</FormControl>
-							<FormControl>
+							<FormControl isInvalid={isRequiredPassword}>
 								<InputGroup>
 									<InputLeftElement
 										pointerEvents="none"
@@ -152,8 +216,13 @@ const SignupPage = () => {
 										/>
 									</InputRightElement>
 								</InputGroup>
+								{!isRequiredPassword ? (
+									<></>
+								) : (
+									<FormErrorMessage>Password is required.</FormErrorMessage>
+								)}
 							</FormControl>
-							<FormControl>
+							<FormControl isInvalid={isRequiredConfirmPassword}>
 								<InputGroup>
 									<InputLeftElement
 										pointerEvents="none"
@@ -161,6 +230,7 @@ const SignupPage = () => {
 										children={<CFaLock color="gray.500" />}
 									/>
 									<Input
+										onChange={(e) => setConfirmPassword(e.target.value)}
 										type={showPassword ? "text" : "password"}
 										placeholder="Re-enter password"
 									/>
@@ -174,6 +244,11 @@ const SignupPage = () => {
 										/>
 									</InputRightElement>
 								</InputGroup>
+								{!isRequiredConfirmPassword ? (
+									<></>
+								) : (
+									<FormErrorMessage>Passwords do not match!</FormErrorMessage>
+								)}
 							</FormControl>
 							<Stack direction="row">
 								<Button
