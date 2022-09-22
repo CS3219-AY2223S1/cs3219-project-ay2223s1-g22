@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 
 import {
   setupHttpProxies,
@@ -7,6 +8,9 @@ import {
 } from "./proxy.js";
 
 const app = express();
+
+app.use(cors());
+
 const port = 8080;
 
 // basic health check
