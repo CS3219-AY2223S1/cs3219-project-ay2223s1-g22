@@ -3,7 +3,7 @@ import io from "socket.io-client";
 
 import { MATCHING_SERVICE_URL } from "../../config/configs";
 
-let socket = io("172.25.97.19:8080");
+let socket = io(MATCHING_SERVICE_URL);
 
 const sendLevel = (difficulty) => {
   socket.emit("level", difficulty);
