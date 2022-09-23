@@ -60,13 +60,24 @@ export const HTTP_ROUTES = [
     },
   },
   {
-    auth: true,
+    auth: false,
     url: "/logout",
     proxy: {
       target: USER_SERVICE_CLOUD_RUN_URL + "/revokeRefreshToken",
       changeOrigin: true,
       pathRewrite: {
         [`^/logout`]: "",
+      },
+    },
+  },
+  {
+    auth: false,
+    url: "/resetpassword",
+    proxy: {
+      target: USER_SERVICE_CLOUD_RUN_URL + "/resetpassword",
+      changeOrigin: true,
+      pathRewrite: {
+        [`^/resetpassword`]: "",
       },
     },
   },
