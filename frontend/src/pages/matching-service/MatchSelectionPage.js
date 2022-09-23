@@ -29,7 +29,7 @@ function MatchSelectionPage() {
   const { getSocket, sendLevel, sendUserId } = useContext(SocketContext);
   const { user, idToken, refreshToken, storeUserData } =
     useContext(UserContext);
-  const socketRef = useRef(getSocket(idToken));
+  const socketRef = useRef(null);
   const [isFindingMatch, setIsFindingMatch] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,7 +48,20 @@ function MatchSelectionPage() {
   });
 
   useEffect(() => {
+    const socket = getSocket(idToken, user.uid);
+    socketRef.current = socket;
+  }, []);
+
+  useEffect(() => {
     const socket = socketRef.current;
+
+    if (!socket) {
+      return;
+    }
+
+    if (socket.connected) {
+      setIsConnected(true);
+    }
 
     socket.on("connect", () => {
       console.log("emitting user-id event");
@@ -74,8 +87,8 @@ function MatchSelectionPage() {
     });
 
     return () => {
-      socket.off("connect");
-      socket.off("disconnect");
+      // socket.off("connect");
+      // socket.off("disconnect");
       socket.off("connection-error");
       socket.off("room-number");
     };
