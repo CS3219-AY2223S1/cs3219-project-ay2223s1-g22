@@ -27,7 +27,6 @@
     - [API Gateway as Reverse Proxy](#api-gateway-as-reverse-proxy)
       - [Better security for microservices](#better-security-for-microservices)
       - [Increased cohesion](#increased-cohesion)
-    - [Searching for a Peer](#searching-for-a-peer)
 - [Design Patterns](#design-patterns)
 - [Possible Enhancements](#possible-enhancements)
 - [Reflections and Learning Points](#reflections-and-learning-points)
@@ -249,15 +248,13 @@ Access to microservices is protected by an API gateway in the following manner:
     - once the `access token` has been authenticated by the User service, the request will be forwarded to the relevant microservice(s)
       - otherwise, the request will be refused by the API gateway
 
+![api-gateway-authentication](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/api-gateway-authentication.png?raw=true)
+
 #### Increased cohesion
 
 Implementing the authentication logic in the API gateway removes this responsibility from the microservices.
 
 This reduces the need for each microservice to implement its own authentication logic and allows it to focus on fulfilling its core function, increasing cohesion and reducing duplication of code.
-
-### Searching for a Peer
-
-![matching-request](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/match-request.png?raw=true)
 
 # Design Patterns
 

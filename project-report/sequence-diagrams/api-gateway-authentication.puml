@@ -1,0 +1,41 @@
+@startuml abc
+!include style.puml
+
+actor "User" as User
+
+box API Gateway API_GATEWAY_COLOR_T1
+	participant "API Gateway" as APIGateway
+end box
+
+box User Service USER_SERVICE_COLOR_T1
+	participant "User Service" as UserService
+end box
+
+alt endpoint is unprotected
+
+	User -> APIGateway : request(endpoint)
+	activate APIGateway
+
+	APIGateway -> : forward request to relevant microservice
+	deactivate APIGateway
+
+
+else endpoint is protected
+
+	User -> APIGateway : request(endpoint, accessToken)
+	activate APIGateway
+	APIGateway -> UserService : verifyAccessToken(accessToken)
+
+	alt access token is valid
+		APIGateway <-- UserService : OK
+		APIGateway ->  : forward request to relevant microservice 
+	else access token is not valid
+		APIGateway <-- UserService : Unauthenticated
+		User <-- APIGateway : Unauthenticated
+		
+		deactivate APIGateway
+	end
+
+end
+
+@enduml
