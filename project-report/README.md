@@ -24,6 +24,7 @@
   - [Manual Deployment](#manual-deployment)
   - [Infrastructure as Code](#infrastructure-as-code)
   - [Design Decisions](#design-decisions)
+    - [API Gateway as Reverse Proxy](#api-gateway-as-reverse-proxy)
     - [Searching for a Peer](#searching-for-a-peer)
 - [Design Patterns](#design-patterns)
 - [Possible Enhancements](#possible-enhancements)
@@ -219,6 +220,8 @@ Managing infrastructure in a declarative manner using Terraform configuration fi
 
 ## Design Decisions
 
+### API Gateway as Reverse Proxy
+
 ### Searching for a Peer
 
 ![matching-request](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/match-request.png?raw=true)
@@ -271,8 +274,17 @@ TODO
 
 ### Technical Contributions
 
-TODO
+- Developed collaborative editor component on frontend
+- Developed API gateway
+- Wrote GitHub Actions workflow scripts
+  - for continuous-integration:
+    - to run unit tests on all services for pull-requests to `main` branch
+  - for manual deployment:
+    - to dockerize services and upload docker images to Google Container Repository (GCR)
+    - to trigger re-deployment of selected service on Google Cloud Platform
+- Set up deployment environment
+  - Wrote Terraform configuration files to define the deployment environment for each service
 
 ### Non-Technical Contributions
 
-TODO
+- Created solution architecture diagram for project documentation
