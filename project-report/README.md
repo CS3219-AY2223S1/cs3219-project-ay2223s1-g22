@@ -24,7 +24,9 @@
   - [Manual Deployment](#manual-deployment)
   - [Infrastructure as Code](#infrastructure-as-code)
   - [Design Decisions](#design-decisions)
-    - [Searching for a Peer](#searching-for-a-peer)
+    - [API Gateway as Reverse Proxy](#api-gateway-as-reverse-proxy)
+      - [Better security for microservices](#better-security-for-microservices)
+      - [Increased cohesion](#increased-cohesion)
 - [Design Patterns](#design-patterns)
 - [Possible Enhancements](#possible-enhancements)
 - [Reflections and Learning Points](#reflections-and-learning-points)
@@ -219,9 +221,40 @@ Managing infrastructure in a declarative manner using Terraform configuration fi
 
 ## Design Decisions
 
-### Searching for a Peer
+### API Gateway as Reverse Proxy
 
-![matching-request](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/match-request.png?raw=true)
+Instead of interacting with the microservices directly, the frontend sends requests to an API gateway, which forwards requests to the relevant microservices.
+
+Our team decided on this approach for two main reasons:
+
+- Better security for microservices
+- Increased cohesion
+
+#### Better security for microservices
+
+Access to microservices is protected by an API gateway in the following manner:
+
+- if the requested endpoint is unprotected, the API gateway will forward it to the microservice(s) that are responsible for fulfilling the request
+- however, if the requested endpoint is protected, the request must provide some credentials for authentication:
+  - when the user successfully logs in, an `access token` and `refresh token` will be provided:
+    - the `access token` is valid for an hour
+    - the `refresh token` will remain valid for an indefinite period of time until either of the following occur:
+      - the user logs out
+      - the user deletes the account
+  - to access protected endpoint, the `access token` must be included in the `Authorization` header as a `bearer token`
+    - upon receiving the request, the API gateway will send the `access token` to the User service to verify that the `access token`:
+      - has not been tampered with
+      - has not expired
+    - once the `access token` has been authenticated by the User service, the request will be forwarded to the relevant microservice(s)
+      - otherwise, the request will be refused by the API gateway
+
+![api-gateway-authentication](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/api-gateway-authentication.png?raw=true)
+
+#### Increased cohesion
+
+Implementing the authentication logic in the API gateway removes this responsibility from the microservices.
+
+This reduces the need for each microservice to implement its own authentication logic and allows it to focus on fulfilling its core function, increasing cohesion and reducing duplication of code.
 
 # Design Patterns
 
@@ -271,8 +304,23 @@ TODO
 
 ### Technical Contributions
 
-TODO
+- Developed collaborative editor component on frontend
+- Developed API gateway
+- Wrote GitHub Actions workflow scripts
+  - for continuous-integration:
+    - to run unit tests on all services for pull-requests to `main` branch
+  - for manual deployment:
+    - to dockerize services and upload docker images to Google Container Repository (GCR)
+    - to trigger re-deployment of selected service on Google Cloud Platform
+- Set up deployment environment
+  - Wrote Terraform configuration files to define the deployment environment for each service
 
 ### Non-Technical Contributions
 
-TODO
+- Created solution architecture diagram for project documentation
+- Documented the following aspects of the development process:
+  - Continuous Integration
+  - Manual Deployment
+  - Infrastructure as Code
+- Documented design decisions made:
+  - API Gateway as Reverse Proxy

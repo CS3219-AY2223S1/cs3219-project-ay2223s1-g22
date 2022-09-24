@@ -7,6 +7,12 @@
 
 'T1 through T4 are shades of the original color from lightest to darkest
 
+!define API_GATEWAY_COLOR #A38300
+!define API_GATEWAY_COLOR_T1 #FFE374
+!define API_GATEWAY_COLOR_T2 #EDC520
+!define API_GATEWAY_COLOR_T3 #806600
+!define API_GATEWAY_COLOR_T2 #544400
+
 !define USER_SERVICE_COLOR #3333C4
 !define USER_SERVICE_COLOR_T1 #C8C8FA
 !define USER_SERVICE_COLOR_T2 #6A6ADC
@@ -24,12 +30,6 @@
 ' !define UI_COLOR_T2 #3FC71B
 ' !define UI_COLOR_T3 #166800
 ' !define UI_COLOR_T4 #0E4100
-
-' !define STORAGE_COLOR #A38300
-' !define STORAGE_COLOR_T1 #FFE374
-' !define STORAGE_COLOR_T2 #EDC520
-' !define STORAGE_COLOR_T3 #806600
-' !define STORAGE_COLOR_T2 #544400
 
 ' !define USER_COLOR #000000
 
