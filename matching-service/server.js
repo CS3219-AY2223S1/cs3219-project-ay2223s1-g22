@@ -1,4 +1,4 @@
-import {Server} from "socket.io";
+import axios from "axios";
 
 const difficulty = {
     easy: [],
@@ -33,7 +33,7 @@ export function alreadyInQueue(socket, level) {
     }).length;
 }
 
-export function makeRoom(server, socket, level) {
+export async function makeRoom(server, socket, level) {
     const socket1 = difficulty[level].shift();
     console.info(`making room for sockets:\n ${ socket.id } and ${ socket1.id }`)
     const room = socket.id.concat(socket1.id);
@@ -41,5 +41,17 @@ export function makeRoom(server, socket, level) {
     sockets.map((sock) => {
         sock.join(room)
     })
+    await getRandomQuestion(level)
+        .then(question => {
+            server.to(room).emit("question", question)
+        }).catch(err => {
+            console.log(err);
+            server.to(room).emit("question-error", err);
+        });
     server.to(room).emit('room-number', room);
+}
+
+async function getRandomQuestion(level) {
+    const url = "http://localhost:8082";
+    return axios.get(`${url}/${level}`)
 }

@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { createQuestion } from './controller/question-controller.js';
+import {createQuestion, getQuestion} from './controller/question-controller.js';
 import bodyParser from "body-parser";
 
 const app = express();
@@ -17,6 +17,7 @@ app.use(bodyParser.json());
 const router = express.Router()
 app.get('/', (_, res) => res.send('Hello World from questions-service'))
 app.post('/api/questions', (req, res) => createQuestion(req, res))
+app.get('/api/questions/:difficulty', (difficulty, res) => getQuestion(difficulty, res))
 
 app.use('/api/questions', router).all((_, res) => {
     res.setHeader('content-type', 'application/json')
