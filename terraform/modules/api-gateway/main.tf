@@ -12,6 +12,15 @@ resource "google_cloud_run_service" "api-gateway" {
         image = "gcr.io/cs3219-project-ay2223s1-g22/api-gateway:${var.image_tag}"
       }
     }
+    metadata {
+      annotations = {        
+        # minimum number of instances
+        # "autoscaling.knative.dev/minScale" = 1
+
+        # maximum number of instances
+        "autoscaling.knative.dev/maxScale" = 10
+      }
+    }
   }
   traffic {
     percent         = 100
