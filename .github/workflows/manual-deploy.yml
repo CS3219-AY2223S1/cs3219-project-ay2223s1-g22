@@ -9,6 +9,7 @@ on:
         type: choice
         options:
           - frontend
+          - api-gateway
           - matching-service
           - user-service
 

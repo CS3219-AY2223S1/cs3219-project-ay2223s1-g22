@@ -1,11 +1,12 @@
 import { Flex } from "@chakra-ui/react";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 
 import Divider from "../components/chat/Divider";
 import Footer from "../components/chat/Footer";
 import Header from "../components/chat/Header";
 import Messages from "../components/chat/Messages";
 import { SocketContext } from "./matching-service/SocketContext";
+import UserContext from "../UserContext";
 
 function Chat({ roomNumber }) {
   const [messages, setMessages] = useState([
@@ -24,17 +25,18 @@ function Chat({ roomNumber }) {
   ]);
   const [inputMessage, setInputMessage] = useState("");
 
-  const { socket } = useContext(SocketContext);
+  const { idToken } = useContext(UserContext);
+  const { getSocket, rejoinRoom } = useContext(SocketContext);
+  const socketRef = useRef(getSocket(idToken));
 
   useEffect(() => {
+    const socket = socketRef.current;
+
     socket.on("connect", () => {
-      // setIsConnected(true);
+      rejoinRoom(roomNumber);
     });
 
-    socket.on("disconnect", () => {
-      // setIsConnected(false);
-      // socket.connect();
-    });
+    socket.on("disconnect", () => {});
 
     socket.on("receive", (message) => {
       setMessages((old) => [
@@ -63,7 +65,7 @@ function Chat({ roomNumber }) {
   };
 
   const sendChatMessage = (chatMessage) => {
-    socket.emit("send", chatMessage, roomNumber);
+    socketRef.current.emit("send", chatMessage, roomNumber);
   };
 
   return (

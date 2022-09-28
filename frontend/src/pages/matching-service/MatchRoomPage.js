@@ -7,6 +7,7 @@ import Chat from "../Chat";
 import Question from "../../components/Question";
 import CodeEditor from "../../components/CodeEditor";
 import { SocketContext } from "./SocketContext";
+import UserContext from "../../UserContext";
 
 const MatchRoomPage = () => {
   const roomNumber = useLocation().state;
@@ -14,13 +15,17 @@ const MatchRoomPage = () => {
   const { sendLeaveMatch } = useContext(SocketContext);
   const [isOpen, setIsOpen] = useState(false);
   const cancelRef = useRef();
-  const { socket } = useContext(SocketContext);
+  const { idToken } = useContext(UserContext);
+  const { getSocket } = useContext(SocketContext);
+  const socketRef = useRef(getSocket(idToken));
 
   const onClose = () => setIsOpen(false);
 
   const openLeaveDialog = () => setIsOpen(true);
 
   const handleLeaveMatch = () => {
+    const socket = socketRef.current;
+
     if (socket.connected) {
       console.info(
         `socket ${socket.id} is still connected, sending leave match.`
@@ -45,6 +50,8 @@ const MatchRoomPage = () => {
   };
 
   useEffect(() => {
+    const socket = socketRef.current;
+
     socket.on("match-over", (message) => {
       console.log(`got match over event from server: socket -> ${socket.id}`);
       showOpponentLeftToast();

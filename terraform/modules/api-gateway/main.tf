@@ -3,19 +3,19 @@ variable "image_tag" {
   default="latest"
 }
 
-resource "google_cloud_run_service" "matching-service" {
-  name     = "matching-service"
+resource "google_cloud_run_service" "api-gateway" {
+  name     = "api-gateway"
   location = "asia-southeast1"
   template {
     spec {
       containers {
-        image = "gcr.io/cs3219-project-ay2223s1-g22/matching-service:${var.image_tag}"
+        image = "gcr.io/cs3219-project-ay2223s1-g22/api-gateway:${var.image_tag}"
       }
     }
     metadata {
       annotations = {        
         # minimum number of instances
-        "autoscaling.knative.dev/minScale" = 1
+        # "autoscaling.knative.dev/minScale" = 1
 
         # maximum number of instances
         "autoscaling.knative.dev/maxScale" = 10
@@ -39,14 +39,14 @@ data "google_iam_policy" "noauth" {
 }
 
 # Enable public access on Cloud Run service
-resource "google_cloud_run_service_iam_policy" "noauth-matching-service" {
-  location    = google_cloud_run_service.matching-service.location
-  project     = google_cloud_run_service.matching-service.project
-  service     = google_cloud_run_service.matching-service.name
+resource "google_cloud_run_service_iam_policy" "noauth-api-gateway" {
+  location    = google_cloud_run_service.api-gateway.location
+  project     = google_cloud_run_service.api-gateway.project
+  service     = google_cloud_run_service.api-gateway.name
   policy_data = data.google_iam_policy.noauth.policy_data
 }
 
 # Return service URL
-output "matching-service-url" {
-  value = google_cloud_run_service.matching-service.status[0].url
+output "api-gateway-url" {
+  value = google_cloud_run_service.api-gateway.status[0].url
 }
