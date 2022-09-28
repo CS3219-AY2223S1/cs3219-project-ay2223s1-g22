@@ -1,7 +1,7 @@
-export const MATCHING_SERVICE_CLOUD_RUN_URL =
-  "https://matching-service-pzsuad4zva-as.a.run.app:443";
-export const USER_SERVICE_CLOUD_RUN_URL =
-  "https://user-service-pzsuad4zva-as.a.run.app" + "/api" + "/firebaseauth";
+import config from "./config.js";
+
+export const MATCHING_SERVICE_CLOUD_RUN_URL = config.matchingServiceUrl;
+export const USER_SERVICE_CLOUD_RUN_URL = config.userServiceUrl;
 
 export const HTTP_ROUTES = [
   {
@@ -34,6 +34,17 @@ export const HTTP_ROUTES = [
       changeOrigin: true,
       pathRewrite: {
         [`^/refreshToken`]: "",
+      },
+    },
+  },
+  {
+    auth: false,
+    url: "/sendEmailVerification",
+    proxy: {
+      target: USER_SERVICE_CLOUD_RUN_URL + "/sendEmailVerification",
+      changeOrigin: true,
+      pathRewrite: {
+        [`^/sendEmailVerification`]: "",
       },
     },
   },
