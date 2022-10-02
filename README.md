@@ -29,6 +29,13 @@ cd user-service
 npm run dev
 ```
 
+#### Initialize Collaboration Service
+
+```
+cd collaboration-service
+npm run dev
+```
+
 #### Initialize Frontend
 
 ```
