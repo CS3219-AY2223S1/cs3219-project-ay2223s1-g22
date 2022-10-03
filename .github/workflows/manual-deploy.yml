@@ -12,6 +12,7 @@ on:
           - api-gateway
           - matching-service
           - user-service
+          - collaboration-service
 
 # Environment variables available to all jobs and steps in this workflow; examples of usage:
 #  GKE_EMAIL: ${{ secrets.GKE_EMAIL }}
