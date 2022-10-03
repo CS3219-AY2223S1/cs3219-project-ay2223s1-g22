@@ -14,7 +14,7 @@ app.use(cors());
 const port = 8080;
 
 // basic health check
-app.get("/health", (req, res) => {
+app.get("/health-api-gateway", (req, res) => {
   return res.send("API Gateway is up!");
 });
 

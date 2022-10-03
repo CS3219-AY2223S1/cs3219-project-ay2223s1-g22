@@ -3,7 +3,7 @@ import config from "./config.js";
 export const MATCHING_SERVICE_URL = config.matchingServiceUrl;
 export const USER_SERVICE_URL = config.userServiceUrl;
 
-export const HTTP_ROUTES = [
+export const UNAUTHENTICATED_HTTP_ROUTES = [
   {
     auth: false,
     url: "/signup",
@@ -23,6 +23,17 @@ export const HTTP_ROUTES = [
       changeOrigin: true,
       pathRewrite: {
         [`^/login`]: "",
+      },
+    },
+  },
+  {
+    auth: false,
+    url: "/health-matching-service",
+    proxy: {
+      target: MATCHING_SERVICE_URL,
+      changeOrigin: true,
+      pathRewrite: {
+        [`^/health-matching-service`]: "",
       },
     },
   },
@@ -89,6 +100,53 @@ export const HTTP_ROUTES = [
       changeOrigin: true,
       pathRewrite: {
         [`^/resetpassword`]: "",
+      },
+    },
+  },
+  {
+    auth: true,
+    url: "/deleteuser",
+    proxy: {
+      target: USER_SERVICE_URL + "/deleteuser",
+      changeOrigin: true,
+      pathRewrite: {
+        [`^/deleteuser`]: "",
+      },
+    },
+  },
+];
+
+export const AUTHENTICATED_HTTP_ROUTES = [
+  {
+    auth: true,
+    url: "/authenticate",
+    proxy: {
+      target: USER_SERVICE_URL + "/authenticate",
+      changeOrigin: true,
+      pathRewrite: {
+        [`^/authenticate`]: "",
+      },
+    },
+  },
+  {
+    auth: true,
+    url: "/getuser",
+    proxy: {
+      target: USER_SERVICE_URL + "/getuser",
+      changeOrigin: true,
+      pathRewrite: {
+        [`^/getuser`]: "",
+      },
+    },
+  },
+  {
+    auth: false,
+    url: "/logout",
+    proxy: {
+      target: USER_SERVICE_URL + "/revokeRefreshToken",
+      changeOrigin: true,
+      pathRewrite: {
+        [`^/logout`]: "",
       },
     },
   },
