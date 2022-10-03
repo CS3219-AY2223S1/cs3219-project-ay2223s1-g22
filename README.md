@@ -6,10 +6,26 @@
 
 # For developers
 
+## Set up
+
 To set up the environment for local development, run the following command:
 
+1. Ensure that the Docker desktop application is running
+2. With the cloned repo as the current working directory, enter the following commands in the terminal:
+
 ```bash
-# ensure that the Docker desktop application is running,
-# then, with the cloned repo as the current working directory:
 docker-compose up --build -d
+
+cd frontend
+npm run start
+```
+
+## Tear down
+
+1. With `/frontend` as the current working directory, press the keys: `CTRL` + `C`
+2. Enter the following commands in the terminal:
+
+```bash
+cd ..
+docker-compose down
 ```
