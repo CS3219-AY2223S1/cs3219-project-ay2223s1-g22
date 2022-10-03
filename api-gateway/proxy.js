@@ -1,21 +1,22 @@
 import { createProxyMiddleware } from "http-proxy-middleware";
 import {
-  HTTP_ROUTES,
-  USER_SERVICE_CLOUD_RUN_URL,
+  UNAUTHENTICATED_HTTP_ROUTES,
+  AUTHENTICATED_HTTP_ROUTES,
+  USER_SERVICE_URL,
   WEBSOCKET_ROUTES,
 } from "./routes.js";
 
 import axios from "axios";
 
 export const setupHttpProxies = (app) => {
-  HTTP_ROUTES.forEach((r) => {
+  UNAUTHENTICATED_HTTP_ROUTES.forEach((r) => {
     const proxy = createProxyMiddleware(r.url, r.proxy);
+    app.use(proxy);
+  });
 
-    if (r.auth) {
-      app.use(checkAuthentication, proxy);
-    } else {
-      app.use(proxy);
-    }
+  AUTHENTICATED_HTTP_ROUTES.forEach((r) => {
+    const proxy = createProxyMiddleware(r.url, r.proxy);
+    app.use(checkAuthentication, proxy);
   });
 };
 
@@ -23,7 +24,6 @@ export const setupWebSocketProxies = (app) => {
   const wsProxies = [];
 
   WEBSOCKET_ROUTES.forEach((r) => {
-    // const wsProxy = createProxyMiddleware(r.proxy);
     const wsProxy = createProxyMiddleware(r.url, r.proxy); // this should be working
     app.use(wsProxy);
     wsProxies.push(wsProxy);
@@ -68,6 +68,8 @@ const checkAuthentication = async (req, res, next) => {
 const isAuthenticatedWebSocketRequest = async (req) => {
   const authHeader = req.headers["authorization"];
 
+  console.log(authHeader);
+
   if (!authHeader) {
     return false;
   }
@@ -85,7 +87,7 @@ const isAuthenticatedWebSocketRequest = async (req) => {
 };
 
 const isValidAccessToken = async (accessToken) => {
-  const TOKEN_VALIDATION_URL = USER_SERVICE_CLOUD_RUN_URL + "/authenticate";
+  const TOKEN_VALIDATION_URL = USER_SERVICE_URL + "/authenticate";
 
   const config = {
     headers: { Authorization: `Bearer ${accessToken}` },

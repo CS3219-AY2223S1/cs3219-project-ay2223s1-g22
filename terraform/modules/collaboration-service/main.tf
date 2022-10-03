@@ -3,13 +3,13 @@ variable "image_tag" {
   default="latest"
 }
 
-resource "google_cloud_run_service" "matching-service" {
-  name     = "matching-service"
+resource "google_cloud_run_service" "collaboration-service" {
+  name     = "collaboration-service"
   location = "asia-southeast1"
   template {
     spec {
       containers {
-        image = "gcr.io/cs3219-project-ay2223s1-g22/matching-service:${var.image_tag}"
+        image = "gcr.io/cs3219-project-ay2223s1-g22/collaboration-service:${var.image_tag}"
       }
     }
     metadata {
@@ -39,14 +39,14 @@ data "google_iam_policy" "noauth" {
 }
 
 # Enable public access on Cloud Run service
-resource "google_cloud_run_service_iam_policy" "noauth-matching-service" {
-  location    = google_cloud_run_service.matching-service.location
-  project     = google_cloud_run_service.matching-service.project
-  service     = google_cloud_run_service.matching-service.name
+resource "google_cloud_run_service_iam_policy" "noauth-collaboration-service" {
+  location    = google_cloud_run_service.collaboration-service.location
+  project     = google_cloud_run_service.collaboration-service.project
+  service     = google_cloud_run_service.collaboration-service.name
   policy_data = data.google_iam_policy.noauth.policy_data
 }
 
 # Return service URL
-output "matching-service-url" {
-  value = google_cloud_run_service.matching-service.status[0].url
+output "collaboration-service-url" {
+  value = google_cloud_run_service.collaboration-service.status[0].url
 }

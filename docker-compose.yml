@@ -13,9 +13,7 @@ services:
       context: ./matching-service
       target: dev
     ports:
-      - 8081:8080
-    expose:
-      - 8080
+      - 8081:8081
   user-service:
     container_name: user-service
     build:
@@ -23,5 +21,10 @@ services:
       target: dev
     ports:
       - 8082:8080
-    expose:
-      - 8080
+  collaboration-service:
+    container_name: collaboration-service
+    build:
+      context: ./collaboration-service
+      target: dev
+    ports:
+      - 8083:8080

@@ -6,32 +6,26 @@
 
 # For developers
 
-To set up the environment for local development, run the following commands in SEPARATE TERMINALS:
+## Set up
 
-#### Initialize API Gateway
+To set up the environment for local development, run the following command:
 
-```
-cd api-gateway
-npm run dev
-```
+1. Ensure that the Docker desktop application is running
+2. With the cloned repo as the current working directory, enter the following commands in the terminal:
 
-#### Initialize Matching Service
+```bash
+docker-compose up --build -d
 
-```
-cd matching-service
-npm run dev
-```
-
-#### Initialize User Service
-
-```
-cd user-service
-npm run dev
-```
-
-#### Initialize Frontend
-
-```
 cd frontend
 npm run start
+```
+
+## Tear down
+
+1. With `/frontend` as the current working directory, press the keys: `CTRL` + `C`
+2. Enter the following commands in the terminal:
+
+```bash
+cd ..
+docker-compose down
 ```
