@@ -14,8 +14,6 @@ services:
       target: dev
     ports:
       - 8081:8080
-    expose:
-      - 8080
   user-service:
     container_name: user-service
     build:
@@ -23,5 +21,3 @@ services:
       target: dev
     ports:
       - 8082:8080
-    expose:
-      - 8080
