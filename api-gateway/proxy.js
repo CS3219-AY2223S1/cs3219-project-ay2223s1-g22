@@ -24,7 +24,6 @@ export const setupWebSocketProxies = (app) => {
   const wsProxies = [];
 
   WEBSOCKET_ROUTES.forEach((r) => {
-    // const wsProxy = createProxyMiddleware(r.proxy);
     const wsProxy = createProxyMiddleware(r.url, r.proxy); // this should be working
     app.use(wsProxy);
     wsProxies.push(wsProxy);
@@ -68,6 +67,8 @@ const checkAuthentication = async (req, res, next) => {
 
 const isAuthenticatedWebSocketRequest = async (req) => {
   const authHeader = req.headers["authorization"];
+
+  console.log(authHeader);
 
   if (!authHeader) {
     return false;
