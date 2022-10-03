@@ -27,4 +27,4 @@ services:
       context: ./collaboration-service
       target: dev
     ports:
-      - 8083:8080
+      - 8083:1234
