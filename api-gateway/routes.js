@@ -174,4 +174,14 @@ export const WEBSOCKET_ROUTES = [
       pathRewrite: { [`^/get-match`]: "/socket.io" },
     },
   },
+  {
+    auth: false,
+    url: "/setup-editor-sync",
+    proxy: {
+      target: MATCHING_SERVICE_URL,
+      ws: true,
+      changeOrigin: true,
+      pathRewrite: { [`^/setup-editor-sync`]: "/socket.io" },
+    },
+  },
 ];

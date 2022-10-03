@@ -18,7 +18,7 @@ function CodeEditor({ roomNumber }) {
   const [isConnected, setIsConnected] = useState("pending");
   const [isSynced, setIsSynced] = useState(false);
 
-  const COLLABORATION_WEBSOCKET_URL = "ws://localhost:1234";
+  const COLLABORATION_WEBSOCKET_URL = "ws://localhost:8083";
 
   useEffect(() => {
     if (editorRef.current) {

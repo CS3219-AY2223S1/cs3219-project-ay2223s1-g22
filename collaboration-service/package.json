@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "PORT=8080 node ./node_modules/y-websocket/bin/server.js",
-    "dev": "PORT=1234 node ./node_modules/y-websocket/bin/server.js",
+    "start": "HOST=0.0.0.0 PORT=8080 node ./node_modules/y-websocket/bin/server.js",
+    "dev": "HOST=0.0.0.0 PORT=8080 node ./node_modules/y-websocket/bin/server.js",
     "test": "echo \"Warning: no test specified\" && exit 0"
   },
   "author": "",
