@@ -71,6 +71,9 @@ function CodeEditor({ roomNumber }) {
 
   const options = {
     selectOnLineNumbers: true,
+    minimap: {
+      enabled: false,
+    },
   };
 
   return (
