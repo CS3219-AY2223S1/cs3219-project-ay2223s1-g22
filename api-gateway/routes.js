@@ -1,14 +1,14 @@
 import config from "./config.js";
 
-export const MATCHING_SERVICE_CLOUD_RUN_URL = config.matchingServiceUrl;
-export const USER_SERVICE_CLOUD_RUN_URL = config.userServiceUrl;
+export const MATCHING_SERVICE_URL = config.matchingServiceUrl;
+export const USER_SERVICE_URL = config.userServiceUrl;
 
 export const HTTP_ROUTES = [
   {
     auth: false,
     url: "/signup",
     proxy: {
-      target: USER_SERVICE_CLOUD_RUN_URL + "/signup",
+      target: USER_SERVICE_URL + "/signup",
       changeOrigin: true,
       pathRewrite: {
         [`^/signup`]: "",
@@ -19,7 +19,7 @@ export const HTTP_ROUTES = [
     auth: false,
     url: "/login",
     proxy: {
-      target: USER_SERVICE_CLOUD_RUN_URL + "/login",
+      target: USER_SERVICE_URL + "/login",
       changeOrigin: true,
       pathRewrite: {
         [`^/login`]: "",
@@ -30,7 +30,7 @@ export const HTTP_ROUTES = [
     auth: false,
     url: "/refreshToken",
     proxy: {
-      target: USER_SERVICE_CLOUD_RUN_URL + "/refreshToken",
+      target: USER_SERVICE_URL + "/refreshToken",
       changeOrigin: true,
       pathRewrite: {
         [`^/refreshToken`]: "",
@@ -41,7 +41,7 @@ export const HTTP_ROUTES = [
     auth: false,
     url: "/sendEmailVerification",
     proxy: {
-      target: USER_SERVICE_CLOUD_RUN_URL + "/sendEmailVerification",
+      target: USER_SERVICE_URL + "/sendEmailVerification",
       changeOrigin: true,
       pathRewrite: {
         [`^/sendEmailVerification`]: "",
@@ -52,7 +52,7 @@ export const HTTP_ROUTES = [
     auth: true,
     url: "/authenticate",
     proxy: {
-      target: USER_SERVICE_CLOUD_RUN_URL + "/authenticate",
+      target: USER_SERVICE_URL + "/authenticate",
       changeOrigin: true,
       pathRewrite: {
         [`^/authenticate`]: "",
@@ -63,7 +63,7 @@ export const HTTP_ROUTES = [
     auth: true,
     url: "/getuser",
     proxy: {
-      target: USER_SERVICE_CLOUD_RUN_URL + "/getuser",
+      target: USER_SERVICE_URL + "/getuser",
       changeOrigin: true,
       pathRewrite: {
         [`^/getuser`]: "",
@@ -74,7 +74,7 @@ export const HTTP_ROUTES = [
     auth: false,
     url: "/logout",
     proxy: {
-      target: USER_SERVICE_CLOUD_RUN_URL + "/revokeRefreshToken",
+      target: USER_SERVICE_URL + "/revokeRefreshToken",
       changeOrigin: true,
       pathRewrite: {
         [`^/logout`]: "",
@@ -85,7 +85,7 @@ export const HTTP_ROUTES = [
     auth: false,
     url: "/resetpassword",
     proxy: {
-      target: USER_SERVICE_CLOUD_RUN_URL + "/resetpassword",
+      target: USER_SERVICE_URL + "/resetpassword",
       changeOrigin: true,
       pathRewrite: {
         [`^/resetpassword`]: "",
@@ -96,7 +96,7 @@ export const HTTP_ROUTES = [
     auth: true,
     url: "/deleteuser",
     proxy: {
-      target: USER_SERVICE_CLOUD_RUN_URL + "/deleteuser",
+      target: USER_SERVICE_URL + "/deleteuser",
       changeOrigin: true,
       pathRewrite: {
         [`^/deleteuser`]: "",
@@ -110,7 +110,7 @@ export const WEBSOCKET_ROUTES = [
     auth: true,
     url: "/get-match",
     proxy: {
-      target: MATCHING_SERVICE_CLOUD_RUN_URL,
+      target: MATCHING_SERVICE_URL,
       ws: true,
       changeOrigin: true,
       pathRewrite: { [`^/get-match`]: "/socket.io" },

@@ -4,8 +4,8 @@ var environments = {};
 
 environments.development = {
   envName: "development",
-  matchingServiceUrl: "http://localhost:8081",
-  userServiceUrl: "http://localhost:8082/api/firebaseauth",
+  matchingServiceUrl: "http://matching-service:8081",
+  userServiceUrl: "http://user-service:8082/api/firebaseauth",
 };
 
 environments.production = {
