@@ -18,7 +18,7 @@ resource "google_cloud_run_service" "collaboration-service" {
         "autoscaling.knative.dev/minScale" = 1
 
         # maximum number of instances
-        "autoscaling.knative.dev/maxScale" = 10
+        "autoscaling.knative.dev/maxScale" = 1
       }
     }
   }
