@@ -1,4 +1,5 @@
-import { ormCreateQuestion as _createQuestion } from '../model/question-orm.js'
+import { ormCreateQuestion as _createQuestion
+        , ormGetQuestion as _getQuestion } from '../model/question-orm.js'
 
 export async function createQuestion(req, res) {
     try {
@@ -18,4 +19,14 @@ export async function createQuestion(req, res) {
     } catch (err) {
         return res.status(500).json({message: 'Database failure when creating new question!'})
     }
+}
+
+export async function getQuestion(req, res) {
+    await _getQuestion(req.params.difficulty)
+        .then(question => {
+            return res.status(200).json(question);
+        }
+        ).catch(err => {
+            return res.status(400).json({message: `${err}`})
+        });
 }
