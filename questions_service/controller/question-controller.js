@@ -21,8 +21,8 @@ export async function createQuestion(req, res) {
     }
 }
 
-export async function getQuestion(difficulty, res) {
-    await _getQuestion(difficulty)
+export async function getQuestion(req, res) {
+    await _getQuestion(req.params.difficulty)
         .then(question => {
             return res.status(200).json(question);
         }

@@ -13,10 +13,5 @@ export async function ormCreateQuestion(difficulty, title, description, input, o
 }
 
 export async function ormGetQuestion(difficulty) {
-    await getQuestion(difficulty).then(question => {
-        return question;
-    }).catch(err => {
-        console.log(err);
-        return { err };
-    })
+    return await getQuestion(difficulty);
 }

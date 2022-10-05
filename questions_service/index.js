@@ -17,7 +17,8 @@ app.use(bodyParser.json());
 const router = express.Router()
 app.get('/', (_, res) => res.send('Hello World from questions-service'))
 app.post('/api/questions', (req, res) => createQuestion(req, res))
-app.get('/api/questions/:difficulty', (difficulty, res) => getQuestion(difficulty, res))
+app.get('/api/questions/:difficulty',
+    (req, res) => getQuestion(req, res))
 
 app.use('/api/questions', router).all((_, res) => {
     res.setHeader('content-type', 'application/json')

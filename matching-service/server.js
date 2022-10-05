@@ -42,8 +42,8 @@ export async function makeRoom(server, socket, level) {
         sock.join(room)
     })
     await getRandomQuestion(level)
-        .then(question => {
-            server.to(room).emit("question", question)
+        .then(res => {
+            server.to(room).emit("question", res.data)
         }).catch(err => {
             console.log(err);
             server.to(room).emit("question-error", err);
@@ -52,6 +52,6 @@ export async function makeRoom(server, socket, level) {
 }
 
 async function getRandomQuestion(level) {
-    const url = "http://localhost:8082";
-    return axios.get(`${url}/${level}`)
+    const url = "http://localhost:8082/api";
+    return axios.get(`${url}/questions/${level}`)
 }
