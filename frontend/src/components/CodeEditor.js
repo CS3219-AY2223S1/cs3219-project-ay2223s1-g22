@@ -7,39 +7,45 @@ import { WebsocketProvider } from "y-websocket";
 import { Select, VStack, Box, HStack, Heading, Text } from "@chakra-ui/react";
 import { CheckCircleIcon, WarningTwoIcon } from "@chakra-ui/icons";
 
-import { API_GATEWAY_WEBSOCKET_URL } from "../config/configs";
+import { COLLABORATION_SERVICE_WEBSOCKET_URL } from "../config/configs";
 import "./Editor.css";
 
 function CodeEditor({ roomNumber, accessToken }) {
   const ydocRef = useRef(null);
   const editorRef = useRef(null);
   const providerRef = useRef(null);
+  const bindingRef = useRef(null);
 
   const [programmingLanguage, setProgrammingLanguage] = useState("javascript");
-  const [isConnected, setIsConnected] = useState("pending");
+  const [isConnected, setIsConnected] = useState(false);
+  const [isEditorMounted, setIsEditorMounted] = useState(false);
   const [isSynced, setIsSynced] = useState(false);
 
   useEffect(() => {
-    if (editorRef.current) {
+    if (isEditorMounted) {
       ydocRef.current = setupYDoc();
       providerRef.current = setupWsProvider();
 
       setupMonacoBinding();
     }
-  }, [editorRef]);
+  }, [isEditorMounted]);
 
   const setupYDoc = () => {
     return new Y.Doc();
   };
 
   const setupWsProvider = () => {
+    if (providerRef.current) {
+      return;
+    }
+
     const wsProvider = new WebsocketProvider(
-      API_GATEWAY_WEBSOCKET_URL + "/setup-editor-sync",
+      COLLABORATION_SERVICE_WEBSOCKET_URL + "/setup-editor-sync",
       roomNumber,
       ydocRef.current,
       {
         params: {
-          accessToken,
+          accessToken: accessToken,
         },
       }
     );
@@ -57,11 +63,19 @@ function CodeEditor({ roomNumber, accessToken }) {
       console.log(`isSynced: ${isSynced}`);
     });
 
+    wsProvider.on("error", (error) => {
+      console.log(error);
+    });
+
     return wsProvider;
   };
 
   const setupMonacoBinding = () => {
-    new MonacoBinding(
+    if (bindingRef.current) {
+      return;
+    }
+
+    bindingRef.current = new MonacoBinding(
       ydocRef.current.getText("monaco"),
       editorRef.current.getModel(),
       new Set([editorRef.current]),
@@ -72,6 +86,7 @@ function CodeEditor({ roomNumber, accessToken }) {
   const editorDidMount = (editor, monaco) => {
     editorRef.current = editor;
     editor.focus();
+    setIsEditorMounted(true);
   };
 
   const options = {

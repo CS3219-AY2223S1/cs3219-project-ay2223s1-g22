@@ -47,17 +47,18 @@ function MatchSelectionPage() {
     autoStart: false,
   });
 
+  // useEffect(() => {
+  //   const socket = getSocket(idToken, user.uid);
+  //   socketRef.current = socket;
+  // }, []);
+
   useEffect(() => {
     const socket = getSocket(idToken, user.uid);
     socketRef.current = socket;
-  }, []);
 
-  useEffect(() => {
-    const socket = socketRef.current;
-
-    if (!socket) {
-      return;
-    }
+    // if (!socket) {
+    //   return;
+    // }
 
     if (socket.connected) {
       setIsConnected(true);
@@ -92,7 +93,7 @@ function MatchSelectionPage() {
       socket.off("connection-error");
       socket.off("room-number");
     };
-  }, [socketRef.current]);
+  }, [isConnected]);
 
   const refreshUserInfo = () => {
     setIsLoading(true);
