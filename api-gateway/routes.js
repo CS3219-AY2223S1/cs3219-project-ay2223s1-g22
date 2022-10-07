@@ -2,7 +2,7 @@ import config from "./config.js";
 
 export const MATCHING_SERVICE_URL = config.matchingServiceUrl;
 export const USER_SERVICE_URL = config.userServiceUrl;
-// export const COLLABORATION_SERVICE_URL = config.collaborationServiceUrl;
+export const COLLABORATION_SERVICE_URL = config.collaborationServiceUrl;
 
 export const UNAUTHENTICATED_HTTP_ROUTES = [
   {
@@ -163,25 +163,3 @@ export const AUTHENTICATED_HTTP_ROUTES = [
     },
   },
 ];
-
-export const WEBSOCKET_ROUTES = [
-  {
-    url: "/get-match",
-    proxy: {
-      target: MATCHING_SERVICE_URL,
-      ws: true,
-      changeOrigin: true,
-      pathRewrite: { [`^/get-match`]: "/socket.io" },
-    },
-  },
-];
-
-/* TODO: find out why a request to the collaboration service websocket cannot be proxied */
-// {
-//   url: "/setup-editor-sync",
-//   proxy: {
-//     target: COLLABORATION_SERVICE_URL,
-//     ws: true,
-//     pathRewrite: { [`^/setup-editor-sync`]: "" },
-//   },
-// },
