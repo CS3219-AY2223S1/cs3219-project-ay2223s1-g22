@@ -49,12 +49,12 @@ export const setupWebSocketProxies = (server) => {
 
     console.log(pathname);
 
-    if (pathname == "/get-match/") {
+    if (pathname.includes("/get-match")) {
       console.log("proxying to matching service");
       matchingServiceProxy.upgrade(request, socket, head);
     }
 
-    if (pathname == "/setup-editor-sync") {
+    if (pathname.includes("/setup-editor-sync")) {
       console.log("proxying to collaboration service");
       collaborationServiceProxy.upgrade(request, socket, head);
     }

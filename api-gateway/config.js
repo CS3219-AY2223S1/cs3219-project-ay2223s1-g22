@@ -14,7 +14,8 @@ environments.production = {
   matchingServiceUrl: "https://matching-service-pzsuad4zva-as.a.run.app:443",
   userServiceUrl:
     "https://user-service-pzsuad4zva-as.a.run.app/api/firebaseauth",
-  collaborationServiceUrl: "pending-deployment",
+  collaborationServiceUrl:
+    "wss://collaboration-service-pzsuad4zva-as.a.run.app",
 };
 
 environments.test = {
