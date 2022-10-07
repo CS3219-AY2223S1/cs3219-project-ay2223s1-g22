@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
+import { createProxyMiddleware } from "http-proxy-middleware";
 
+import { MATCHING_SERVICE_URL, COLLABORATION_SERVICE_URL } from "./routes.js";
 import { setupHttpProxies, setupWebSocketProxies } from "./proxy.js";
 
 const app = express();
@@ -17,10 +19,26 @@ app.get("/health-api-gateway", (req, res) => {
 // map HTTP routes
 setupHttpProxies(app);
 
+// map WebSocket routes
+// TODO: refactor this code block; move these into the method setupWebsocketProxies(...) if possible
+const matchingServiceProxy = createProxyMiddleware({
+  target: MATCHING_SERVICE_URL,
+  ws: true,
+  changeOrigin: false,
+  pathRewrite: { [`^/get-match`]: "/socket.io" },
+});
+const collaborationServiceProxy = createProxyMiddleware({
+  target: COLLABORATION_SERVICE_URL,
+  changeOrigin: false,
+  pathRewrite: { [`^/setup-editor-sync`]: "" },
+});
+app.use("/get-match", matchingServiceProxy);
+app.use("/setup-editor-sync", collaborationServiceProxy);
+
 // initialize the server
 const server = app.listen(port, () => {
   console.log(`API Gateway is listening at port: ${port}`);
 });
 
-// map WebSocket routes
-setupWebSocketProxies(server);
+// manually authenticate WebSocket routes
+setupWebSocketProxies(server, matchingServiceProxy, collaborationServiceProxy);
