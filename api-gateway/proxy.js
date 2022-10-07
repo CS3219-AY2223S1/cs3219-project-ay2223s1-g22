@@ -82,12 +82,19 @@ const isAuthenticatedWebSocketRequest = async (request) => {
 };
 
 const getAccessTokenFromWebSocketHeader = (request) => {
+  const accessTokenFromQueryParam = parse(request.url, true).query.accessToken;
+
   if (
+    !accessTokenFromQueryParam &&
     !request.headers["authorization"] &&
     !request.headers["sec-websocket-protocol"]
   ) {
     console.log("No access token found!");
     return null;
+  }
+
+  if (accessTokenFromQueryParam) {
+    return accessTokenFromQueryParam;
   }
 
   if (request.headers["authorization"]) {
@@ -103,7 +110,7 @@ const getAccessTokenFromWebSocketHeader = (request) => {
 
     return accessToken;
   } else {
-    // TODO: maybe find a better way to send the accessToken through websocket; maybe send it as the first message?
+    // note: this is not a good way to pass access tokens; avoid if possible
 
     // get the accessToken from request.headers["sec-websocket-protocol"]
     const accessToken = request.headers["sec-websocket-protocol"];

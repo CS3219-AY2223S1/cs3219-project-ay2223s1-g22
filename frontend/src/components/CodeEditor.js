@@ -7,10 +7,10 @@ import { WebsocketProvider } from "y-websocket";
 import { Select, VStack, Box, HStack, Heading, Text } from "@chakra-ui/react";
 import { CheckCircleIcon, WarningTwoIcon } from "@chakra-ui/icons";
 
-import { COLLABORATION_SERVICE_URL } from "../config/configs";
+import { API_GATEWAY_WEBSOCKET_URL } from "../config/configs";
 import "./Editor.css";
 
-function CodeEditor({ roomNumber }) {
+function CodeEditor({ roomNumber, accessToken }) {
   const ydocRef = useRef(null);
   const editorRef = useRef(null);
   const providerRef = useRef(null);
@@ -34,9 +34,14 @@ function CodeEditor({ roomNumber }) {
 
   const setupWsProvider = () => {
     const wsProvider = new WebsocketProvider(
-      COLLABORATION_SERVICE_URL,
+      API_GATEWAY_WEBSOCKET_URL + "/setup-editor-sync",
       roomNumber,
-      ydocRef.current
+      ydocRef.current,
+      {
+        params: {
+          accessToken,
+        },
+      }
     );
 
     wsProvider.on("status", (statusUpdate) => {
