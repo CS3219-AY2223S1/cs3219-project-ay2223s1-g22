@@ -6,8 +6,6 @@ import {
   UNAUTHENTICATED_HTTP_ROUTES,
   AUTHENTICATED_HTTP_ROUTES,
   USER_SERVICE_URL,
-  MATCHING_SERVICE_URL,
-  COLLABORATION_SERVICE_URL,
 } from "./routes.js";
 
 export const setupHttpProxies = (app) => {
@@ -22,21 +20,12 @@ export const setupHttpProxies = (app) => {
   });
 };
 
-export const setupWebSocketProxies = (server) => {
+export const setupWebSocketProxies = (
+  server,
+  matchingServiceProxy,
+  collaborationServiceProxy
+) => {
   server.on("upgrade", async (request, socket, head) => {
-    const matchingServiceProxy = createProxyMiddleware({
-      target: MATCHING_SERVICE_URL,
-      ws: true,
-      changeOrigin: false,
-      pathRewrite: { [`^/get-match`]: "/socket.io" },
-    });
-
-    const collaborationServiceProxy = createProxyMiddleware({
-      target: COLLABORATION_SERVICE_URL,
-      changeOrigin: false,
-      pathRewrite: { [`^/setup-editor-sync`]: "" },
-    });
-
     let isAuthenticated = await isAuthenticatedWebSocketRequest(request);
 
     if (!isAuthenticated) {
