@@ -24,12 +24,13 @@ setupHttpProxies(app);
 const matchingServiceProxy = createProxyMiddleware({
   target: MATCHING_SERVICE_URL,
   ws: true,
-  changeOrigin: false,
+  changeOrigin: true,
   pathRewrite: { [`^/get-match`]: "/socket.io" },
 });
 const collaborationServiceProxy = createProxyMiddleware({
   target: COLLABORATION_SERVICE_URL,
-  changeOrigin: false,
+  ws: true,
+  changeOrigin: true,
   pathRewrite: { [`^/setup-editor-sync`]: "" },
 });
 app.use("/get-match", matchingServiceProxy);
