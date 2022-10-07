@@ -1,12 +1,14 @@
 import { createProxyMiddleware } from "http-proxy-middleware";
+import axios from "axios";
+import { parse } from "url";
+
 import {
   UNAUTHENTICATED_HTTP_ROUTES,
   AUTHENTICATED_HTTP_ROUTES,
   USER_SERVICE_URL,
-  WEBSOCKET_ROUTES,
+  MATCHING_SERVICE_URL,
+  COLLABORATION_SERVICE_URL,
 } from "./routes.js";
-
-import axios from "axios";
 
 export const setupHttpProxies = (app) => {
   UNAUTHENTICATED_HTTP_ROUTES.forEach((r) => {
@@ -20,30 +22,42 @@ export const setupHttpProxies = (app) => {
   });
 };
 
-export const setupWebSocketProxies = (app) => {
-  const wsProxies = [];
-
-  WEBSOCKET_ROUTES.forEach((r) => {
-    const wsProxy = createProxyMiddleware(r.url, r.proxy); // this should be working
-    app.use(wsProxy);
-    wsProxies.push(wsProxy);
-  });
-
-  return wsProxies;
-};
-
-export const authenticateWebSocketProxies = (server, wsProxies) => {
-  wsProxies.forEach((p) => {
-    server.on("upgrade", async (req, socket, head) => {
-      let isAuthenticated = await isAuthenticatedWebSocketRequest(req);
-
-      if (isAuthenticated) {
-        p.upgrade(req, socket, head);
-      } else {
-        // reject connection request if not authenticated
-        socket.destroy();
-      }
+export const setupWebSocketProxies = (server) => {
+  server.on("upgrade", async (request, socket, head) => {
+    const matchingServiceProxy = createProxyMiddleware({
+      target: MATCHING_SERVICE_URL,
+      ws: true,
+      changeOrigin: false,
+      pathRewrite: { [`^/get-match`]: "/socket.io" },
     });
+
+    const collaborationServiceProxy = createProxyMiddleware({
+      target: COLLABORATION_SERVICE_URL,
+      changeOrigin: false,
+      pathRewrite: { [`^/setup-editor-sync`]: "" },
+    });
+
+    let isAuthenticated = await isAuthenticatedWebSocketRequest(request);
+
+    if (!isAuthenticated) {
+      // if the accessToken is not provided or is invalid, reject the websocket proxy request
+      socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+      socket.destroy();
+    }
+
+    const { pathname } = parse(request.url);
+
+    console.log(pathname);
+
+    if (pathname.includes("/get-match")) {
+      console.log("proxying to matching service");
+      matchingServiceProxy.upgrade(request, socket, head);
+    }
+
+    if (pathname.includes("/setup-editor-sync")) {
+      console.log("proxying to collaboration service");
+      collaborationServiceProxy.upgrade(request, socket, head);
+    }
   });
 };
 
@@ -65,16 +79,8 @@ const checkAuthentication = async (req, res, next) => {
   next();
 };
 
-const isAuthenticatedWebSocketRequest = async (req) => {
-  const authHeader = req.headers["authorization"];
-
-  console.log(authHeader);
-
-  if (!authHeader) {
-    return false;
-  }
-
-  const accessToken = authHeader.split(" ")[1];
+const isAuthenticatedWebSocketRequest = async (request) => {
+  const accessToken = getAccessTokenFromWebSocketHeader(request);
 
   if (!accessToken) {
     return false;
@@ -84,6 +90,37 @@ const isAuthenticatedWebSocketRequest = async (req) => {
   await isValidAccessToken(accessToken).then((val) => (isValid = val));
 
   return isValid;
+};
+
+const getAccessTokenFromWebSocketHeader = (request) => {
+  if (
+    !request.headers["authorization"] &&
+    !request.headers["sec-websocket-protocol"]
+  ) {
+    console.log("No access token found!");
+    return null;
+  }
+
+  if (request.headers["authorization"]) {
+    const authHeader = request.headers["authorization"];
+
+    const split = authHeader.split(" ");
+
+    if (split.length !== 2) {
+      return false;
+    }
+
+    const accessToken = split[1];
+
+    return accessToken;
+  } else {
+    // TODO: maybe find a better way to send the accessToken through websocket; maybe send it as the first message?
+
+    // get the accessToken from request.headers["sec-websocket-protocol"]
+    const accessToken = request.headers["sec-websocket-protocol"];
+
+    return accessToken;
+  }
 };
 
 const isValidAccessToken = async (accessToken) => {

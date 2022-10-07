@@ -6,7 +6,7 @@ environments.development = {
   envName: "development",
   matchingServiceUrl: "http://matching-service:8081",
   userServiceUrl: "http://user-service:8082/api/firebaseauth",
-  collaborationServiceUrl: "ws://localhost:8083",
+  collaborationServiceUrl: "ws://collaboration-service:8083",
 };
 
 environments.production = {
@@ -14,14 +14,15 @@ environments.production = {
   matchingServiceUrl: "https://matching-service-pzsuad4zva-as.a.run.app:443",
   userServiceUrl:
     "https://user-service-pzsuad4zva-as.a.run.app/api/firebaseauth",
-  collaborationServiceUrl: "pending-deployment",
+  collaborationServiceUrl:
+    "wss://collaboration-service-pzsuad4zva-as.a.run.app",
 };
 
 environments.test = {
   envName: "test",
   matchingServiceUrl: "http://matching-service:8081",
   userServiceUrl: "http://user-service:8082/api/firebaseauth",
-  collaborationServiceUrl: "ws://localhost:8083",
+  collaborationServiceUrl: "ws://collaboration-service:8083",
 };
 
 var currEnvironment =
