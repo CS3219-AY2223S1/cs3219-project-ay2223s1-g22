@@ -56,8 +56,14 @@ const MatchRoomPage = () => {
       console.log(`got match over event from server: socket -> ${socket.id}`);
       showOpponentLeftToast();
     });
+
+    socket.on("question", (question) => {
+      console.log(`got a question from server: question -> ${question}`);
+    })
+
     return () => {
       socket.off("match-over");
+      socket.off("question");
     };
   }, []);
 
