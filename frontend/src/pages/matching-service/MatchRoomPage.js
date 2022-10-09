@@ -109,7 +109,7 @@ const MatchRoomPage = () => {
         borderColor="blackAlpha.300"
         backgroundColor="linkedin.700"
       >
-        <CodeEditor roomNumber={roomNumber} />
+        <CodeEditor roomNumber={roomNumber} accessToken={idToken} />
       </GridItem>
     </Grid>
   );

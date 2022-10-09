@@ -1,10 +1,10 @@
 import axios from "axios";
 import { API_GATEWAY_URL } from "../config/configs.js";
 
-export const sendEmailVerification = async (accessToken) => {
+export const sendEmailVerification = async (idToken) => {
   try {
     return await axios.post(API_GATEWAY_URL + "/sendEmailVerification", {
-      accessToken,
+      idToken,
     });
   } catch (error) {
     console.log(error.response.message);

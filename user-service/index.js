@@ -12,6 +12,7 @@ import {
   revokeRefreshToken,
   sendEmailVerification,
 } from "./controller/user-controller.js";
+import config from "./config/config.js";
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -36,9 +37,11 @@ router.post("/firebaseauth/refreshToken", refreshAccessToken);
 router.post("/firebaseauth/revokeRefreshToken", revokeRefreshToken);
 router.post("/firebaseauth/sendEmailVerification", sendEmailVerification);
 
+const port = config.port || 8080;
+
 app.use("/api", router).all((_, res) => {
   res.setHeader("content-type", "application/json");
   res.setHeader("Access-Control-Allow-Origin", "*");
 });
 
-app.listen(8080, () => console.log("user-service listening on port 8080"));
+app.listen(port, () => console.log(`user-service listening on port ${port}`));

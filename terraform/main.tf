@@ -21,3 +21,9 @@ module "user-service" {
 
   image_tag = var.user-service_image_tag
 }
+
+module "collaboration-service" {
+  source = "./modules/collaboration-service"
+
+  image_tag = var.collaboration-service_image_tag
+}

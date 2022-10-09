@@ -1,49 +1,52 @@
 import { createProxyMiddleware } from "http-proxy-middleware";
+import axios from "axios";
+import { parse } from "url";
+
 import {
-  HTTP_ROUTES,
-  USER_SERVICE_CLOUD_RUN_URL,
-  WEBSOCKET_ROUTES,
+  UNAUTHENTICATED_HTTP_ROUTES,
+  AUTHENTICATED_HTTP_ROUTES,
+  USER_SERVICE_URL,
 } from "./routes.js";
 
-import axios from "axios";
-
 export const setupHttpProxies = (app) => {
-  HTTP_ROUTES.forEach((r) => {
+  UNAUTHENTICATED_HTTP_ROUTES.forEach((r) => {
     const proxy = createProxyMiddleware(r.url, r.proxy);
+    app.use(proxy);
+  });
 
-    if (r.auth) {
-      app.use(checkAuthentication, proxy);
-    } else {
-      app.use(proxy);
+  AUTHENTICATED_HTTP_ROUTES.forEach((r) => {
+    const proxy = createProxyMiddleware(r.url, r.proxy);
+    app.use(checkAuthentication, proxy);
+  });
+};
+
+export const setupWebSocketProxies = (
+  server,
+  matchingServiceProxy,
+  collaborationServiceProxy
+) => {
+  server.on("upgrade", async (request, socket, head) => {
+    let isAuthenticated = await isAuthenticatedWebSocketRequest(request);
+
+    if (!isAuthenticated) {
+      // if the accessToken is not provided or is invalid, reject the websocket proxy request
+      socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+      socket.destroy();
     }
-  });
-};
 
-export const setupWebSocketProxies = (app) => {
-  const wsProxies = [];
+    const { pathname } = parse(request.url);
 
-  WEBSOCKET_ROUTES.forEach((r) => {
-    // const wsProxy = createProxyMiddleware(r.proxy);
-    const wsProxy = createProxyMiddleware(r.url, r.proxy); // this should be working
-    app.use(wsProxy);
-    wsProxies.push(wsProxy);
-  });
+    console.log(pathname);
 
-  return wsProxies;
-};
+    if (pathname.includes("/get-match")) {
+      console.log("proxying to matching service");
+      matchingServiceProxy.upgrade(request, socket, head);
+    }
 
-export const authenticateWebSocketProxies = (server, wsProxies) => {
-  wsProxies.forEach((p) => {
-    server.on("upgrade", async (req, socket, head) => {
-      let isAuthenticated = await isAuthenticatedWebSocketRequest(req);
-
-      if (isAuthenticated) {
-        p.upgrade(req, socket, head);
-      } else {
-        // reject connection request if not authenticated
-        socket.destroy();
-      }
-    });
+    if (pathname.includes("/setup-editor-sync")) {
+      console.log("proxying to collaboration service");
+      collaborationServiceProxy.upgrade(request, socket, head);
+    }
   });
 };
 
@@ -65,14 +68,8 @@ const checkAuthentication = async (req, res, next) => {
   next();
 };
 
-const isAuthenticatedWebSocketRequest = async (req) => {
-  const authHeader = req.headers["authorization"];
-
-  if (!authHeader) {
-    return false;
-  }
-
-  const accessToken = authHeader.split(" ")[1];
+const isAuthenticatedWebSocketRequest = async (request) => {
+  const accessToken = getAccessTokenFromWebSocketHeader(request);
 
   if (!accessToken) {
     return false;
@@ -84,8 +81,46 @@ const isAuthenticatedWebSocketRequest = async (req) => {
   return isValid;
 };
 
+const getAccessTokenFromWebSocketHeader = (request) => {
+  const accessTokenFromQueryParam = parse(request.url, true).query.accessToken;
+
+  if (
+    !accessTokenFromQueryParam &&
+    !request.headers["authorization"] &&
+    !request.headers["sec-websocket-protocol"]
+  ) {
+    console.log("No access token found!");
+    return null;
+  }
+
+  if (accessTokenFromQueryParam) {
+    return accessTokenFromQueryParam;
+  }
+
+  if (request.headers["authorization"]) {
+    const authHeader = request.headers["authorization"];
+
+    const split = authHeader.split(" ");
+
+    if (split.length !== 2) {
+      return false;
+    }
+
+    const accessToken = split[1];
+
+    return accessToken;
+  } else {
+    // note: this is not a good way to pass access tokens; avoid if possible
+
+    // get the accessToken from request.headers["sec-websocket-protocol"]
+    const accessToken = request.headers["sec-websocket-protocol"];
+
+    return accessToken;
+  }
+};
+
 const isValidAccessToken = async (accessToken) => {
-  const TOKEN_VALIDATION_URL = USER_SERVICE_CLOUD_RUN_URL + "/authenticate";
+  const TOKEN_VALIDATION_URL = USER_SERVICE_URL + "/authenticate";
 
   const config = {
     headers: { Authorization: `Bearer ${accessToken}` },
