@@ -170,7 +170,7 @@ By deploying service instances in separate containers, each microservice can be 
 
 Also, by deploying the service instances in containers instead of virtual machines, start up time is reduced.
 
-![PeerPrep-Solution-Architecture](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/PeerPrep-Architecture-V1.png?raw=true)
+![PeerPrep-Solution-Architecture](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/PeerPrep-Architecture-V2.png?raw=true)
 
 # Development Process
 
