@@ -81,10 +81,17 @@ function MatchSelectionPage() {
       showAlreadyConnectedToast();
     });
 
-    socket.on("room-number", (roomNumber) => {
+    socket.on("room-number", (roomNumber, question) => {
+      console.log("creating room");
       hideFindingMatchModal();
       showMatchFoundToast();
-      navigate("/matchroom", { state: roomNumber });
+      navigate("/matchroom",
+        { state: {
+            roomNumber,
+            question
+          }
+        }
+      );
     });
 
     return () => {

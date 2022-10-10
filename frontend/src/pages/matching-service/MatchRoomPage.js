@@ -10,7 +10,7 @@ import { SocketContext } from "./SocketContext";
 import UserContext from "../../UserContext";
 
 const MatchRoomPage = () => {
-  const roomNumber = useLocation().state;
+  const state = useLocation().state;
   const navigate = useNavigate();
   const { sendLeaveMatch } = useContext(SocketContext);
   const [isOpen, setIsOpen] = useState(false);
@@ -31,7 +31,7 @@ const MatchRoomPage = () => {
         `socket ${socket.id} is still connected, sending leave match.`
       );
       onClose();
-      sendLeaveMatch(roomNumber);
+      sendLeaveMatch(state.roomNumber);
     } else {
       socket.connect();
     }
@@ -56,6 +56,7 @@ const MatchRoomPage = () => {
       console.log(`got match over event from server: socket -> ${socket.id}`);
       showOpponentLeftToast();
     });
+
     return () => {
       socket.off("match-over");
     };
@@ -80,7 +81,7 @@ const MatchRoomPage = () => {
         borderRadius="10"
         borderColor="blackAlpha.300"
       >
-        <Question />
+        <Question question={state.question} />
       </GridItem>
       <GridItem
         rowSpan={4}
@@ -92,7 +93,7 @@ const MatchRoomPage = () => {
         borderRadius="10"
         borderColor="blackAlpha.300"
       >
-        <Chat roomNumber={roomNumber} />
+        <Chat roomNumber={state.roomNumber} />
       </GridItem>
       <GridItem
         rowSpan={10}
@@ -103,7 +104,7 @@ const MatchRoomPage = () => {
         borderColor="blackAlpha.300"
         backgroundColor="linkedin.700"
       >
-        <CodeEditor roomNumber={roomNumber} accessToken={idToken} />
+        <CodeEditor roomNumber={state.roomNumber} accessToken={idToken} />
       </GridItem>
     </Grid>
   );

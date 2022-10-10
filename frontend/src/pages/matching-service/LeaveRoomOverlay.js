@@ -22,7 +22,7 @@ const LeaveRoomOverlay = (props) => {
   const onClose = () => {
     props.toggleOverlay(false);
   };
-  const roomNumber = useLocation().state;
+  const state = useLocation().state;
   const navigate = useNavigate();
 
   const handleLeaveMatch = () => {
@@ -31,10 +31,10 @@ const LeaveRoomOverlay = (props) => {
     if (socket) {
       if (socket.connected) {
         console.info(
-          `socket ${socket.id} is still connected, sending leave match.`
+          `socket ${socket.id} is still connected, sending leave match to roomNumber: ${state.roomNumber}.`
         );
         onClose();
-        sendLeaveMatch(roomNumber);
+        sendLeaveMatch(state.roomNumber);
       } else {
         socket.connect();
       }
