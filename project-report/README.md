@@ -18,6 +18,7 @@
   - [Security Requirements](#security-requirements)
   - [Scalability Requirements](#scalability-requirements)
 - [Solution Architecture](#solution-architecture)
+  - [Overview](#overview)
   - [Service Instance per Container](#service-instance-per-container)
 - [Development Process](#development-process)
   - [Continuous Integration](#continuous-integration)
@@ -162,6 +163,10 @@ TODO - Requirement Prioritization table (refer to slide 42 of Lecture 2)
 
 # Solution Architecture
 
+## Overview
+
+![PeerPrep-Solution-Architecture](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/PeerPrep-Architecture-V2.png?raw=true)
+
 ## Service Instance per Container
 
 Each microservice is packaged into a Docker container image and deployed in a distinct container using Cloud Run on Google Cloud Platform.
@@ -169,8 +174,6 @@ Each microservice is packaged into a Docker container image and deployed in a di
 By deploying service instances in separate containers, each microservice can be scaled up or down separately as needed as demand fluctuates, leading to better cost efficiency.
 
 Also, by deploying the service instances in containers instead of virtual machines, start up time is reduced.
-
-![PeerPrep-Solution-Architecture](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/PeerPrep-Architecture-V2.png?raw=true)
 
 # Development Process
 
