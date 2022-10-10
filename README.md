@@ -19,6 +19,7 @@ docker-compose up --build -d
 
 # Serve frontend
 cd frontend
+npm i
 npm run start
 ```
 
