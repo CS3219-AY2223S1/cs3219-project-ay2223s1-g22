@@ -64,15 +64,15 @@ export async function makeRoom(server, socket, level) {
     })
     await getRandomQuestion(level)
         .then(res => {
-            server.to(room).emit("question", res.data)
+            console.log(res.data);
+            server.to(room).emit('room-number', room, res.data);
         }).catch(err => {
             console.log(err);
             server.to(room).emit("question-error", err);
-        });
-    server.to(room).emit('room-number', room);
+        })
 }
 
 async function getRandomQuestion(level) {
-    const url = "http://localhost:8082/api";
-    return axios.get(`${url}/questions/${level}`)
+    const url = "http://questions-service:8084/api";
+    return axios.get(`${url}/questions/${level}`);
 }

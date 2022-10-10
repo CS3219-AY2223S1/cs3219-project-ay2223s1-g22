@@ -15,11 +15,11 @@ let QuestionModelSchema = new Schema({
         required: true,
     },
 	input: {
-        type: String,
+        type: Array,
         required: true,
     },
 	output: {
-        type: String,
+        type: Array,
         required: true,
     },
 })

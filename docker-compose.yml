@@ -28,3 +28,10 @@ services:
       target: dev
     ports:
       - 8083:8083
+  questions-service:
+    container_name: questions-service
+    build:
+      context: ./questions-service
+      target: dev
+    ports:
+      - 8084:8084
