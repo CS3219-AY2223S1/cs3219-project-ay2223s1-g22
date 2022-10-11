@@ -117,16 +117,18 @@ const SignupPage = () => {
             if (output) {
               handleResetStates();
               showSignupSuccessToast();
+              setIsRegistering(false);
               navigate("/login");
               return;
             }
           });
         } else if (res.message.includes("auth/email-already-in-use")) {
           showSignupFailureToast("Email is already in use!");
+          setIsRegistering(false);
         } else {
           showSignupFailureToast("Something went wrong, please try again later!");
+          setIsRegistering(false);
         }
-        setIsRegistering(false);
       });
     } else {
       showSignupFailureToast("Missing required fields!");
@@ -139,7 +141,7 @@ const SignupPage = () => {
       title: "Sign up successful!",
       description: "An email verification has been sent.",
       status: "success",
-      duration: 3000,
+      duration: 5000,
       isClosable: true,
     });
 
