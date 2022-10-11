@@ -46,6 +46,7 @@ const SignupPage = () => {
   const [isRequiredConfirmPassword, setIsRequiredConfirmPassword] =
     useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
   const handleShowClick = () => setShowPassword(!showPassword);
   const navigate = useNavigate();
 
@@ -81,12 +82,17 @@ const SignupPage = () => {
 
     handleConfirmPassword();
 
-    return (
-      !isRequiredName &&
-      !isRequiredEmail &&
-      !isRequiredPassword &&
-      !isRequiredConfirmPassword
-    );
+    if (name === "" || email === "" || password === "" || confirmPassword === "") {
+      return false;
+    } else {
+      return (
+        name &&
+        email &&
+        password &&
+        confirmPassword &&
+        password === confirmPassword
+      );
+    }
   };
 
   const handleResetStates = () => {
@@ -102,6 +108,7 @@ const SignupPage = () => {
 
   const handleSignup = () => {
     if (handleRequiredFields()) {
+      setIsRegistering(true);
       const promise = createUserAccount(name, email, password);
       promise.then((res) => {
         if (res.data) {
@@ -117,10 +124,9 @@ const SignupPage = () => {
         } else if (res.message.includes("auth/email-already-in-use")) {
           showSignupFailureToast("Email is already in use!");
         } else {
-          showSignupFailureToast(
-            "Something went wrong, please try again later!"
-          );
+          showSignupFailureToast("Something went wrong, please try again later!");
         }
+        setIsRegistering(false);
       });
     } else {
       showSignupFailureToast("Missing required fields!");
@@ -143,7 +149,7 @@ const SignupPage = () => {
       title: "Sign up unsuccessful.",
       description: desc,
       status: "error",
-      duration: 3000,
+      duration: 5000,
       isClosable: true,
     });
 
@@ -273,16 +279,29 @@ const SignupPage = () => {
                 >
                   Back
                 </Button>
-                <Button
-                  borderRadius={5}
-                  variant="solid"
-                  colorScheme="teal"
-                  width="50%"
-                  shadow="lg"
-                  onClick={handleSignup}
-                >
-                  Register
-                </Button>
+                {!isRegistering ? (
+                  <Button
+                    borderRadius={5}
+                    variant="solid"
+                    colorScheme="teal"
+                    width="50%"
+                    shadow="lg"
+                    onClick={handleSignup}
+                  >
+                    Register
+                  </Button>
+                ) : (
+                  <Button
+                    isLoading
+                    borderRadius={5}
+                    variant="solid"
+                    colorScheme="teal"
+                    width="50%"
+                    shadow="lg"
+                  >
+                    Register
+                  </Button>
+                )}
               </Stack>
             </Stack>
           </form>

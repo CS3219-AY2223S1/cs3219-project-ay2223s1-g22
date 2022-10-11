@@ -73,7 +73,7 @@ const LoginPage = () => {
       title: "Login unsuccessful.",
       description: "Is your email or password correct?",
       status: "error",
-      duration: 3000,
+      duration: 5000,
       isClosable: true,
     });
 
