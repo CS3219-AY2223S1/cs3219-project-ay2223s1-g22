@@ -5,11 +5,14 @@ import { API_GATEWAY_URL } from "../../config/configs";
 
 let socket;
 
-const getSocket = (accessToken) => {
+const getSocket = (accessToken, uuid) => {
   if (!socket && accessToken) {
+    console.log(`init socket because socket is undefined -> ${socket === undefined} 
+      or access token is undefined -> ${accessToken === undefined}`)
     socket = initSocket(accessToken);
+    console.log(`attaching ${uuid} onto socket ${socket["id"]}`);
+    socket["uuid"] = uuid;
   }
-
   return socket;
 };
 
@@ -22,14 +25,6 @@ const initSocket = (accessToken) => {
   });
 };
 
-const sendLevel = (difficulty) => {
-  if (socket) {
-    socket.emit("level", difficulty);
-  }
-
-  return socket;
-};
-
 const sendLeaveMatch = (roomNumber) => {
   if (socket) {
     socket.emit("leave-match", roomNumber);
@@ -38,9 +33,9 @@ const sendLeaveMatch = (roomNumber) => {
   }
 };
 
-const sendUserId = (userId) => {
+const sendUserId = (userId, username) => {
   if (socket) {
-    socket.emit("user-id", userId);
+    socket.emit("user-id", userId, username);
   }
 };
 
@@ -53,7 +48,6 @@ const rejoinRoom = (roomNum) => {
 export const SocketContext = createContext({
   getSocket: getSocket,
   initSocket: initSocket,
-  sendLevel: sendLevel,
   sendLeaveMatch: sendLeaveMatch,
   sendUserId: sendUserId,
   rejoinRoom: rejoinRoom,

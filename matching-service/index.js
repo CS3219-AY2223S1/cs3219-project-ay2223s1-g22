@@ -8,7 +8,7 @@ import {
   makeRoom,
   alreadyInQueue,
   addUser,
-  rejoinSocket,
+  rejoinSocket, cancelQueue,
 } from "./server.js";
 import config from "./config.js";
 
@@ -29,23 +29,29 @@ const server = new Server(httpServer, {
 }).on("connection", (socket) => {
   console.info(`user ${socket.id} connected`);
 
-  socket.on("user-id", (userId) => {
-    addUser(server, socket, userId);
+  socket.on("user-id", (userId, username) => {
+    addUser(server, socket, userId, username);
   });
 
   socket.on("rejoin-room", (roomNum) => {
     rejoinSocket(server, socket, roomNum);
   });
 
-  socket.on("level", (level) => {
-    if (!alreadyInQueue(socket, level)) {
+  socket.on("level", (level, callback) => {
+    if (!alreadyInQueue(socket)) {
       if (isQueueEmpty(server, level)) {
-        if (!alreadyInQueue(socket, level)) {
           queueSocket(socket, level);
-        }
+          if (typeof callback === "function") {
+            callback(false);
+          }
       } else {
         makeRoom(server, socket, level);
       }
+    } else {
+      if (typeof callback == "function") {
+        callback(true);
+      }
+      // socket.emit("already-queued", "You are already in queue");
     }
   });
 
@@ -59,9 +65,13 @@ const server = new Server(httpServer, {
     server.in(room).emit("match-over");
     server.in(room).disconnectSockets();
   });
+
+  socket.on("cancel-queue", () => {
+    cancelQueue(socket)
+  })
 });
 
-const PORT = config.port || 8080;
+const PORT = config?.port || 8080;
 
 httpServer.listen(PORT, () => {
   console.log(`HTTP server started at port: ${PORT}`);

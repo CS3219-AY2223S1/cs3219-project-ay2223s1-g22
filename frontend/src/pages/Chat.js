@@ -8,7 +8,7 @@ import Messages from "../components/chat/Messages";
 import { SocketContext } from "./matching-service/SocketContext";
 import UserContext from "../UserContext";
 
-function Chat({ roomNumber }) {
+function Chat({ roomProps }) {
   const [messages, setMessages] = useState([
     {
       from: "matching_service",
@@ -16,7 +16,7 @@ function Chat({ roomNumber }) {
     },
     {
       from: "matching_service",
-      text: `Your room number is: ${roomNumber}`,
+      text: `Your room number is: ${roomProps.roomNumber}`,
     },
     {
       from: "matching_service",
@@ -33,7 +33,7 @@ function Chat({ roomNumber }) {
     const socket = socketRef.current;
 
     socket.on("connect", () => {
-      rejoinRoom(roomNumber);
+      rejoinRoom(roomProps.roomNumber);
     });
 
     socket.on("disconnect", () => {});
@@ -65,7 +65,7 @@ function Chat({ roomNumber }) {
   };
 
   const sendChatMessage = (chatMessage) => {
-    socketRef.current.emit("send", chatMessage, roomNumber);
+    socketRef.current.emit("send", chatMessage, roomProps.roomNumber);
   };
 
   return (
@@ -76,7 +76,7 @@ function Chat({ roomNumber }) {
       borderRadius="10"
       padding="2"
     >
-      <Header />
+      <Header opponentName={roomProps.opponentName} />
       <Divider />
       <Messages messages={messages} />
       <Divider />
