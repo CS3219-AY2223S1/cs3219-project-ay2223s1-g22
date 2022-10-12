@@ -6,7 +6,7 @@ import {
   isQueueEmpty,
   queueSocket,
   makeRoom,
-  alreadyInQueue,
+  alreadyInQueueOrRoom,
   addUser,
   rejoinSocket, cancelQueue,
 } from "./server.js";
@@ -38,7 +38,7 @@ const server = new Server(httpServer, {
   });
 
   socket.on("level", (level, callback) => {
-    if (!alreadyInQueue(socket)) {
+    if (!alreadyInQueueOrRoom(socket)) {
       if (isQueueEmpty(server, level)) {
           queueSocket(socket, level);
           if (typeof callback === "function") {
@@ -61,9 +61,9 @@ const server = new Server(httpServer, {
   });
 
   socket.on("leave-match", (room) => {
-    console.info(`Evicting room: ${room}`);
+    console.info(`Evicting ${socket["uuid"]} from room: ${room}`);
     server.in(room).emit("match-over");
-    server.in(room).disconnectSockets();
+    socket.disconnect();
   });
 
   socket.on("cancel-queue", () => {
