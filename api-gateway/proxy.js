@@ -69,7 +69,7 @@ const checkAuthentication = async (req, res, next) => {
 };
 
 const isAuthenticatedWebSocketRequest = async (request) => {
-  const accessToken = getAccessTokenFromWebSocketHeader(request);
+  const accessToken = getAccessTokenFromQueryParams(request);
 
   if (!accessToken) {
     return false;
@@ -81,42 +81,16 @@ const isAuthenticatedWebSocketRequest = async (request) => {
   return isValid;
 };
 
-const getAccessTokenFromWebSocketHeader = (request) => {
-  const accessTokenFromQueryParam = parse(request.url, true).query.accessToken;
+const getAccessTokenFromQueryParams = (request) => {
+  const queryParams = parse(request.url, true).query;
+  const accessToken = queryParams.accessToken;
 
-  if (
-    !accessTokenFromQueryParam &&
-    !request.headers["authorization"] &&
-    !request.headers["sec-websocket-protocol"]
-  ) {
-    console.log("No access token found!");
+  if (!accessToken) {
+    console.log("No access token found in query params!");
     return null;
   }
 
-  if (accessTokenFromQueryParam) {
-    return accessTokenFromQueryParam;
-  }
-
-  if (request.headers["authorization"]) {
-    const authHeader = request.headers["authorization"];
-
-    const split = authHeader.split(" ");
-
-    if (split.length !== 2) {
-      return false;
-    }
-
-    const accessToken = split[1];
-
-    return accessToken;
-  } else {
-    // note: this is not a good way to pass access tokens; avoid if possible
-
-    // get the accessToken from request.headers["sec-websocket-protocol"]
-    const accessToken = request.headers["sec-websocket-protocol"];
-
-    return accessToken;
-  }
+  return accessToken;
 };
 
 const isValidAccessToken = async (accessToken) => {
