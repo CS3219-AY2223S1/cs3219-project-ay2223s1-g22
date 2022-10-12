@@ -93,7 +93,7 @@ const MatchRoomPage = () => {
         borderRadius="10"
         borderColor="blackAlpha.300"
       >
-        <Chat roomNumber={state.roomNumber} />
+        <Chat roomProps={state}/>
       </GridItem>
       <GridItem
         rowSpan={10}

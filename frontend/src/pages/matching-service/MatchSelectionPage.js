@@ -26,7 +26,7 @@ import { getUser } from "../../controller/user-controller";
 const DEFAULT_TIMEOUT_LIMIT = 30; // cancel search after 30 seconds
 
 function MatchSelectionPage() {
-  const { getSocket, sendLevel, sendUserId } = useContext(SocketContext);
+  const { getSocket, sendUserId } = useContext(SocketContext);
   const { user, idToken, refreshToken, storeUserData } =
     useContext(UserContext);
   const socketRef = useRef(null);
@@ -34,6 +34,8 @@ function MatchSelectionPage() {
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isAlreadyConnected, setIsAlreadyConnected] = useState(false);
+  const [opponent, setOpponent] = useState("");
+  const [userName, setUserName] = useState(user["email"].split("@")[0]);
   const isVerified = user.emailVerified;
 
   let navigate = useNavigate();
@@ -53,20 +55,18 @@ function MatchSelectionPage() {
   // }, []);
 
   useEffect(() => {
-    const socket = getSocket(idToken, user.uid);
+    console.log(`socket creation with user id : ${user["uid"]}`)
+    const userId = user["uid"];
+    const socket = getSocket(idToken, userId);
     socketRef.current = socket;
-
-    // if (!socket) {
-    //   return;
-    // }
 
     if (socket.connected) {
       setIsConnected(true);
     }
 
     socket.on("connect", () => {
-      console.log("emitting user-id event");
-      sendUserId(user.uid);
+      console.log(`emitting user-id event, sending ${user["uid"]}`);
+      sendUserId(user["uid"], userName);
       setIsConnected(true);
     });
 
@@ -75,29 +75,24 @@ function MatchSelectionPage() {
       socket.connect();
     });
 
-    socket.on("connection-error", (message) => {
-      console.log("got connection error event!");
-      setIsAlreadyConnected(true);
-      showAlreadyConnectedToast();
-    });
-
-    socket.on("room-number", (roomNumber, question) => {
-      console.log("creating room");
+    socket.on("room-number", (roomNumber, question, opponent) => {
+      const opponentName = opponent.filter(name => name != userName).toString();
+      console.log(`creating room with opponent ${opponentName}`);
       hideFindingMatchModal();
       showMatchFoundToast();
       navigate("/matchroom",
         { state: {
             roomNumber,
-            question
+            question,
+            opponentName
           }
         }
       );
     });
 
     return () => {
-      // socket.off("connect");
-      // socket.off("disconnect");
-      socket.off("connection-error");
+      socket.off("connect");
+      socket.off("disconnect");
       socket.off("room-number");
     };
   }, [isConnected]);
@@ -112,15 +107,24 @@ function MatchSelectionPage() {
     });
   };
 
-  const handleRequestMatch = (difficulty) => {
-    showFindingMatchModal();
+  const cancelQueueRequest = () => {
+    console.log("emitting cancel queue event");
+    socketRef.current.emit("cancel-queue");
+  }
 
-    sendLevel(difficulty);
+  const handleRequestMatch = (difficulty) => {
+    socketRef.current.emit("level", difficulty, inQueue => {
+      if (inQueue) {
+        showAlreadyQueuedToast();
+      } else {
+        showFindingMatchModal();
+      }
+    })
   };
 
   const handleCancelRequest = () => {
     hideFindingMatchModal();
-
+    cancelQueueRequest();
     // TODO: send cancellation request to backend
   };
 
@@ -153,12 +157,12 @@ function MatchSelectionPage() {
       duration: 3000,
       isClosable: true,
     });
-  const alreadyConnectedToast = useToast();
-  const showAlreadyConnectedToast = () =>
-    alreadyConnectedToast({
-      title: "Connected refused.",
+  const alreadyQueuedToast = useToast();
+  const showAlreadyQueuedToast = () =>
+    alreadyQueuedToast({
+      title: "Unable to join queue.",
       description:
-        "You are already connected on another window! Please use that connection or close it!",
+        "You are already queued on another window!",
       status: "error",
       duration: 3000,
       isClosable: true,

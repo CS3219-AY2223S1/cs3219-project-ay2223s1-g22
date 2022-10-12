@@ -6,21 +6,13 @@ const difficulty = {
     hard: []
 }
 
-const users = {};
+let inRoom = [];
 
-
-export function addUser(server, socket, userId) {
-        console.info(`adding user: ${userId} to connected map.`);
-    if (!users[`${userId}`]) {
-        console.info(`added user: ${userId}`);
-        users[`${userId}`] = socket;
-    } else if (users[`${userId}`].connected) {
-        console.info(`user: ${userId} is already connected!`);
-        server.to(socket.id).emit("connection-error", "You are already connected!");
-    } else {
-        console.info(`added user: ${userId}`);
-        users[`${userId}`] = socket;
-    }
+export function addUser(server, socket, userId, username) {
+    console.info(`added user: ${userId}`);
+    socket["uuid"] = userId;
+    socket["username"] = username;
+    console.log(`added user id to socket ${socket.id} : ${socket["uuid"]}`);
 }
 
 export function rejoinSocket(server, socket, roomNum) {
@@ -30,6 +22,17 @@ export function rejoinSocket(server, socket, roomNum) {
 export function queueSocket(socket, level) {
     console.info(`socket ${ socket.id } added to ${ level } queue.`)
     difficulty[level].push(socket);
+    console.log(`${level} queue after add :${difficulty[level]}`);
+}
+
+export function cancelQueue(socket) {
+    const keyList = Object.keys(difficulty);
+    for (let i = 0; i < keyList.length; i++) {
+        const currKey = keyList[i];
+        const currList = difficulty[currKey];
+        difficulty[currKey] = currList.filter(sock => sock != socket && sock.connected)
+        console.log(`after cancel event ${currKey} queue: ${difficulty[currKey]}`)
+    }
 }
 
 export function isQueueEmpty(server, level) {
@@ -46,12 +49,34 @@ export function isQueueEmpty(server, level) {
     return true;
 }
 
-export function alreadyInQueue(socket, level) {
-    return difficulty[level].filter(sock => {
-        console.log("checking if already in queue")
-        console.log(sock.id);
-        return sock.id == socket.id;
-    }).length;
+export function alreadyInQueueOrRoom(socket) {
+    const keyList = Object.keys(difficulty);
+    let isInSomeQueue = false;
+    for (let i = 0; i < keyList.length; i++) {
+        const currKey = keyList[i];
+        console.log(`${currKey} queue before filter : ${difficulty[currKey]?.map(x => x.uuid).toString()}`);
+        difficulty[currKey] = difficulty[currKey].filter(sock => sock.connected);
+        console.log(`${currKey} queue after filter : ${difficulty[currKey]?.map(x => x.uuid).toString()}`);
+        const currLevelList = difficulty[currKey].map(sock => sock.uuid);
+        console.log(`checking if user ${socket.uuid} is in ${currLevelList}`);
+        isInSomeQueue = isInSomeQueue || currLevelList?.includes(socket.uuid);
+    }
+    console.log(`checked if already in queue: ${isInSomeQueue}`);
+    inRoom = inRoom.filter(sock => {
+        console.log(`${sock.uuid} is ${sock.connected}`);
+        return sock.connected;
+    });
+    const checkRoom = inRoom.map(sock => sock.uuid);
+    const isInRoom = inRoom?.filter(sock => sock.uuid == socket.uuid).length > 0;
+    console.log(`checking ${socket.uuid} in ${checkRoom} : ${isInRoom}`);
+    return isInSomeQueue || isInRoom;
+}
+
+function addSocketsToInRoom(sockets) {
+    console.log(`adding sockets ${sockets.map(socket => socket.uuid)} to inRoom`);
+    inRoom = inRoom.filter(sock => sock.connected);
+    sockets.map(sock => inRoom.push(sock));
+    console.log(`inRoom : ${inRoom}`)
 }
 
 export async function makeRoom(server, socket, level) {
@@ -59,13 +84,13 @@ export async function makeRoom(server, socket, level) {
     console.info(`making room for sockets:\n ${ socket.id } and ${ socket1.id }`)
     const room = socket.id.concat(socket1.id);
     const sockets = [socket, socket1];
+    addSocketsToInRoom(sockets);
     sockets.map((sock) => {
         sock.join(room)
-    })
+    });
     await getRandomQuestion(level)
         .then(res => {
-            console.log(res.data);
-            server.to(room).emit('room-number', room, res.data);
+            server.to(room).emit('room-number', room, res.data, sockets.map(sock => sock["username"]));
         }).catch(err => {
             console.log(err);
             server.to(room).emit("question-error", err);

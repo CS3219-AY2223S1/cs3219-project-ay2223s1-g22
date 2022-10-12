@@ -10,7 +10,7 @@ import {
 	TableContainer,
   } from '@chakra-ui/react'
 
-const Question = (question) => {
+const Question = ({question}) => {
   return (
     <Flex
       h="100%"
@@ -22,10 +22,10 @@ const Question = (question) => {
       <Container>
         {console.info("checking question", {question})}
         <Heading size='lg' as='u'>
-          {question.question.title}
+          {question.title}
         </Heading>
         <Text>
-          {question.question.description}	
+          {question.description}
         </Text>
         <Spacer flexDir='column' />
         <TableContainer border='2px' borderColor='gray.500' borderRadius='10'>
@@ -38,12 +38,12 @@ const Question = (question) => {
             </Thead>
             <Tbody>
               <Td>
-                {question.question.input.map(line => 
+                {question.input.map(line =>
                   <Tr>{line}</Tr>
                   )}
               </Td>
               <Td>
-                {question.question.output.map(line => 
+                {question.output.map(line =>
                   <Tr>{line}</Tr>
                   )}
               </Td>
