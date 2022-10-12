@@ -1,11 +1,11 @@
-import { auth } from "../config/firebase-config.js";
+import { auth, db } from "../config/firebase-config.js";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
-  sendPasswordResetEmail,
-  updateProfile,
+  sendPasswordResetEmail
 } from "firebase/auth";
+import { ref, set } from "firebase/database";
 import admin from "../config/firebase-service.js";
 import axios from "axios";
 
@@ -14,6 +14,10 @@ export const createUserAccount = async (req, res) => {
     const { name, email, password } = req.body;
     await createUserWithEmailAndPassword(auth, email, password).then(
       (userCred) => {
+		set(ref(db, "users/" + userCred.user.uid), {
+			name: name,
+			email: email
+		});
         return res.status(201).json({
           message: "user created!",
           accessToken: userCred.user.stsTokenManager.accessToken,

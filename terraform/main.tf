@@ -27,3 +27,9 @@ module "collaboration-service" {
 
   image_tag = var.collaboration-service_image_tag
 }
+
+module "questions-service" {
+  source = "./modules/questions-service"
+
+  image_tag = var.questions-service_image_tag
+}

@@ -19,8 +19,9 @@ const getSocket = (accessToken, uuid) => {
 const initSocket = (accessToken) => {
   return io(API_GATEWAY_URL, {
     path: "/get-match",
-    extraHeaders: {
-      Authorization: `Bearer ${accessToken}`,
+    transports: ["websocket"],
+    query: {
+      accessToken,
     },
   });
 };

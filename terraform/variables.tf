@@ -19,3 +19,8 @@ variable "collaboration-service_image_tag" {
 	type=string
 	default="latest"
 }
+
+variable "questions-service_image_tag" {
+	type=string
+	default="latest"
+}
