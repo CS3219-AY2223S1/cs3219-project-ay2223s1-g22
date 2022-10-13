@@ -265,11 +265,7 @@ TODO
 
 # Possible Enhancements
 
-- Add collaboration service endpoint to API gateway
-  - When trying to proxy websocket frames between the frontend and collaboration service through the API gateway, the websocket connection kept getting disconnected due to an `invalid frame header` error
-    - However, communicating through a direct websocket connection between the frontend and collaboration service had no such errors
-    - As no solution could be found for this problem thus far, the team decided to access the collaboration service directly from the frontend
-  - If a solution to this problem can be found, access to the collaboration service can be restricted to only through the API gateway for better security.
+TODO
 
 # Reflections and Learning Points
 
