@@ -48,10 +48,10 @@ const server = new Server(httpServer, {
   socket.on("level", (level, callback) => {
     if (!alreadyInQueueOrRoom(socket)) {
       if (isQueueEmpty(server, level)) {
-          queueSocket(socket, level);
-          if (typeof callback === "function") {
-            callback(false);
-          }
+        queueSocket(socket, level);
+        if (typeof callback === "function") {
+          callback(false);
+        }
       } else {
         makeRoom(server, socket, level);
       }
@@ -75,11 +75,11 @@ const server = new Server(httpServer, {
   });
 
   socket.on("cancel-queue", () => {
-    cancelQueue(socket)
-  })
+    cancelQueue(socket);
+  });
 });
 
-const PORT = config?.port || 8080;
+const PORT = config?.portToListenOn || 8080;
 
 httpServer.listen(PORT, () => {
   console.log(`HTTP server started at port: ${PORT}`);

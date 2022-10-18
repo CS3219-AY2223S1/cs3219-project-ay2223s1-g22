@@ -3,15 +3,18 @@
 var environments = {};
 
 environments.development = {
-  port: 8081,
+  questionsServiceUrl: "http://questions-service:8084/api",
+  portToListenOn: 8081,
 };
 
 environments.production = {
-  port: 8080,
+  questionsServiceUrl: "https://questions-service-pzsuad4zva-as.a.run.app/api",
+  portToListenOn: 8080,
 };
 
 environments.test = {
-  port: 8081,
+  questionsServiceUrl: "http://questions-service:8084/api",
+  portToListenOn: 8081,
 };
 
 var currEnvironment =

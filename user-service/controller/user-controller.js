@@ -54,6 +54,7 @@ export const deleteUser = async (req, res) => {
       .auth()
       .deleteUser(uid)
       .then(() => {
+		set(ref(db, "users/" + uid), null);
         return res.status(200).json({
           message: "user deleted!",
         });
