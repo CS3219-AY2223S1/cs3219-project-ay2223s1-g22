@@ -6,7 +6,7 @@ const difficulty = {
     hard: []
 }
 
-let inRoom = [];
+let inRoom = {};
 
 export function addUser(server, socket, userId, username) {
     console.info(`added user: ${userId}`);
@@ -62,21 +62,27 @@ export function alreadyInQueueOrRoom(socket) {
         isInSomeQueue = isInSomeQueue || currLevelList?.includes(socket.uuid);
     }
     console.log(`checked if already in queue: ${isInSomeQueue}`);
-    inRoom = inRoom.filter(sock => {
-        console.log(`${sock.uuid} is ${sock.connected}`);
-        return sock.connected;
-    });
-    const checkRoom = inRoom.map(sock => sock.uuid);
-    const isInRoom = inRoom?.filter(sock => sock.uuid == socket.uuid).length > 0;
-    console.log(`checking ${socket.uuid} in ${checkRoom} : ${isInRoom}`);
-    return isInSomeQueue || isInRoom;
+    updateSocketsInRoom();
+    return isInSomeQueue || checkIfSocketInRoom(socket);
 }
 
-function addSocketsToInRoom(sockets) {
+export function checkIfSocketInRoom(socket) {
+    return inRoom[socket];
+}
+
+function addSocketsToInRoom(sockets, room) {
     console.log(`adding sockets ${sockets.map(socket => socket.uuid)} to inRoom`);
-    inRoom = inRoom.filter(sock => sock.connected);
-    sockets.map(sock => inRoom.push(sock));
-    console.log(`inRoom : ${inRoom}`)
+    updateSocketsInRoom();
+    sockets.map(sock => inRoom[sock] = room);
+}
+
+function updateSocketsInRoom() {
+    const socketList = Object.keys(inRoom);
+    socketList.map(sock => {
+        if (!sock.connected) {
+            delete inRoom[sock];
+        }
+    })
 }
 
 export async function makeRoom(server, socket, level) {
@@ -84,7 +90,7 @@ export async function makeRoom(server, socket, level) {
     console.info(`making room for sockets:\n ${ socket.id } and ${ socket1.id }`)
     const room = socket.id.concat(socket1.id);
     const sockets = [socket, socket1];
-    addSocketsToInRoom(sockets);
+    addSocketsToInRoom(sockets, room);
     sockets.map((sock) => {
         sock.join(room)
     });
