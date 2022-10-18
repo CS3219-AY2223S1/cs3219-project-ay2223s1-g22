@@ -76,8 +76,9 @@ function MatchSelectionPage() {
     });
 
     socket.on("room-number", (roomNumber, question, opponent) => {
-      const opponentName = opponent.filter(name => name != userName).toString();
-      console.log(`creating room with opponent ${opponentName}`);
+      const opponentUid = opponent.filter(uuid => uuid !== userId).toString();
+      const opponentName = opponentUid;
+      console.log(`creating room with opponent ${opponentUid}`);
       hideFindingMatchModal();
       showMatchFoundToast();
       navigate("/matchroom",
