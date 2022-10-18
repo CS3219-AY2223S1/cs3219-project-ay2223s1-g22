@@ -34,7 +34,7 @@ const LeaveRoomOverlay = (props) => {
           `socket ${socket.id} is still connected, sending leave match to roomNumber: ${state.roomNumber}.`
         );
         onClose();
-        sendLeaveMatch(state.roomNumber);
+        socket.disconnect();
       } else {
         socket.connect();
       }

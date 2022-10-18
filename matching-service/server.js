@@ -99,7 +99,7 @@ export async function makeRoom(server, socket, level) {
     });
     await getRandomQuestion(level)
         .then(res => {
-            server.to(room).emit('room-number', room, res.data, sockets.map(sock => sock["username"]));
+            server.to(room).emit('room-number', room, res.data, sockets.map(sock => sock["uuid"]));
         }).catch(err => {
             console.log(err);
             server.to(room).emit("question-error", err);
@@ -108,5 +108,5 @@ export async function makeRoom(server, socket, level) {
 
 async function getRandomQuestion(level) {
   const url = config.questionsServiceUrl;
-  return axios.get(`${url}/questions/${level}`);
+  return axios.get(`${url}/questions/${level}`) || "easy";
 }
