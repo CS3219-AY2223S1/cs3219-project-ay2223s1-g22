@@ -83,6 +83,17 @@ export const UNAUTHENTICATED_HTTP_ROUTES = [
     },
   },
   {
+    auth: true,
+    url: "/getname",
+    proxy: {
+      target: USER_SERVICE_URL + "/getname",
+      changeOrigin: true,
+      pathRewrite: {
+        [`^/getname`]: "",
+      },
+    },
+  },
+  {
     auth: false,
     url: "/logout",
     proxy: {

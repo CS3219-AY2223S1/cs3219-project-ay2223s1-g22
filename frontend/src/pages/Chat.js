@@ -7,6 +7,7 @@ import Header from "../components/chat/Header";
 import Messages from "../components/chat/Messages";
 import { SocketContext } from "./matching-service/SocketContext";
 import UserContext from "../UserContext";
+import { getName } from "../controller/user-controller";
 
 function Chat({ roomProps }) {
   const [messages, setMessages] = useState([
@@ -24,13 +25,21 @@ function Chat({ roomProps }) {
     },
   ]);
   const [inputMessage, setInputMessage] = useState("");
+  const [opponentName, setOpponentName] = useState("");
 
   const { idToken } = useContext(UserContext);
   const { getSocket, rejoinRoom } = useContext(SocketContext);
   const socketRef = useRef(getSocket(idToken));
-
+  
   useEffect(() => {
     const socket = socketRef.current;
+    const promise = getName(roomProps.opponentUid);
+    promise.then(res => {
+      console.log(res);
+      if (res) {
+        setOpponentName(res.data.name);
+      }
+    })
 
     socket.on("connect", () => {
       rejoinRoom(roomProps.roomNumber);
@@ -76,7 +85,7 @@ function Chat({ roomProps }) {
       borderRadius="10"
       padding="2"
     >
-      <Header opponentName={roomProps.opponentName} />
+      <Header opponentName={opponentName} />
       <Divider />
       <Messages messages={messages} />
       <Divider />

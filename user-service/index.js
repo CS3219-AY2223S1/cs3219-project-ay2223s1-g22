@@ -4,6 +4,7 @@ import { checkIfAuthenticated } from "./middleware/firebase-middleware.js";
 import {
   createUserAccount,
   deleteUser,
+  getName,
   getUser,
   loginUser,
   logoutUser,
@@ -31,6 +32,7 @@ router.post("/firebaseauth/login", loginUser);
 router.post("/firebaseauth/signup", createUserAccount);
 router.post("/firebaseauth/logout", logoutUser);
 router.post("/firebaseauth/getuser", getUser);
+router.post("/firebaseauth/getname", getName);
 router.post("/firebaseauth/deleteuser", deleteUser);
 router.post("/firebaseauth/resetpassword", resetPassword);
 router.post("/firebaseauth/refreshToken", refreshAccessToken);
