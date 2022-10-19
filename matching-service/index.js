@@ -8,8 +8,7 @@ import {
   makeRoom,
   alreadyInQueueOrRoom,
   addUser,
-  rejoinSocket,
-  cancelQueue,
+  rejoinSocket, cancelQueue, checkIfSocketInRoom,
 } from "./server.js";
 import config from "./config.js";
 
@@ -33,6 +32,14 @@ const server = new Server(httpServer, {
   socket.on("user-id", (userId, username) => {
     addUser(server, socket, userId, username);
   });
+
+  socket.on("disconnect", () => {
+    console.log(`${socket.id} disconnected`);
+    const roomNumber = checkIfSocketInRoom(socket);
+    if (roomNumber) {
+      server.in(roomNumber).emit("match-over");
+    }
+  })
 
   socket.on("rejoin-room", (roomNum) => {
     rejoinSocket(server, socket, roomNum);

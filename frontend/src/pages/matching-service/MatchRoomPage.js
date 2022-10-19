@@ -19,35 +19,16 @@ const MatchRoomPage = () => {
 	const { getSocket } = useContext(SocketContext);
 	const socketRef = useRef(getSocket(idToken));
 
-	const onClose = () => setIsOpen(false);
-
-	const openLeaveDialog = () => setIsOpen(true);
-
-	const handleLeaveMatch = () => {
-		const socket = socketRef.current;
-
-		if (socket.connected) {
-			console.info(
-				`socket ${socket.id} is still connected, sending leave match.`
-			);
-			onClose();
-			sendLeaveMatch(state.roomNumber);
-		} else {
-			socket.connect();
-		}
-		navigate("/matchselection");
-	};
-
-	const opponentLeftToast = useToast();
-	const showOpponentLeftToast = () => {
-		opponentLeftToast({
-			title: "Oops! You opponent left the match!",
-			description: "You can continue working on the problem though :)",
-			status: "error",
-			duration: 3000,
-			isClosable: true,
-		});
-	};
+  const opponentLeftToast = useToast();
+  const showOpponentLeftToast = () => {
+    opponentLeftToast({
+      title: "Oops! You opponent left the match!",
+      description: "You can continue working on the problem though :)",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    });
+  };
 
 	useEffect(() => {
 		const socket = socketRef.current;
