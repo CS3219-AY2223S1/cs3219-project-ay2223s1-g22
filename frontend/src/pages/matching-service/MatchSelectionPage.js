@@ -34,7 +34,6 @@ function MatchSelectionPage() {
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isAlreadyConnected, setIsAlreadyConnected] = useState(false);
-  const [opponent, setOpponent] = useState("");
   const [userName, setUserName] = useState(user["email"].split("@")[0]);
   const isVerified = user.emailVerified;
 
@@ -77,7 +76,6 @@ function MatchSelectionPage() {
 
     socket.on("room-number", (roomNumber, question, opponent) => {
       const opponentUid = opponent.filter(uuid => uuid !== userId).toString();
-      const opponentName = opponentUid;
       console.log(`creating room with opponent ${opponentUid}`);
       hideFindingMatchModal();
       showMatchFoundToast();
@@ -85,7 +83,7 @@ function MatchSelectionPage() {
         { state: {
             roomNumber,
             question,
-            opponentName
+            opponentUid
           }
         }
       );

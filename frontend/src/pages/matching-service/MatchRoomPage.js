@@ -11,10 +11,6 @@ import UserContext from "../../UserContext";
 
 const MatchRoomPage = () => {
 	const state = useLocation().state;
-	const navigate = useNavigate();
-	const { sendLeaveMatch } = useContext(SocketContext);
-	const [isOpen, setIsOpen] = useState(false);
-	const cancelRef = useRef();
 	const { idToken } = useContext(UserContext);
 	const { getSocket } = useContext(SocketContext);
 	const socketRef = useRef(getSocket(idToken));

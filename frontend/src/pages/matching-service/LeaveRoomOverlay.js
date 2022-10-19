@@ -39,6 +39,7 @@ const LeaveRoomOverlay = (props) => {
         socket.connect();
       }
       navigate("/matchselection");
+	  socket.connect();
     }
   };
 

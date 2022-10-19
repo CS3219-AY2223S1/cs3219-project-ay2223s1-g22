@@ -5,7 +5,7 @@ import {
   signOut,
   sendPasswordResetEmail
 } from "firebase/auth";
-import { ref, set, get } from "firebase/database";
+import { ref, set, get, child } from "firebase/database";
 import admin from "../config/firebase-service.js";
 import axios from "axios";
 
@@ -50,8 +50,10 @@ export const getUser = async (req, res) => {
 export const getName = async (req, res) => {
 	try {
 		const { uid } = req.body;
-		await get(ref(db), "users/" + uid).then((snapshot) => {
+		console.log(uid);
+		await get(child(ref(db), `users/${uid}`)).then((snapshot) => {
 			if (snapshot.exists()) {
+				console.log(snapshot.val());
 				return res.status(200).json({
 					name: snapshot.val().name
 				})
