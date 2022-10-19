@@ -30,6 +30,7 @@ function MatchSelector() {
 			</Stack>
 			<HStack w="100%" spacing="10%" justifyContent="center">
 				<Button
+					w="100px"
 					colorScheme="green"
 					disabled={isDisabled}
 					onClick={() => requestMatch("easy")}
@@ -41,6 +42,7 @@ function MatchSelector() {
 				</Button>
 
 				<Button
+					w="100px"
 					colorScheme="yellow"
 					disabled={isDisabled}
 					onClick={() => requestMatch("medium")}
@@ -52,6 +54,7 @@ function MatchSelector() {
 				</Button>
 
 				<Button
+					w="100px"
 					colorScheme="red"
 					disabled={isDisabled}
 					onClick={() => requestMatch("hard")}

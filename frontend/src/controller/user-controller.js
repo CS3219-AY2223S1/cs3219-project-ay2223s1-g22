@@ -23,6 +23,17 @@ export const getUser = async (uid, accessToken) => {
   }
 };
 
+export const getName = async (uid) => {
+	try {
+		return await axios.post(
+			API_GATEWAY_URL + "/getname",
+			{ uid }
+		);
+	} catch (error) {
+		console.log(error.message);
+	}
+}
+
 export const deleteUserAccount = async (uid, accessToken) => {
   try {
     return await axios.post(

@@ -5,7 +5,7 @@ import {
   signOut,
   sendPasswordResetEmail
 } from "firebase/auth";
-import { ref, set } from "firebase/database";
+import { ref, set, get } from "firebase/database";
 import admin from "../config/firebase-service.js";
 import axios from "axios";
 
@@ -45,6 +45,27 @@ export const getUser = async (req, res) => {
       message: error.message,
     });
   }
+};
+
+export const getName = async (req, res) => {
+	try {
+		const { uid } = req.body;
+		await get(ref(db), "users/" + uid).then((snapshot) => {
+			if (snapshot.exists()) {
+				return res.status(200).json({
+					name: snapshot.val().name
+				})
+			} else {
+				return res.staus(400).json({
+					message: "user does not exist!"
+				})
+			}
+		})
+	} catch (error) {
+		return res.status(400).json({
+			message: error.message,
+		});
+	}
 };
 
 export const deleteUser = async (req, res) => {

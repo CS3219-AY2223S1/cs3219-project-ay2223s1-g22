@@ -1,7 +1,7 @@
 #monaco-editor {
   width: inherit;
   height: inherit;
-  margin: auto;
+  position: absolute !important;
 }
 
 .yRemoteSelection {
