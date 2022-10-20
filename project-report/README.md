@@ -335,6 +335,7 @@ TODO
 - Helped to create the sequence diagrams
 	- Question service
 	- Matching service
+- Create user-service and frontend issues
 
 ## Yeap Yi Sheng James
 
