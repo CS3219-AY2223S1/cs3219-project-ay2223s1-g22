@@ -317,7 +317,9 @@ TODO
 
 Currently, users cannot compile and run the solution that they have worked on during a match.
 
-To make this possible, an [Execution Service](#execution-service) can be set up. This microservice would receive the source code from the frontend, compile it using a suitable compiler, and execute the compiled program with a list of inputs from the user. Once the execution is complete, the results output by the compiled program will be sent to the frontend; along with any compilation or runtime errors, if any.
+To make this possible, an [Execution Service](#execution-service) can be set up. This microservice would receive the source code from the frontend, compile it using a suitable compiler, and execute the compiled program with a list of inputs from the user.
+
+Once the execution is complete, the results output by the compiled program will be sent to the frontend; along with any compilation or runtime errors.
 
 # Reflections and Learning Points
 
@@ -394,4 +396,5 @@ TODO
   - Infrastructure as Code
 - Documented design decisions made:
   - API Gateway as Reverse Proxy
+    - Created a sequence diagram that shows the interactions between the user, API Gateway, and microservices
 - Documented prioritisation of non-functional requirements in a table
