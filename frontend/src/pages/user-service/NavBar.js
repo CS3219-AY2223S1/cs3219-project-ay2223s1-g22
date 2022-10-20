@@ -159,11 +159,11 @@ function NavBar() {
 					))}
 				{location.pathname == "/matchroom" && (buddyCon ? (
 					<Badge variant="solid" colorScheme="green">
-						Buddy Connected
+						Peer Connected
 					</Badge>
 				) : (
 					<Badge variant="solid" colorScheme="red">
-						Buddy Disconnected
+						Peer Disconnected
 					</Badge>
 				))}
 				<Button variant="link" onClick={() => toggleColorMode()}>
