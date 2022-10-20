@@ -124,7 +124,6 @@ function MatchSelectionPage() {
   const handleCancelRequest = () => {
     hideFindingMatchModal();
     cancelQueueRequest();
-    // TODO: send cancellation request to backend
   };
 
   const showFindingMatchModal = () => {

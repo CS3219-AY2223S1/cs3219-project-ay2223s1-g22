@@ -15,27 +15,18 @@ const MatchRoomPage = () => {
 	const { getSocket } = useContext(SocketContext);
 	const socketRef = useRef(getSocket(idToken));
 
-  const opponentLeftToast = useToast();
-  const showOpponentLeftToast = () => {
-    opponentLeftToast({
-      title: "Oops! You opponent left the match!",
-      description: "You can continue working on the problem though :)",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
-  };
+	const reconnectSocket = (sock) => {
+		console.log("sending exit");
+		sock.emit("exit-room", state.roomNumber);
+		sock.disconnect();
+		sock.connect();
+	}
 
 	useEffect(() => {
 		const socket = socketRef.current;
-
-		socket.on("match-over", (message) => {
-			console.log(`got match over event from server: socket -> ${socket.id}`);
-			showOpponentLeftToast();
-		});
-
+		socket.emit("enter-room", state.roomNumber);
 		return () => {
-			socket.off("match-over");
+			reconnectSocket(socket);
 		};
 	}, []);
 
