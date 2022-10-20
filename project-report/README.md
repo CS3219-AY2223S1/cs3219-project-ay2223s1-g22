@@ -124,7 +124,7 @@ In building PeerPrep, we seek to achieve the following objectives:
 
 # Non-Functional Requirements
 
-TODO - Requirement Prioritization table (refer to slide 42 of Lecture 2)
+![Non-Functional-Requirements-Prioritisation-Table](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/requirement_prioritisation_table.PNG?raw=true)
 
 ## Availability Requirements
 
@@ -160,6 +160,14 @@ TODO - Requirement Prioritization table (refer to slide 42 of Lecture 2)
 | ID     | Description                                                     | Priority |
 | ------ | --------------------------------------------------------------- | -------- |
 | N-SC-1 | The system should be able to handle at least 100 users at once. | Low      |
+
+## Usability Requirements
+
+TODO
+
+## Integrity Requirements
+
+TODO
 
 # Solution Architecture
 
@@ -362,3 +370,4 @@ TODO
   - Infrastructure as Code
 - Documented design decisions made:
   - API Gateway as Reverse Proxy
+- Documented prioritisation of non-functional requirements in a table
