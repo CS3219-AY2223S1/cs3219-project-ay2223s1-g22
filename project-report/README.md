@@ -17,6 +17,8 @@
   - [Robustness Requirements](#robustness-requirements)
   - [Security Requirements](#security-requirements)
   - [Scalability Requirements](#scalability-requirements)
+  - [Usability Requirements](#usability-requirements)
+  - [Integrity Requirements](#integrity-requirements)
 - [Solution Architecture](#solution-architecture)
   - [Overview](#overview)
   - [Service Instance per Container](#service-instance-per-container)
@@ -28,6 +30,13 @@
     - [API Gateway as Reverse Proxy](#api-gateway-as-reverse-proxy)
       - [Better security for microservices](#better-security-for-microservices)
       - [Increased cohesion](#increased-cohesion)
+    - [Firebase as authenticator for user-service](#firebase-as-authenticator-for-user-service)
+      - [Easy sign-in with any platform](#easy-sign-in-with-any-platform)
+      - [Comprehensive security](#comprehensive-security)
+      - [In-built features](#in-built-features)
+      - [Fast implementation](#fast-implementation)
+      - [Realtime database](#realtime-database)
+      - [Tradeoffs from using Firebase's email verification](#tradeoffs-from-using-firebases-email-verification)
 - [Design Patterns](#design-patterns)
 - [Possible Enhancements](#possible-enhancements)
 - [Reflections and Learning Points](#reflections-and-learning-points)
@@ -163,11 +172,15 @@ In building PeerPrep, we seek to achieve the following objectives:
 
 ## Usability Requirements
 
-TODO
+| ID     | Description                                                                                                     | Priority |
+| ------ | --------------------------------------------------------------------------------------------------------------- | -------- |
+| N-US-1 | The application should be intuitive enough such that the user does not have to refer to a user guide to use it. | Medium   |
 
 ## Integrity Requirements
 
-TODO
+| ID     | Description                                                                                                                              | Priority |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| N-IN-1 | The collaborative text editor should preserve the work done by the user when the browser is refreshed when the user is still in a match. | High     |
 
 # Solution Architecture
 
@@ -270,21 +283,27 @@ This reduces the need for each microservice to implement its own authentication 
 ### Firebase as authenticator for user-service
 
 #### Easy sign-in with any platform
+
 Provides end-to-end identity solution supporting different methods of authentication such as the basic email and password accounts, Google, Twitter, Facebook, Github login etc.
 
 #### Comprehensive security
+
 Firebase uses a modified Firebase version of the scrypt hashing algorithm to store passwords. This version is more secure against hardware brute-force attacks than alternative functions such as PBKDF2 or bcrypt. Also, scrypt automatically does password salting on top of password hashing.
 
 #### In-built features
+
 Firebase has many in-built features for their authentication system. Some of these useful features that we used were the email address verification and password reset. These allowed us to easily implement an authentication system with all the necessary in-built features that are essential to us.
 
 #### Fast implementation
+
 We figured that it can take quite a long time to develop our own authentication system that is reasonably secure and not to mention the need to maintain it in future. Hence, we decided to use Firebase Authentication that is already developed by Google which will allow us to implement a secure auth system quickly and without much hassle.
 
 #### Realtime database
+
 In Firebase, here is an in-built realtime database that we can use to store our essential user data. With the integration of Firebase Authentication, it helps to deal with security concerns of users. Also, with Firebase's realtime database, we have the ability to set data permissions as well.
 
 #### Tradeoffs from using Firebase's email verification
+
 For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep. This can lead to a tedious user experience where users are forced to verify their accounts before further usage of PeerPrep. Although being aware of this concern, we felt that this is a necessary tradeoff so as to ensure the security and availability of PeerPrep. This is to prevent bots from performing DOS attacks on our web application and causing unnecessary performance issues.
 
 # Design Patterns
@@ -326,10 +345,10 @@ TODO
 ### Technical Contributions
 
 - Implemented user-service
-	- created the api calls for user authentication (login, signup, logout etc)
-	- created middleware to check for user's access token
+  - created the api calls for user authentication (login, signup, logout etc)
+  - created middleware to check for user's access token
 - Implemented email verification for each new user signup
-	- unverified users are unable to use matching service
+  - unverified users are unable to use matching service
 - Implemented reset password functionality
 - Used firebase realtime database to store basic user information
 - Implemented form validation for the frontend of signup page
@@ -338,11 +357,11 @@ TODO
 ### Non-Technical Contributions
 
 - Documented the design decisions for firebase
-	- included the tradeoffs
+  - included the tradeoffs
 - Documented the possible enhancements for match history
 - Helped to create the sequence diagrams
-	- Question service
-	- Matching service
+  - Question service
+  - Matching service
 - Create user-service and frontend issues
 
 ## Yeap Yi Sheng James
