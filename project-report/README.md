@@ -39,6 +39,7 @@
       - [Tradeoffs from using Firebase's email verification](#tradeoffs-from-using-firebases-email-verification)
 - [Design Patterns](#design-patterns)
 - [Possible Enhancements](#possible-enhancements)
+  - [Code compilation and execution](#code-compilation-and-execution)
 - [Reflections and Learning Points](#reflections-and-learning-points)
 - [Individual Contributions](#individual-contributions)
   - [Ong Kim Lai](#ong-kim-lai)
@@ -312,7 +313,11 @@ TODO
 
 # Possible Enhancements
 
-TODO
+## Code compilation and execution
+
+Currently, users cannot compile and run the solution that they have worked on during a match.
+
+To make this possible, an [Execution Service](#execution-service) can be set up. This microservice would receive the source code from the frontend, compile it using a suitable compiler, and execute the compiled program with a list of inputs from the user. Once the execution is complete, the results output by the compiled program will be sent to the frontend; along with any compilation or runtime errors, if any.
 
 # Reflections and Learning Points
 
