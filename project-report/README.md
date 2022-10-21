@@ -19,6 +19,9 @@
   - [Scalability Requirements](#scalability-requirements)
   - [Usability Requirements](#usability-requirements)
   - [Integrity Requirements](#integrity-requirements)
+  - [Trade-Offs](#trade-offs)
+    - [Security vs Performance](#security-vs-performance)
+    - [Security vs Usability](#security-vs-usability)
 - [Solution Architecture](#solution-architecture)
   - [Overview](#overview)
   - [Service Instance per Container](#service-instance-per-container)
@@ -36,7 +39,7 @@
       - [In-built features](#in-built-features)
       - [Fast implementation](#fast-implementation)
       - [Realtime database](#realtime-database)
-      - [Tradeoffs from using Firebase's email verification](#tradeoffs-from-using-firebases-email-verification)
+      - [Enforcing email verification](#enforcing-email-verification)
 - [Design Patterns](#design-patterns)
 - [Possible Enhancements](#possible-enhancements)
   - [Code compilation and execution](#code-compilation-and-execution)
@@ -134,8 +137,6 @@ In building PeerPrep, we seek to achieve the following objectives:
 
 # Non-Functional Requirements
 
-![Non-Functional-Requirements-Prioritisation-Table](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/requirement_prioritisation_table.PNG?raw=true)
-
 ## Availability Requirements
 
 | ID     | Description s                                                                   | Priority |
@@ -182,6 +183,22 @@ In building PeerPrep, we seek to achieve the following objectives:
 | ID     | Description                                                                                                                              | Priority |
 | ------ | ---------------------------------------------------------------------------------------------------------------------------------------- | -------- |
 | N-IN-1 | The collaborative text editor should preserve the work done by the user when the browser is refreshed when the user is still in a match. | High     |
+
+## Trade-Offs
+
+![Non-Functional-Requirements-Prioritisation-Table](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/requirement_prioritisation_table.PNG?raw=true)
+
+### Security vs Performance
+
+Our team had to decide whether to incoming authenticate requests for microservices. On one hand, if we didn't authenticate these requests, the response time for these requests would be faster as no checks needed to be done. On the other, the lack of authentication would make the system vulnerable to attacks such as Denial-of-Service (DOS).
+
+After some consideration, we decided to enforce authentication using an [API Gateway](#api-gateway-as-reverse-proxy), as doing so would increase the security and stability of our system, and was in our view well-worth the slight decrease in performance.
+
+### Security vs Usability
+
+Another issue that we had to consider was whether it was important to [verify the email addresses used for creating accounts](#enforcing-email-verification).
+
+Requiring our users to verify their emails before giving them full access to our application may lead to a tedious user experience. This being the case however, we felt that the inconvenience caused to our users was necessary in order to ensure the security and availability of PeerPrep, as doing so can prevent bots from performing DOS attacks on our web application and causing performance issues for our users.
 
 # Solution Architecture
 
@@ -303,9 +320,9 @@ We figured that it can take quite a long time to develop our own authentication 
 
 In Firebase, here is an in-built realtime database that we can use to store our essential user data. With the integration of Firebase Authentication, it helps to deal with security concerns of users. Also, with Firebase's realtime database, we have the ability to set data permissions as well.
 
-#### Tradeoffs from using Firebase's email verification
+#### Enforcing email verification
 
-For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep. This can lead to a tedious user experience where users are forced to verify their accounts before further usage of PeerPrep. Although being aware of this concern, we felt that this is a necessary tradeoff so as to ensure the security and availability of PeerPrep. This is to prevent bots from performing DOS attacks on our web application and causing unnecessary performance issues.
+For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep.
 
 # Design Patterns
 
@@ -398,3 +415,4 @@ TODO
   - API Gateway as Reverse Proxy
     - Created a sequence diagram that shows the interactions between the user, API Gateway, and microservices
 - Documented prioritisation of non-functional requirements in a table
+  - justified the use of an API gateway and the trade-off between Security and Performance
