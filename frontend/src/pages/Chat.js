@@ -1,13 +1,15 @@
 import { Flex } from "@chakra-ui/react";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 
 import Divider from "../components/chat/Divider";
 import Footer from "../components/chat/Footer";
 import Header from "../components/chat/Header";
 import Messages from "../components/chat/Messages";
 import { SocketContext } from "./matching-service/SocketContext";
+import UserContext from "../UserContext";
+import { getName } from "../controller/user-controller";
 
-function Chat({ roomNumber }) {
+function Chat({ roomProps }) {
   const [messages, setMessages] = useState([
     {
       from: "matching_service",
@@ -15,7 +17,7 @@ function Chat({ roomNumber }) {
     },
     {
       from: "matching_service",
-      text: `Your room number is: ${roomNumber}`,
+      text: `Your room number is: ${roomProps.roomNumber}`,
     },
     {
       from: "matching_service",
@@ -23,18 +25,27 @@ function Chat({ roomNumber }) {
     },
   ]);
   const [inputMessage, setInputMessage] = useState("");
+  const [opponentName, setOpponentName] = useState("");
 
-  const { socket } = useContext(SocketContext);
-
+  const { idToken } = useContext(UserContext);
+  const { getSocket, rejoinRoom } = useContext(SocketContext);
+  const socketRef = useRef(getSocket(idToken));
+  
   useEffect(() => {
+    const socket = socketRef.current;
+    const promise = getName(roomProps.opponentUid);
+    promise.then(res => {
+      console.log(res);
+      if (res) {
+        setOpponentName(res.data.name);
+      }
+    })
+
     socket.on("connect", () => {
-      // setIsConnected(true);
+      rejoinRoom(roomProps.roomNumber);
     });
 
-    socket.on("disconnect", () => {
-      // setIsConnected(false);
-      // socket.connect();
-    });
+    socket.on("disconnect", () => {});
 
     socket.on("receive", (message) => {
       setMessages((old) => [
@@ -63,7 +74,7 @@ function Chat({ roomNumber }) {
   };
 
   const sendChatMessage = (chatMessage) => {
-    socket.emit("send", chatMessage, roomNumber);
+    socketRef.current.emit("send", chatMessage, roomProps.roomNumber);
   };
 
   return (
@@ -74,7 +85,7 @@ function Chat({ roomNumber }) {
       borderRadius="10"
       padding="2"
     >
-      <Header />
+      <Header opponentName={opponentName} />
       <Divider />
       <Messages messages={messages} />
       <Divider />

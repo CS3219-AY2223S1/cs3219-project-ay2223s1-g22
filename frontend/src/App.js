@@ -11,7 +11,7 @@ import MatchSelectionPage from "./pages/matching-service/MatchSelectionPage";
 import LoginPage from "./pages/user-service/LoginPage";
 import MatchRoomPage from "./pages/matching-service/MatchRoomPage";
 import UserContext from "./UserContext";
-import { useLocalStorage } from "./useLocalStorage";
+import { useSessionStorage } from "./useSessionStorage";
 import Protected from "./Protected";
 import {
 	isUserLoggedIn,
@@ -20,9 +20,9 @@ import {
 import LoginProtected from "./LoginProtected";
 
 function App() {
-	const [idToken, setIdToken] = useLocalStorage("idToken", "");
-	const [refreshToken, setRefreshToken] = useLocalStorage("refreshToken", "");
-	const [user, setUser] = useLocalStorage("user", {});
+	const [idToken, setIdToken] = useSessionStorage("idToken", "");
+	const [refreshToken, setRefreshToken] = useSessionStorage("refreshToken", "");
+	const [user, setUser] = useSessionStorage("user", {});
 
 	const handleStoreUserData = (idToken, refreshToken, user) => {
 		setIdToken(idToken);

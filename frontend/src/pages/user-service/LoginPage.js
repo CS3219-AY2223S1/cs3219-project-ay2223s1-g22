@@ -32,10 +32,8 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import UserContext from "../../UserContext";
 import NavBar from "../user-service/NavBar";
-import {
-	loginUser,
-	resetPassword
-} from "../../controller/user-controller";
+import { loginUser, resetPassword } from "../../controller/user-controller";
+import { SocketContext } from "../matching-service/SocketContext";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -44,10 +42,12 @@ const CFaEyeSlash = chakra(FaRegEyeSlash);
 
 const LoginPage = () => {
 	const { storeUserData } = useContext(UserContext);
+	const { initSocket } = useContext(SocketContext);
 	const [showPassword, setShowPassword] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const { isOpen, onOpen, onClose } = useDisclosure();
+	const [isLoggingIn, setIsLoggingIn] = useState(false);
 
 	const navigate = useNavigate();
 
@@ -74,7 +74,7 @@ const LoginPage = () => {
 			title: "Login unsuccessful.",
 			description: "Is your email or password correct?",
 			status: "error",
-			duration: 3000,
+			duration: 5000,
 			isClosable: true,
 		});
 
@@ -151,27 +151,46 @@ const LoginPage = () => {
 							>
 								Sign up
 							</Button>
-							<Button
+							{isLoggingIn ? (<Button
+								isLoading
 								borderRadius={5}
 								variant="solid"
 								colorScheme="teal"
 								width="50%"
 								shadow="lg"
-								onClick={() => {
-									const promise = loginUser(email, password);
-									promise.then((res) => {
-										if (res) {
-											storeUserData(res.data.accessToken, res.data.refreshToken, res.data.user);
-											showLoginSuccessToast();
-											navigate("/matchselection");
-										} else {
-											showLoginFailureToast();
-										}
-									});
-								}}
 							>
 								Login
-							</Button>
+							</Button>)
+								: (<Button
+									borderRadius={5}
+									variant="solid"
+									colorScheme="teal"
+									width="50%"
+									shadow="lg"
+									onClick={() => {
+										setIsLoggingIn(true);
+										const promise = loginUser(email, password);
+										promise.then((res) => {
+											if (res) {
+												storeUserData(
+													res.data.accessToken,
+													res.data.refreshToken,
+													res.data.user
+												);
+												showLoginSuccessToast();
+												setIsLoggingIn(false);
+												navigate("/matchselection");
+											} else {
+												showLoginFailureToast();
+												setIsLoggingIn(false);
+											}
+										});
+									}}
+								>
+									Login
+								</Button>)}
+
+
 						</Stack>
 					</Stack>
 				</Box>
@@ -224,8 +243,7 @@ const LoginPage = () => {
 							</Button>
 						</Stack>
 					</ModalBody>
-					<ModalFooter>
-					</ModalFooter>
+					<ModalFooter></ModalFooter>
 				</ModalContent>
 			</Modal>
 		</Flex>

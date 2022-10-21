@@ -4,6 +4,7 @@ import { checkIfAuthenticated } from "./middleware/firebase-middleware.js";
 import {
   createUserAccount,
   deleteUser,
+  getName,
   getUser,
   loginUser,
   logoutUser,
@@ -12,6 +13,7 @@ import {
   revokeRefreshToken,
   sendEmailVerification,
 } from "./controller/user-controller.js";
+import config from "./config/config.js";
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -30,15 +32,18 @@ router.post("/firebaseauth/login", loginUser);
 router.post("/firebaseauth/signup", createUserAccount);
 router.post("/firebaseauth/logout", logoutUser);
 router.post("/firebaseauth/getuser", getUser);
+router.post("/firebaseauth/getname", getName);
 router.post("/firebaseauth/deleteuser", deleteUser);
 router.post("/firebaseauth/resetpassword", resetPassword);
 router.post("/firebaseauth/refreshToken", refreshAccessToken);
 router.post("/firebaseauth/revokeRefreshToken", revokeRefreshToken);
 router.post("/firebaseauth/sendEmailVerification", sendEmailVerification);
 
+const port = config.port || 8080;
+
 app.use("/api", router).all((_, res) => {
   res.setHeader("content-type", "application/json");
   res.setHeader("Access-Control-Allow-Origin", "*");
 });
 
-app.listen(8080, () => console.log("user-service listening on port 8080"));
+app.listen(port, () => console.log(`user-service listening on port ${port}`));

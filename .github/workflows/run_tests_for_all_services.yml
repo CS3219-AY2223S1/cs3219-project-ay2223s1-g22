@@ -16,9 +16,11 @@ jobs:
           docker build --target test -t frontend-test ./frontend
           docker build --target test -t user-service-test ./user-service
           docker build --target test -t matching-service-test ./matching-service
+          docker build --target test -t collaboration-service-test ./collaboration-service
 
       - name: Run the tests
         run: |
           docker run --name frontend-test-container frontend-test
           docker run --name user-service-test-container user-service-test
           docker run --name matching-service-test-container matching-service-test
+          docker run --name collaboration-service-test-container collaboration-service-test

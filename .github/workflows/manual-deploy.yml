@@ -9,8 +9,11 @@ on:
         type: choice
         options:
           - frontend
+          - api-gateway
           - matching-service
           - user-service
+          - collaboration-service
+          - questions-service
 
 # Environment variables available to all jobs and steps in this workflow; examples of usage:
 #  GKE_EMAIL: ${{ secrets.GKE_EMAIL }}

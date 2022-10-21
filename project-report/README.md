@@ -18,13 +18,16 @@
   - [Security Requirements](#security-requirements)
   - [Scalability Requirements](#scalability-requirements)
 - [Solution Architecture](#solution-architecture)
+  - [Overview](#overview)
   - [Service Instance per Container](#service-instance-per-container)
 - [Development Process](#development-process)
   - [Continuous Integration](#continuous-integration)
   - [Manual Deployment](#manual-deployment)
   - [Infrastructure as Code](#infrastructure-as-code)
   - [Design Decisions](#design-decisions)
-    - [Searching for a Peer](#searching-for-a-peer)
+    - [API Gateway as Reverse Proxy](#api-gateway-as-reverse-proxy)
+      - [Better security for microservices](#better-security-for-microservices)
+      - [Increased cohesion](#increased-cohesion)
 - [Design Patterns](#design-patterns)
 - [Possible Enhancements](#possible-enhancements)
 - [Reflections and Learning Points](#reflections-and-learning-points)
@@ -108,7 +111,7 @@ In building PeerPrep, we seek to achieve the following objectives:
 | ------- | ------------------------------------------------------------------------------------------------------------------ | -------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | F-FR-1  | The system should provide the user with a login page.                                                              | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-1%22)  |
 | F-FR-2  | The system should provide the user with a registration page.                                                       | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-2%22)  |
-| F-FR-3  | The system should not allow unauthorized users to only access login and registration page.                         | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-3%22)  |
+| F-FR-3  | The system should restrict access for unauthorized users to only login and registration pages.                     | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-3%22)  |
 | F-FR-4  | The system should allow toggling between light and dark mode for all pages.                                        | Low      | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-4%22)  |
 | F-FR-5  | The chat box should provide a list of prompts for the "interviewer" to ask the "interviewee".                      | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-5%22)  |
 | F-FR-6  | The system should provide a chat box that allows users in the same match to communicate via text messages.         | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-6%22)  |
@@ -160,6 +163,10 @@ TODO - Requirement Prioritization table (refer to slide 42 of Lecture 2)
 
 # Solution Architecture
 
+## Overview
+
+![PeerPrep-Solution-Architecture](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/PeerPrep-Architecture-V2.png?raw=true)
+
 ## Service Instance per Container
 
 Each microservice is packaged into a Docker container image and deployed in a distinct container using Cloud Run on Google Cloud Platform.
@@ -167,8 +174,6 @@ Each microservice is packaged into a Docker container image and deployed in a di
 By deploying service instances in separate containers, each microservice can be scaled up or down separately as needed as demand fluctuates, leading to better cost efficiency.
 
 Also, by deploying the service instances in containers instead of virtual machines, start up time is reduced.
-
-![PeerPrep-Solution-Architecture](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/PeerPrep-Architecture-V1.png?raw=true)
 
 # Development Process
 
@@ -219,9 +224,60 @@ Managing infrastructure in a declarative manner using Terraform configuration fi
 
 ## Design Decisions
 
-### Searching for a Peer
+### API Gateway as Reverse Proxy
 
-![matching-request](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/match-request.png?raw=true)
+Instead of interacting with the microservices directly, the frontend sends requests to an API gateway, which forwards requests to the relevant microservices.
+
+Our team decided on this approach for two main reasons:
+
+- Better security for microservices
+- Increased cohesion
+
+#### Better security for microservices
+
+Access to microservices is protected by an API gateway in the following manner:
+
+- if the requested endpoint is unprotected, the API gateway will forward it to the microservice(s) that are responsible for fulfilling the request
+- however, if the requested endpoint is protected, the request must provide some credentials for authentication:
+  - when the user successfully logs in, an `access token` and `refresh token` will be provided:
+    - the `access token` is valid for an hour
+    - the `refresh token` will remain valid for an indefinite period of time until either of the following occur:
+      - the user logs out
+      - the user deletes the account
+  - to access protected endpoint, the `access token` must be included in the `Authorization` header as a `bearer token`
+    - upon receiving the request, the API gateway will send the `access token` to the User service to verify that the `access token`:
+      - has not been tampered with
+      - has not expired
+    - once the `access token` has been authenticated by the User service, the request will be forwarded to the relevant microservice(s)
+      - otherwise, the request will be refused by the API gateway
+
+![api-gateway-authentication](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/api-gateway-authentication.png?raw=true)
+
+#### Increased cohesion
+
+Implementing the authentication logic in the API gateway removes this responsibility from the microservices.
+
+This reduces the need for each microservice to implement its own authentication logic and allows it to focus on fulfilling its core function, increasing cohesion and reducing duplication of code.
+
+### Firebase as authenticator for user-service
+
+#### Easy sign-in with any platform
+Provides end-to-end identity solution supporting different methods of authentication such as the basic email and password accounts, Google, Twitter, Facebook, Github login etc.
+
+#### Comprehensive security
+Firebase uses a modified Firebase version of the scrypt hashing algorithm to store passwords. This version is more secure against hardware brute-force attacks than alternative functions such as PBKDF2 or bcrypt. Also, scrypt automatically does password salting on top of password hashing.
+
+#### In-built features
+Firebase has many in-built features for their authentication system. Some of these useful features that we used were the email address verification and password reset. These allowed us to easily implement an authentication system with all the necessary in-built features that are essential to us.
+
+#### Fast implementation
+We figured that it can take quite a long time to develop our own authentication system that is reasonably secure and not to mention the need to maintain it in future. Hence, we decided to use Firebase Authentication that is already developed by Google which will allow us to implement a secure auth system quickly and without much hassle.
+
+#### Realtime database
+In Firebase, here is an in-built realtime database that we can use to store our essential user data. With the integration of Firebase Authentication, it helps to deal with security concerns of users. Also, with Firebase's realtime database, we have the ability to set data permissions as well.
+
+#### Tradeoffs from using Firebase's email verification
+For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep. This can lead to a tedious user experience where users are forced to verify their accounts before further usage of PeerPrep. Although being aware of this concern, we felt that this is a necessary tradeoff so as to ensure the security and availability of PeerPrep. This is to prevent bots from performing DOS attacks on our web application and causing unnecessary performance issues.
 
 # Design Patterns
 
@@ -261,18 +317,48 @@ TODO
 
 ### Technical Contributions
 
-TODO
+- Implemented user-service
+	- created the api calls for user authentication (login, signup, logout etc)
+	- created middleware to check for user's access token
+- Implemented email verification for each new user signup
+	- unverified users are unable to use matching service
+- Implemented reset password functionality
+- Used firebase realtime database to store basic user information
+- Implemented form validation for the frontend of signup page
+- Worked on the frontend ui and logic
 
 ### Non-Technical Contributions
 
-TODO
+- Documented the design decisions for firebase
+	- included the tradeoffs
+- Documented the possible enhancements for match history
+- Helped to create the sequence diagrams
+	- Question service
+	- Matching service
+- Create user-service and frontend issues
 
 ## Yeap Yi Sheng James
 
 ### Technical Contributions
 
-TODO
+- Implemented collaborative editor component on frontend
+- Set up collaboration service to sync editors of users in the same match
+- Developed API gateway
+- Wrote GitHub Actions workflow scripts
+  - for continuous-integration:
+    - to run unit tests on all services for pull-requests to `main` branch
+  - for manual deployment:
+    - to dockerize services and upload docker images to Google Container Repository (GCR)
+    - to trigger re-deployment of selected service on Google Cloud Platform
+- Set up deployment environment
+  - Wrote Terraform configuration files to define the deployment environment for each service
 
 ### Non-Technical Contributions
 
-TODO
+- Created solution architecture diagrams for project documentation
+- Documented the following aspects of the development process:
+  - Continuous Integration
+  - Manual Deployment
+  - Infrastructure as Code
+- Documented design decisions made:
+  - API Gateway as Reverse Proxy

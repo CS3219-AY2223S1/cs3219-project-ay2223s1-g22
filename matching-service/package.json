@@ -5,9 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon index.js",
-    "start": "node index.js",
-    "test": " mocha --require babel-register tests/*.js --exit"
+    "dev": "NODE_ENV=development nodemon index.js",
+    "start": "NODE_ENV=production node index.js",
+    "test": " NODE_ENV=test mocha --require babel-register tests/*.js --exit"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +16,7 @@
     "nodemon": "^2.0.19"
   },
   "dependencies": {
+    "axios": "^0.27.2",
     "babel-register": "^6.26.0",
     "chai": "^4.3.6",
     "chai-http": "^4.3.0",
