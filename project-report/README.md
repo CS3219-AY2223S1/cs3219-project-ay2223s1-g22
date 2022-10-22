@@ -190,9 +190,9 @@ In building PeerPrep, we seek to achieve the following objectives:
 
 ### Security vs Performance
 
-Our team had to decide whether to incoming authenticate requests for microservices. On one hand, if we didn't authenticate these requests, the response time for these requests would be faster as no checks needed to be done. On the other, the lack of authentication would make the system vulnerable to attacks such as Denial-of-Service (DOS).
+Our team had to decide whether to authenticate incoming requests for microservices. On one hand, if we didn't authenticate these requests, the response time for these requests would be faster because no checks needed to be done. On the other, not authenticating incoming requests would make the system vulnerable to attacks such as Denial-of-Service (DOS), where bots can flood the microservices with numerous requests and cause slower response times for our users.
 
-After some consideration, we decided to enforce authentication using an [API Gateway](#api-gateway-as-reverse-proxy), as doing so would increase the security and stability of our system, and was in our view well-worth the slight decrease in performance.
+We eventually decided to enforce authentication for a select number of endpoints by using an [API Gateway](#api-gateway-as-reverse-proxy) to increase the security and stability of our system, which in our view was worth the slight decrease in performance.
 
 ### Security vs Usability
 
