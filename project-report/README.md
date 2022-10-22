@@ -27,7 +27,9 @@
   - [Service Instance per Container](#service-instance-per-container)
 - [Development Process](#development-process)
   - [Continuous Integration](#continuous-integration)
-  - [Manual Deployment](#manual-deployment)
+  - [Manual Re-Deployment](#manual-re-deployment)
+    - [Partial Re-Deployment](#partial-re-deployment)
+  - [Full Re-Deployment](#full-re-deployment)
   - [Infrastructure as Code](#infrastructure-as-code)
   - [Design Decisions](#design-decisions)
     - [API Gateway as Reverse Proxy](#api-gateway-as-reverse-proxy)
@@ -231,7 +233,9 @@ When all unit tests have been executed without any failures, the workflow ends w
 - If at least one unit test from any service fails, the workflow ends with a `failed` status.
 - The completion status of the workflow is reflected in the page of the pull-request on GitHub.
 
-## Manual Deployment
+## Manual Re-Deployment
+
+### Partial Re-Deployment
 
 For Milestone 1, the team decided to deploy updates manually to the production environment with Github Actions and Terraform.
 
@@ -245,6 +249,19 @@ When the deployment workflow runs, the following steps are taken:
 - The tag of the latest image is passed to the next phase of the workflow, which updates the production environment with Terraform, which:
   - Shuts down all containers in the production environment that are currently running the service
   - Creates new containers using the new Docker image
+
+## Full Re-Deployment
+
+In Milestone 2, we added a workflow to trigger the complete re-deployment of all services.
+
+This workflow would re-deploy all services using the `main` branch in the following order:
+
+1. Frontend
+2. API gateway
+3. Matching service
+4. User service
+5. Collaboration service
+6. Questions service
 
 ## Infrastructure as Code
 
