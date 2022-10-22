@@ -8,7 +8,7 @@
 
 ### Set up
 
-To set up the environment for local development, run the following command:
+To set up the environment for local development, do the following:
 
 1. Ensure that the Docker desktop application is running
 2. With the cloned repo as the current working directory, enter the following commands in the terminal:
