@@ -355,6 +355,38 @@ To make this possible, an [Execution Service](#execution-service) can be set up.
 
 Once the execution is complete, the results output by the compiled program will be sent to the frontend; along with any compilation or runtime errors.
 
+## History service
+
+Currently, users are unable to see their past collaborations with other matched users. 
+
+Below is the architecture diagram to illustrate the implementation of a history service.
+
+[Insert architecture diagram]
+
+### Using Firebase's realtime database to store history
+
+Since we used Firebase as our authenticator, the most efficient and effective way to keep history records of respective users would be to use Firebase's realtime database. Whenever a user creates a new account, their user detaisl would be automatically stored in the realtime database. Each user is stored with their respective uid as the child under the parent "users/". 
+
+### Reading and writing data
+
+We can create api requests to write and read data from the realtime database. 
+At the end of every collaboration session, the details that would be recorded are:
+1. Matched user's details
+2. Question
+3. Collaborated code on code editor
+4. Chat log
+
+### Using React for the frontend
+
+The frontend for history service would display the 50 most recent collaborations of the user. The user would be able to see the details of the other matched user, question, chat log and collaborated code. There is also a filter feature where the user would be able to filter based on the following:
+1. Difficulty of the question
+2. Matched user
+3. Keywords of the question
+
+
+
+
+
 # Reflections and Learning Points
 
 TODO
@@ -400,6 +432,7 @@ TODO
 - Documented the design decisions for firebase
   - included the tradeoffs
 - Documented the possible enhancements for match history
+  - created an architectural diagram
 - Helped to create the sequence diagrams
   - Question service
   - Matching service
