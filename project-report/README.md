@@ -17,19 +17,34 @@
   - [Robustness Requirements](#robustness-requirements)
   - [Security Requirements](#security-requirements)
   - [Scalability Requirements](#scalability-requirements)
+  - [Usability Requirements](#usability-requirements)
+  - [Integrity Requirements](#integrity-requirements)
+  - [Trade-Offs](#trade-offs)
+    - [Security vs Performance](#security-vs-performance)
+    - [Security vs Usability](#security-vs-usability)
 - [Solution Architecture](#solution-architecture)
   - [Overview](#overview)
   - [Service Instance per Container](#service-instance-per-container)
 - [Development Process](#development-process)
   - [Continuous Integration](#continuous-integration)
-  - [Manual Deployment](#manual-deployment)
+  - [Manual Re-Deployment](#manual-re-deployment)
+    - [Partial Re-Deployment](#partial-re-deployment)
+  - [Full Re-Deployment](#full-re-deployment)
   - [Infrastructure as Code](#infrastructure-as-code)
   - [Design Decisions](#design-decisions)
     - [API Gateway as Reverse Proxy](#api-gateway-as-reverse-proxy)
       - [Better security for microservices](#better-security-for-microservices)
       - [Increased cohesion](#increased-cohesion)
+    - [Firebase as authenticator for user-service](#firebase-as-authenticator-for-user-service)
+      - [Easy sign-in with any platform](#easy-sign-in-with-any-platform)
+      - [Comprehensive security](#comprehensive-security)
+      - [In-built features](#in-built-features)
+      - [Fast implementation](#fast-implementation)
+      - [Realtime database](#realtime-database)
+      - [Enforcing email verification](#enforcing-email-verification)
 - [Design Patterns](#design-patterns)
 - [Possible Enhancements](#possible-enhancements)
+  - [Code compilation and execution](#code-compilation-and-execution)
 - [Reflections and Learning Points](#reflections-and-learning-points)
 - [Individual Contributions](#individual-contributions)
   - [Ong Kim Lai](#ong-kim-lai)
@@ -65,66 +80,64 @@ In building PeerPrep, we seek to achieve the following objectives:
 
 ## User Service
 
-| ID     | Description                                                                            | Priority | Tasks                                                                                                                            |
-| ------ | -------------------------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| F-US-1 | The system should allow users to create an account with a username and password.       | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-US-1%22) |
-| F-US-2 | The system should ensure that every account created has a unique username.             | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-US-2%22) |
-| F-US-3 | The system should allow users to log into their accounts with a username and password. | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-US-3%22) |
-| F-US-4 | The system should allow users to log out of their account.                             | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-US-4%22) |
-| F-US-5 | The system should allow users to delete their account.                                 | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-US-5%22) |
-| F-US-6 | The system should allow users to change their password.                                | Medium   | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-US-6%22) |
+| ID     | Description                                                                            | Priority |
+| ------ | -------------------------------------------------------------------------------------- | -------- |
+| F-US-1 | The system should allow users to create an account with a username and password.       | High     |
+| F-US-2 | The system should ensure that every account created has a unique username.             | High     |
+| F-US-3 | The system should allow users to log into their accounts with a username and password. | High     |
+| F-US-4 | The system should allow users to log out of their account.                             | High     |
+| F-US-5 | The system should allow users to delete their account.                                 | High     |
+| F-US-6 | The system should allow users to change their password.                                | Medium   |
 
 ## Matching Service
 
-| ID     | Description                                                                                                        | Priority | Tasks                                                                                                                            |
-| ------ | ------------------------------------------------------------------------------------------------------------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| F-MA-1 | The system should allow users to select the difficulty level of the questions they wish to attempt.                | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-MA-1%22) |
-| F-MA-2 | The system should be able to match two waiting users with similar difficulty levels and put them in the same room. | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-MA-2%22) |
-| F-MA-3 | If there is a valid match, the system should match the users within a reasonable amount of time.                   | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-MA-3%22) |
-| F-MA-4 | The system should provide a means for the user to leave a room once matched.                                       | Medium   | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-MA-4%22) |
+| ID     | Description                                                                                                        | Priority |
+| ------ | ------------------------------------------------------------------------------------------------------------------ | -------- |
+| F-MA-1 | The system should allow users to select the difficulty level of the questions they wish to attempt.                | High     |
+| F-MA-2 | The system should be able to match two waiting users with similar difficulty levels and put them in the same room. | High     |
+| F-MA-3 | If there is a valid match, the system should match the users within a reasonable amount of time.                   | High     |
+| F-MA-4 | The system should provide a means for the user to leave a room once matched.                                       | Medium   |
 
 ## Question Service
 
-| ID     | Description                                                         | Priority | Tasks                                                                                                                            |
-| ------ | ------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| F-QU-1 | The system should store a list of questions, indexed by difficulty. | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-QU-1%22) |
-| F-QU-2 | The system should allow users to retrieve a question by difficulty. | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-QU-2%22) |
-| F-QU-3 | The system should allow administrators to add additional questions. | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-QU-3%22) |
+| ID     | Description                                                         | Priority |
+| ------ | ------------------------------------------------------------------- | -------- |
+| F-QU-1 | The system should store a list of questions, indexed by difficulty. | High     |
+| F-QU-2 | The system should allow users to retrieve a question by difficulty. | High     |
+| F-QU-3 | The system should allow administrators to add additional questions. | High     |
 
 ## Collaboration Service
 
-| ID     | Description                                                                             | Priority | Tasks                                                                                                                            |
-| ------ | --------------------------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| F-CO-1 | The system should provide a text-editor that is synced between users in the same match. | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-CO-1%22) |
-| F-CO-2 | The system should allow peers to see each other's cursors and highlights.               | Low      | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-CO-2%22) |
+| ID     | Description                                                                             | Priority |
+| ------ | --------------------------------------------------------------------------------------- | -------- |
+| F-CO-1 | The system should provide a text-editor that is synced between users in the same match. | High     |
+| F-CO-2 | The system should allow peers to see each other's cursors and highlights.               | Low      |
 
 ## Execution Service
 
-| ID     | Description                                                                    | Priority | Tasks                                                                                                                            |
-| ------ | ------------------------------------------------------------------------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| F-EX-1 | The system should provide a compiler for Java and C programs.                  | Medium   | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-EX-1%22) |
-| F-EX-2 | The system should provide the execution output of Java, C and Python programs. | Medium   | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-EX-2%22) |
+| ID     | Description                                                                    | Priority |
+| ------ | ------------------------------------------------------------------------------ | -------- |
+| F-EX-1 | The system should provide a compiler for Java and C programs.                  | Medium   |
+| F-EX-2 | The system should provide the execution output of Java, C and Python programs. | Medium   |
 
 ## Frontend
 
-| ID      | Description                                                                                                        | Priority | Tasks                                                                                                                             |
-| ------- | ------------------------------------------------------------------------------------------------------------------ | -------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| F-FR-1  | The system should provide the user with a login page.                                                              | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-1%22)  |
-| F-FR-2  | The system should provide the user with a registration page.                                                       | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-2%22)  |
-| F-FR-3  | The system should restrict access for unauthorized users to only login and registration pages.                     | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-3%22)  |
-| F-FR-4  | The system should allow toggling between light and dark mode for all pages.                                        | Low      | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-4%22)  |
-| F-FR-5  | The chat box should provide a list of prompts for the "interviewer" to ask the "interviewee".                      | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-5%22)  |
-| F-FR-6  | The system should provide a chat box that allows users in the same match to communicate via text messages.         | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-6%22)  |
-| F-FR-7  | The system should provide the user with a text editor.                                                             | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-7%22)  |
-| F-FR-8  | The text editor should handle syntax highlight for programming language of choice.                                 | Medium   | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-8%22)  |
-| F-FR-9  | The text editor should handle syntax formatting for programming language of choice.                                | Medium   | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-9%22)  |
-| F-FR-10 | The text editor should allow the user to choose between Java, C and Python as their programming language of choice | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-10%22) |
-| F-FR-11 | The system should provide a non-interactive terminal to display the output of the executed program.                | Medium   | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-11%22) |
-| F-FR-12 | The system should inform the users that no match is available if a match cannot be found within 30 seconds.        | High     | [link](https://github.com/orgs/CS3219-AY2223S1/projects/18/views/4?filterQuery=is%3Aissue+functional-requirement%3A%22F-FR-12%22) |
+| ID      | Description                                                                                                        | Priority |
+| ------- | ------------------------------------------------------------------------------------------------------------------ | -------- |
+| F-FR-1  | The system should provide the user with a login page.                                                              | High     |
+| F-FR-2  | The system should provide the user with a registration page.                                                       | High     |
+| F-FR-3  | The system should restrict access for unauthorized users to only login and registration pages.                     | High     |
+| F-FR-4  | The system should allow toggling between light and dark mode for all pages.                                        | Low      |
+| F-FR-5  | The chat box should provide a list of prompts for the "interviewer" to ask the "interviewee".                      | High     |
+| F-FR-6  | The system should provide a chat box that allows users in the same match to communicate via text messages.         | High     |
+| F-FR-7  | The system should provide the user with a text editor.                                                             | High     |
+| F-FR-8  | The text editor should handle syntax highlight for programming language of choice.                                 | Medium   |
+| F-FR-9  | The text editor should handle syntax formatting for programming language of choice.                                | Medium   |
+| F-FR-10 | The text editor should allow the user to choose between Java, C and Python as their programming language of choice | High     |
+| F-FR-11 | The system should provide a non-interactive terminal to display the output of the executed program.                | Medium   |
+| F-FR-12 | The system should inform the users that no match is available if a match cannot be found within 30 seconds.        | High     |
 
 # Non-Functional Requirements
-
-TODO - Requirement Prioritization table (refer to slide 42 of Lecture 2)
 
 ## Availability Requirements
 
@@ -161,6 +174,34 @@ TODO - Requirement Prioritization table (refer to slide 42 of Lecture 2)
 | ------ | --------------------------------------------------------------- | -------- |
 | N-SC-1 | The system should be able to handle at least 100 users at once. | Low      |
 
+## Usability Requirements
+
+| ID     | Description                                                                                                     | Priority |
+| ------ | --------------------------------------------------------------------------------------------------------------- | -------- |
+| N-US-1 | The application should be intuitive enough such that the user does not have to refer to a user guide to use it. | Medium   |
+
+## Integrity Requirements
+
+| ID     | Description                                                                                                                              | Priority |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| N-IN-1 | The collaborative text editor should preserve the work done by the user when the browser is refreshed when the user is still in a match. | High     |
+
+## Trade-Offs
+
+![Non-Functional-Requirements-Prioritisation-Table](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/requirement_prioritisation_table.PNG?raw=true)
+
+### Security vs Performance
+
+Our team had to decide whether to authenticate incoming requests for microservices. On one hand, if we didn't authenticate these requests, the response time for these requests would be faster because no checks needed to be done. On the other, not authenticating incoming requests would make the system vulnerable to attacks such as Denial-of-Service (DOS), where bots can flood the microservices with numerous requests and cause slower response times for our users.
+
+We eventually decided to enforce authentication for a select number of endpoints by using an [API Gateway](#api-gateway-as-reverse-proxy) to increase the security and stability of our system, which in our view was worth the slight decrease in performance.
+
+### Security vs Usability
+
+Another issue that we had to consider was whether it was important to [verify the email addresses used for creating accounts](#enforcing-email-verification).
+
+Requiring our users to verify their emails before giving them full access to our application may lead to a tedious user experience. This being the case however, we felt that the inconvenience caused to our users was necessary in order to ensure the security and availability of PeerPrep, as doing so can prevent bots from performing DOS attacks on our web application and causing performance issues for our users.
+
 # Solution Architecture
 
 ## Overview
@@ -192,7 +233,9 @@ When all unit tests have been executed without any failures, the workflow ends w
 - If at least one unit test from any service fails, the workflow ends with a `failed` status.
 - The completion status of the workflow is reflected in the page of the pull-request on GitHub.
 
-## Manual Deployment
+## Manual Re-Deployment
+
+### Partial Re-Deployment
 
 For Milestone 1, the team decided to deploy updates manually to the production environment with Github Actions and Terraform.
 
@@ -206,6 +249,19 @@ When the deployment workflow runs, the following steps are taken:
 - The tag of the latest image is passed to the next phase of the workflow, which updates the production environment with Terraform, which:
   - Shuts down all containers in the production environment that are currently running the service
   - Creates new containers using the new Docker image
+
+## Full Re-Deployment
+
+In Milestone 2, we added a workflow to trigger the complete re-deployment of all services.
+
+This workflow would re-deploy all services using the `main` branch in the following order:
+
+1. Frontend
+2. API gateway
+3. Matching service
+4. User service
+5. Collaboration service
+6. Questions service
 
 ## Infrastructure as Code
 
@@ -262,22 +318,28 @@ This reduces the need for each microservice to implement its own authentication 
 ### Firebase as authenticator for user-service
 
 #### Easy sign-in with any platform
+
 Provides end-to-end identity solution supporting different methods of authentication such as the basic email and password accounts, Google, Twitter, Facebook, Github login etc.
 
 #### Comprehensive security
+
 Firebase uses a modified Firebase version of the scrypt hashing algorithm to store passwords. This version is more secure against hardware brute-force attacks than alternative functions such as PBKDF2 or bcrypt. Also, scrypt automatically does password salting on top of password hashing.
 
 #### In-built features
+
 Firebase has many in-built features for their authentication system. Some of these useful features that we used were the email address verification and password reset. These allowed us to easily implement an authentication system with all the necessary in-built features that are essential to us.
 
 #### Fast implementation
+
 We figured that it can take quite a long time to develop our own authentication system that is reasonably secure and not to mention the need to maintain it in future. Hence, we decided to use Firebase Authentication that is already developed by Google which will allow us to implement a secure auth system quickly and without much hassle.
 
 #### Realtime database
+
 In Firebase, here is an in-built realtime database that we can use to store our essential user data. With the integration of Firebase Authentication, it helps to deal with security concerns of users. Also, with Firebase's realtime database, we have the ability to set data permissions as well.
 
-#### Tradeoffs from using Firebase's email verification
-For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep. This can lead to a tedious user experience where users are forced to verify their accounts before further usage of PeerPrep. Although being aware of this concern, we felt that this is a necessary tradeoff so as to ensure the security and availability of PeerPrep. This is to prevent bots from performing DOS attacks on our web application and causing unnecessary performance issues.
+#### Enforcing email verification
+
+For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep.
 
 # Design Patterns
 
@@ -285,7 +347,13 @@ TODO
 
 # Possible Enhancements
 
-TODO
+## Code compilation and execution
+
+Currently, users cannot compile and run the solution that they have worked on during a match.
+
+To make this possible, an [Execution Service](#execution-service) can be set up. This microservice would receive the source code from the frontend, compile it using a suitable compiler, and execute the compiled program with a list of inputs from the user.
+
+Once the execution is complete, the results output by the compiled program will be sent to the frontend; along with any compilation or runtime errors.
 
 # Reflections and Learning Points
 
@@ -318,10 +386,10 @@ TODO
 ### Technical Contributions
 
 - Implemented user-service
-	- created the api calls for user authentication (login, signup, logout etc)
-	- created middleware to check for user's access token
+  - created the api calls for user authentication (login, signup, logout etc)
+  - created middleware to check for user's access token
 - Implemented email verification for each new user signup
-	- unverified users are unable to use matching service
+  - unverified users are unable to use matching service
 - Implemented reset password functionality
 - Used firebase realtime database to store basic user information
 - Implemented form validation for the frontend of signup page
@@ -330,11 +398,11 @@ TODO
 ### Non-Technical Contributions
 
 - Documented the design decisions for firebase
-	- included the tradeoffs
+  - included the tradeoffs
 - Documented the possible enhancements for match history
 - Helped to create the sequence diagrams
-	- Question service
-	- Matching service
+  - Question service
+  - Matching service
 - Create user-service and frontend issues
 
 ## Yeap Yi Sheng James
@@ -362,3 +430,6 @@ TODO
   - Infrastructure as Code
 - Documented design decisions made:
   - API Gateway as Reverse Proxy
+    - Created a sequence diagram that shows the interactions between the user, API Gateway, and microservices
+- Documented prioritisation of non-functional requirements in a table
+  - justified the use of an API gateway and the trade-off between Security and Performance

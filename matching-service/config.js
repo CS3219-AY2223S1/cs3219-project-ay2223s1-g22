@@ -24,5 +24,5 @@ var currEnvironment =
 var environmentToExport =
   typeof environments[currEnvironment] == "object"
     ? environments[currEnvironment]
-    : environments.dev;
+    : environments.development;
 export default environmentToExport;

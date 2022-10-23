@@ -1,0 +1,51 @@
+name: "Deploy all services"
+
+on: workflow_dispatch
+
+jobs:
+  deploy-frontend:
+    name: Deploy frontend
+    uses: CS3219-AY2223S1/cs3219-project-ay2223s1-g22/.github/workflows/manual-deployment-partial.yml@main
+    with:
+      service-name: frontend
+    secrets: inherit
+
+  deploy-api-gateway:
+    needs: deploy-frontend
+    name: Deploy API gateway
+    uses: CS3219-AY2223S1/cs3219-project-ay2223s1-g22/.github/workflows/manual-deployment-partial.yml@main
+    with:
+      service-name: api-gateway
+    secrets: inherit
+
+  deploy-matching-service:
+    needs: deploy-api-gateway
+    name: Deploy matching service
+    uses: CS3219-AY2223S1/cs3219-project-ay2223s1-g22/.github/workflows/manual-deployment-partial.yml@main
+    with:
+      service-name: matching-service
+    secrets: inherit
+    
+  deploy-user-service:
+    needs: deploy-matching-service
+    name: Deploy user service
+    uses: CS3219-AY2223S1/cs3219-project-ay2223s1-g22/.github/workflows/manual-deployment-partial.yml@main
+    with:
+      service-name: user-service
+    secrets: inherit
+
+  deploy-collaboration-service:
+    needs: deploy-user-service
+    name: Deploy collaboration service
+    uses: CS3219-AY2223S1/cs3219-project-ay2223s1-g22/.github/workflows/manual-deployment-partial.yml@main
+    with:
+      service-name: collaboration-service
+    secrets: inherit
+
+  deploy-questions-service:
+    needs: deploy-collaboration-service
+    name: Deploy questions service
+    uses: CS3219-AY2223S1/cs3219-project-ay2223s1-g22/.github/workflows/manual-deployment-partial.yml@main
+    with:
+      service-name: questions-service
+    secrets: inherit

@@ -31,15 +31,13 @@ const LeaveRoomOverlay = (props) => {
     if (socket) {
       if (socket.connected) {
         console.info(
-          `socket ${socket.id} is still connected, sending leave match to roomNumber: ${state.roomNumber}.`
+            `socket ${socket.id} is still connected, sending leave match to roomNumber: ${state.roomNumber}.`
         );
         onClose();
         socket.disconnect();
-      } else {
-        socket.connect();
       }
+      socket.connect();
       navigate("/matchselection");
-	  socket.connect();
     }
   };
 
@@ -57,12 +55,7 @@ const LeaveRoomOverlay = (props) => {
           </AlertDialogHeader>
 
           <AlertDialogBody>
-            {socketRef.current &&
-              socketRef.current.connected &&
-              "Are you sure you want to leave your peer hanging?"}
-            {socketRef.current &&
-              !socketRef.current.connected &&
-              "Are you sure you want to leave the match?"}
+            {"Are you sure you want to leave the match?"}
           </AlertDialogBody>
 
           <AlertDialogFooter>

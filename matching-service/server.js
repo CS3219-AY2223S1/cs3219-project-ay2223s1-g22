@@ -21,9 +21,9 @@ export function rejoinSocket(server, socket, roomNum) {
 }
 
 export function queueSocket(socket, level) {
-  console.info(`socket ${socket.id} added to ${level} queue.`);
+  console.info(`${socket["username"]} added to ${level} queue.`);
   difficulty[level].push(socket);
-  console.log(`${level} queue after add :${difficulty[level]}`);
+  console.log(`${level} queue after add :${difficulty[level].map(sock => sock.username)}`);
 }
 
 export function cancelQueue(socket) {
@@ -57,35 +57,27 @@ export function alreadyInQueueOrRoom(socket) {
     let isInSomeQueue = false;
     for (let i = 0; i < keyList.length; i++) {
         const currKey = keyList[i];
-        console.log(`${currKey} queue before filter : ${difficulty[currKey]?.map(x => x.uuid).toString()}`);
+        console.log(`${currKey} queue before filter : ${difficulty[currKey]?.map(x => x["username"]).toString()}`);
         difficulty[currKey] = difficulty[currKey].filter(sock => sock.connected);
-        console.log(`${currKey} queue after filter : ${difficulty[currKey]?.map(x => x.uuid).toString()}`);
+        console.log(`${currKey} queue after filter : ${difficulty[currKey]?.map(x => x["username"]).toString()}`);
         const currLevelList = difficulty[currKey].map(sock => sock.uuid);
-        console.log(`checking if user ${socket.uuid} is in ${currLevelList}`);
         isInSomeQueue = isInSomeQueue || currLevelList?.includes(socket.uuid);
     }
-    console.log(`checked if already in queue: ${isInSomeQueue}`);
-    updateSocketsInRoom();
+    console.log(`checked if already in queue: ${isInSomeQueue} or room: ${checkIfSocketInRoom(socket)}`);
     return isInSomeQueue || checkIfSocketInRoom(socket);
 }
 
 export function checkIfSocketInRoom(socket) {
-    return inRoom[socket];
+    return inRoom[socket.username];
 }
 
-function addSocketsToInRoom(sockets, room) {
-    console.log(`adding sockets ${sockets.map(socket => socket.uuid)} to inRoom`);
-    updateSocketsInRoom();
-    sockets.map(sock => inRoom[sock] = room);
+export function addSocketsToInRoom(sockets, room) {
+    console.log(`adding users ${sockets.map(socket => socket.username)} to inRoom`);
+    sockets.map(sock => inRoom[sock.username] = room);
 }
 
-function updateSocketsInRoom() {
-    const socketList = Object.keys(inRoom);
-    socketList.map(sock => {
-        if (!sock.connected) {
-            delete inRoom[sock];
-        }
-    })
+export function removeSocketFromInRoom(socket) {
+    delete inRoom[socket.username];
 }
 
 export async function makeRoom(server, socket, level) {

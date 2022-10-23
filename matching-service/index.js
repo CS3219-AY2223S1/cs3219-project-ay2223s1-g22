@@ -8,7 +8,7 @@ import {
   makeRoom,
   alreadyInQueueOrRoom,
   addUser,
-  rejoinSocket, cancelQueue, checkIfSocketInRoom,
+  rejoinSocket, cancelQueue, checkIfSocketInRoom, addSocketsToInRoom, removeSocketFromInRoom,
 } from "./server.js";
 import config from "./config.js";
 
@@ -27,17 +27,21 @@ const httpServer = createServer(app);
 const server = new Server(httpServer, {
   cors: { origin: true },
 }).on("connection", (socket) => {
-  console.info(`user ${socket.id} connected`);
+  console.info(`socket ${socket.id} connected`);
 
   socket.on("user-id", (userId, username) => {
     addUser(server, socket, userId, username);
   });
 
   socket.on("disconnect", () => {
-    console.log(`${socket.id} disconnected`);
-    const roomNumber = checkIfSocketInRoom(socket);
-    if (roomNumber) {
-      server.in(roomNumber).emit("match-over");
+    console.log(`socket ${socket.id} disconnected`);
+    if (socket.username) {
+      const roomNumber = checkIfSocketInRoom(socket);
+      if (roomNumber) {
+        socket.leave(roomNumber);
+        removeSocketFromInRoom(socket);
+        socket.to(roomNumber).emit("buddy-check", false);
+      }
     }
   })
 
@@ -63,16 +67,23 @@ const server = new Server(httpServer, {
     }
   });
 
+
   socket.on("send", (message, room) => {
     console.info("sending message to room " + room);
     socket.to(room).emit("receive", message);
   });
 
-  socket.on("leave-match", (room) => {
-    console.info(`Evicting ${socket["uuid"]} from room: ${room}`);
-    server.in(room).emit("match-over");
-    socket.disconnect();
-  });
+  socket.on("enter-room", (room) => {
+    socket.join(room);
+    socket.to(room).emit("buddy-check", true, room);
+    addSocketsToInRoom([socket], room);
+  })
+
+  socket.on("exit-room", (room) => {
+    socket.leave(room);
+    removeSocketFromInRoom(socket);
+    socket.to(room).emit("buddy-check", false);
+  })
 
   socket.on("cancel-queue", () => {
     cancelQueue(socket);
