@@ -315,6 +315,8 @@ Implementing the authentication logic in the API gateway removes this responsibi
 
 This reduces the need for each microservice to implement its own authentication logic and allows it to focus on fulfilling its core function, increasing cohesion and reducing duplication of code.
 
+---
+
 ### Firebase as authenticator for user-service
 
 #### Easy sign-in with any platform
@@ -340,6 +342,28 @@ In Firebase, here is an in-built realtime database that we can use to store our 
 #### Enforcing email verification
 
 For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep.
+
+---
+
+### Socket.IO for matching-service
+
+Socket.IO is built on top of the WebSocket protocol and provides additional guarantees like fallback to HTTP long-polling or automatic reconnection. 
+
+#### Receiving acknowledgment
+
+Socket.IO provides a very convenient way to send an event and receive a response. This feature allows us to send acknowledgement to the client that the server as added them to the queue and have/are looking for a match for them.
+
+#### Socket.IO broadcasting and rooms
+
+Rooms are arbitrary channels that sockets can join and leave. We used this in conjunction with the broadcasting feature that is also another functionality provided by Socket.IO. When 2 clients have been matched, they are added to the same room. This feature was used to implement our chat service, as messages from the server/another client in the room can easily be broadcast to all sockets in the room.
+
+#### Sticky Load balancing
+
+Socket.IO allows us to scale to multiple servers if we need to by using sticky-sessions.
+
+#### Tradeoffs
+
+https://itnext.io/differences-between-websockets-and-socket-io-a9e5fa29d3dc
 
 # Design Patterns
 
