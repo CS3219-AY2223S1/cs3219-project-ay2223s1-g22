@@ -381,23 +381,18 @@ https://itnext.io/differences-between-websockets-and-socket-io-a9e5fa29d3dc
 
 ## Observer
 
-Our team used the WebSocket protocol extensively for asynchronous communication between the frontend and microservices.
+Our team used the WebSocket protocol extensively for asynchronous communication [between the frontend and microservices](#socketio-for-matching-service).
 
-Some examples include:
-
-- receiving chat messages from the other user in the match [F-FR-6](#frontend)
-- moving a user to the match room page once a match has been found [F-MA-3](#matching-service)
-
-These features are implemented using the Observer pattern in the frontend and matching service in the following manner:
+These features are implemented using the Observer pattern in the following manner:
 
 - a WebSocket object that receives messages from a microservice is instantiated
   - this object is the `Observable`
-- a component that is responsible for performing a certain action received registers interest in a particular type of message
+- a component registers interest in a particular type of message that is received by the WebSocket
   - the component acts as the `Observer` of the WebSocket object
 
 For example, in the page where the user submits requests for a match, we want to look out for notifications from the matching service when a match has been found so that the user can be redirected to the match room page to begin the match.
 
-A code snippet from the frontend that implements this feature is included below:
+A code snippet from the frontend implementing this feature is included below:
 
 ```javascript
 /* code snippet from MatchRoomPage.js */
