@@ -42,9 +42,19 @@
       - [Fast implementation](#fast-implementation)
       - [Realtime database](#realtime-database)
       - [Enforcing email verification](#enforcing-email-verification)
+    - [Socket.IO for matching-service](#socketio-for-matching-service)
+      - [Receiving acknowledgment](#receiving-acknowledgment)
+      - [Socket.IO broadcasting and rooms](#socketio-broadcasting-and-rooms)
+      - [Sticky Load balancing](#sticky-load-balancing)
+      - [Tradeoffs](#tradeoffs)
 - [Design Patterns](#design-patterns)
+  - [Observer](#observer)
 - [Possible Enhancements](#possible-enhancements)
   - [Code compilation and execution](#code-compilation-and-execution)
+  - [History service](#history-service)
+    - [Using Firebase's realtime database to store history](#using-firebases-realtime-database-to-store-history)
+    - [Reading and writing data](#reading-and-writing-data)
+    - [Using React for the frontend](#using-react-for-the-frontend)
 - [Reflections and Learning Points](#reflections-and-learning-points)
 - [Individual Contributions](#individual-contributions)
   - [Ong Kim Lai](#ong-kim-lai)
@@ -347,7 +357,7 @@ For every new user, we made use of Firebase's email verification to ensure every
 
 ### Socket.IO for matching-service
 
-Socket.IO is built on top of the WebSocket protocol and provides additional guarantees like fallback to HTTP long-polling or automatic reconnection. 
+Socket.IO is built on top of the WebSocket protocol and provides additional guarantees like fallback to HTTP long-polling or automatic reconnection.
 
 #### Receiving acknowledgment
 
@@ -367,7 +377,49 @@ https://itnext.io/differences-between-websockets-and-socket-io-a9e5fa29d3dc
 
 # Design Patterns
 
-TODO
+## Observer
+
+Our team used the WebSocket protocol extensively for asynchronous communication between the frontend and microservices.
+
+Some examples include:
+
+- receiving chat messages from the other user in the match [F-FR-6](#frontend)
+- moving a user to the match room page once a match has been found [F-MA-3](#matching-service)
+
+These features are implemented using the Observer pattern in the frontend and matching service in the following manner:
+
+- a WebSocket object that receives messages from a microservice is instantiated
+  - this object is the `Observable`
+- a component that is responsible for performing a certain action when a message is received registers interest in a particular event type
+  - the component acts as the `Observer` of the WebSocket object and listens for incoming messages
+
+For example, in the page where the user submits requests for a match, we want to look out for notifications from the matching service when a match has been found so that the user can be redirected to the match room page to begin the match.
+
+A code snippet from the frontend that implements this feature is included below.
+
+```javascript
+/* code snippet from MatchRoomPage.js */
+
+socket.on("room-number", (roomNumber, question, opponent) => {
+  // ... code omitted for brevity
+
+  showMatchFoundToast();
+  navigate("/matchroom", {
+    state: {
+      roomNumber,
+      question,
+      opponentUid,
+    },
+  });
+});
+```
+
+Inside the match selection page component, we listen for any incoming messages containing the `room-number`; which the matching service will send to the frontend once a match has been found. When this message is received, two actions are performed:
+
+- a popup notification is displayed to inform the user that a match has been found
+  - done using the `showMatchFoundToast()` method call
+- the user is redirected to the match room page
+  - done using the `navigate("/matchroom", ...)` method call
 
 # Possible Enhancements
 
@@ -381,7 +433,7 @@ Once the execution is complete, the results output by the compiled program will 
 
 ## History service
 
-Currently, users are unable to see their past collaborations with other matched users. 
+Currently, users are unable to see their past collaborations with other matched users.
 
 Below is the architecture diagram to illustrate the implementation of a history service.
 
@@ -389,12 +441,13 @@ Below is the architecture diagram to illustrate the implementation of a history 
 
 ### Using Firebase's realtime database to store history
 
-Since we used Firebase as our authenticator, the most efficient and effective way to keep history records of respective users would be to use Firebase's realtime database. Whenever a user creates a new account, their user detaisl would be automatically stored in the realtime database. Each user is stored with their respective uid as the child under the parent "users/". 
+Since we used Firebase as our authenticator, the most efficient and effective way to keep history records of respective users would be to use Firebase's realtime database. Whenever a user creates a new account, their user details would be automatically stored in the realtime database. Each user is stored with their respective uid as the child under the parent "users/".
 
 ### Reading and writing data
 
-We can create api requests to write and read data from the realtime database. 
+We can create api requests to write and read data from the realtime database.
 At the end of every collaboration session, the details that would be recorded are:
+
 1. Matched user's details
 2. Question
 3. Collaborated code on code editor
@@ -403,13 +456,10 @@ At the end of every collaboration session, the details that would be recorded ar
 ### Using React for the frontend
 
 The frontend for history service would display the 50 most recent collaborations of the user. The user would be able to see the details of the other matched user, question, chat log and collaborated code. There is also a filter feature where the user would be able to filter based on the following:
+
 1. Difficulty of the question
 2. Matched user
 3. Keywords of the question
-
-
-
-
 
 # Reflections and Learning Points
 
@@ -490,3 +540,4 @@ TODO
     - Created a sequence diagram that shows the interactions between the user, API Gateway, and microservices
 - Documented prioritisation of non-functional requirements in a table
   - justified the use of an API gateway and the trade-off between Security and Performance
+- Documented the use of the Observer design pattern
