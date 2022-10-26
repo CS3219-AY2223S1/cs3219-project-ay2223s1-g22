@@ -361,7 +361,7 @@ Currently, users are unable to see their past collaborations with other matched 
 
 Below is the architecture diagram to illustrate the implementation of a history service.
 
-[Insert architecture diagram]
+![PeerPrep-History-Service-Solution-Architecture](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/possible_enhancements_history_service_architecture.png?raw=true)
 
 ### Using Firebase's realtime database to store history
 
@@ -382,10 +382,6 @@ The frontend for history service would display the 50 most recent collaborations
 1. Difficulty of the question
 2. Matched user
 3. Keywords of the question
-
-
-
-
 
 # Reflections and Learning Points
 
@@ -432,7 +428,7 @@ TODO
 - Documented the design decisions for firebase
   - included the tradeoffs
 - Documented the possible enhancements for match history
-  - created an architectural diagram
+  - created an architecture diagram
 - Helped to create the sequence diagrams
   - Question service
   - Matching service
