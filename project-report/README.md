@@ -347,7 +347,9 @@ For every new user, we made use of Firebase's email verification to ensure every
 
 ### Socket.IO for matching-service
 
-Socket.IO is built on top of the WebSocket protocol and provides additional guarantees like fallback to HTTP long-polling or automatic reconnection. 
+#### Abstraction layer on top of WebSockets
+
+Socket.IO is built on top of the WebSocket protocol and provides additional guarantees like fallback to HTTP long-polling and automatic reconnection. 
 
 #### Receiving acknowledgment
 
@@ -363,7 +365,7 @@ Socket.IO allows us to scale to multiple servers if we need to by using sticky-s
 
 #### Tradeoffs
 
-https://itnext.io/differences-between-websockets-and-socket-io-a9e5fa29d3dc
+Socket.IO has a much higher memory requirement compared to WebSockets. There is a significant difference in the amount of memory required to handle the same amount of clients, and this could affect the scaling of Socket.IO with high concurrency. This tradeoff can be overlooked as Socket.IO is a much more complex solution as compared to WebSockets or SockJS.
 
 # Design Patterns
 
