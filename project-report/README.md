@@ -260,6 +260,8 @@ When the deployment workflow runs, the following steps are taken:
   - Shuts down all containers in the production environment that are currently running the service
   - Creates new containers using the new Docker image
 
+![partial-redeployment-process](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/partial-redeployment-process.png?raw=true)
+
 ## Full Re-Deployment
 
 In Milestone 2, we added a workflow to trigger the complete re-deployment of all services.
