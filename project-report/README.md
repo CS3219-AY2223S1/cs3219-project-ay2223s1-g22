@@ -379,6 +379,10 @@ Socket.IO allows us to scale to multiple servers if we need to by using sticky-s
 
 Socket.IO has a much higher memory requirement compared to WebSockets. There is a significant difference in the amount of memory required to handle the same amount of clients, and this could affect the scaling of Socket.IO with high concurrency. This tradeoff can be overlooked as Socket.IO is a much more complex solution as compared to WebSockets or SockJS.
 
+#### Usability for Reliability
+
+Matching-service prevents users from being able to join more than one queue or room, which makes it more reliable, as users can expect to always match with an active user. This however, may slightly affect usability as the user will have to ensure that he leaves another match or queue that he is in before joining another one.
+
 # Design Patterns
 
 ## Observer
