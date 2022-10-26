@@ -390,12 +390,12 @@ These features are implemented using the Observer pattern in the frontend and ma
 
 - a WebSocket object that receives messages from a microservice is instantiated
   - this object is the `Observable`
-- a component that is responsible for performing a certain action when a message is received registers interest in a particular event type
-  - the component acts as the `Observer` of the WebSocket object and listens for incoming messages
+- a component that is responsible for performing a certain action received registers interest in a particular type of message
+  - the component acts as the `Observer` of the WebSocket object
 
 For example, in the page where the user submits requests for a match, we want to look out for notifications from the matching service when a match has been found so that the user can be redirected to the match room page to begin the match.
 
-A code snippet from the frontend that implements this feature is included below.
+A code snippet from the frontend that implements this feature is included below:
 
 ```javascript
 /* code snippet from MatchRoomPage.js */
@@ -414,7 +414,9 @@ socket.on("room-number", (roomNumber, question, opponent) => {
 });
 ```
 
-Inside the match selection page component, we listen for any incoming messages containing the `room-number`; which the matching service will send to the frontend once a match has been found. When this message is received, two actions are performed:
+Within the match selection page component, we listen for any incoming messages containing the `room-number`, which the matching service will send to the frontend once a match has been found.
+
+When this message is received, two actions are performed:
 
 - a popup notification is displayed to inform the user that a match has been found
   - done using the `showMatchFoundToast()` method call
