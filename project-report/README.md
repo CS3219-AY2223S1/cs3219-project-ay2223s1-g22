@@ -31,6 +31,8 @@
     - [Partial Re-Deployment](#partial-re-deployment)
   - [Full Re-Deployment](#full-re-deployment)
   - [Infrastructure as Code](#infrastructure-as-code)
+    - [Increase developer productivity](#increase-developer-productivity)
+    - [Increase reliability](#increase-reliability)
   - [Design Decisions](#design-decisions)
     - [API Gateway as Reverse Proxy](#api-gateway-as-reverse-proxy)
       - [Better security for microservices](#better-security-for-microservices)
@@ -43,10 +45,13 @@
       - [Realtime database](#realtime-database)
       - [Enforcing email verification](#enforcing-email-verification)
     - [Socket.IO for matching-service](#socketio-for-matching-service)
+      - [Abstraction layer on top of WebSockets](#abstraction-layer-on-top-of-websockets)
       - [Receiving acknowledgment](#receiving-acknowledgment)
       - [Socket.IO broadcasting and rooms](#socketio-broadcasting-and-rooms)
       - [Sticky Load balancing](#sticky-load-balancing)
       - [Tradeoffs](#tradeoffs)
+      - [Usability for Reliability](#usability-for-reliability)
+    - [Using Terraform for Infrastructure-as-Code (IaC)](#using-terraform-for-infrastructure-as-code-iac)
 - [Design Patterns](#design-patterns)
   - [Observer](#observer)
 - [Possible Enhancements](#possible-enhancements)
@@ -277,18 +282,41 @@ This workflow would re-deploy all services using the `main` branch in the follow
 
 ## Infrastructure as Code
 
-To better manage the production environment, the team has defined the infrastructure components required for each service in Terraform module configuration files.
+Our team has chosen to adopt the Infrastructure as Code (IaC) approach to manage and provision infrastructure instead of using manual processes.
 
-This makes updating infrastructure easier:
+We did this for two reasons:
 
-- to add, modify or remove a component for a service, the team would modify the Terraform configuration file for the service
-- A request would then be made to Terraform to automatically update the infrastructure with the updated configuration file in the following manner:
+- To increase developer productivity
+- To increase reliability
+
+### Increase developer productivity
+
+For each service, we have defined the infrastructure components required in separate Terraform module configuration files:
+
+- to add, modify or remove a component for a service, the team would modify its module configuration file
+- A request would then be made to Terraform to update the infrastructure:
   - deploy component(s) added to the configuration file.
   - re-deploy any component(s) whose configurations have been modified
     - eg: the target Docker image of the container
   - shut down component(s) removed from the configuration file
 
-Managing infrastructure in a declarative manner using Terraform configuration files also allows the team to keep track of changes made to the infrastructure over time.
+For example, if the team has just merged a pull-request that adds a feature to the user service and wants to increase the number of containers running in production to 3 (perhaps in anticipation of increased user traffic), we can:
+
+1. update the Terraform module configuration file for the user service to specify a minimum of 3 containers running
+2. build a Docker image from the latest version of the user service and upload it to Google Container Registry (GCR)
+3. trigger Terraform to update the infrastructure, which will:
+   - shut down all old containers running the user service
+   - create 3 new containers running the latest Docker image of the user service
+
+Thus, using Terraform gives the team an automated way to deploy updates and saves us the time spent on having to log on the GCP console and manually shutting down and creating the containers.
+
+More importantly, this allows us to rapidly deploy updates by simply triggering [a single GitHub workflow](#partial-re-deployment) and increase developer productivity.
+
+### Increase reliability
+
+Having our entire infrastructure documented in code lets us easily revert any changes made, which is handy if we run into any technical issues.
+
+It also allows us to quickly spin up a replica of our infrastructure if any unforeseen event such as a regional service outage happens.
 
 ## Design Decisions
 
@@ -361,7 +389,7 @@ For every new user, we made use of Firebase's email verification to ensure every
 
 #### Abstraction layer on top of WebSockets
 
-Socket.IO is built on top of the WebSocket protocol and provides additional guarantees like fallback to HTTP long-polling and automatic reconnection. 
+Socket.IO is built on top of the WebSocket protocol and provides additional guarantees like fallback to HTTP long-polling and automatic reconnection.
 
 #### Receiving acknowledgment
 
@@ -382,6 +410,20 @@ Socket.IO has a much higher memory requirement compared to WebSockets. There is 
 #### Usability for Reliability
 
 Matching-service prevents users from being able to join more than one queue or room, which makes it more reliable, as users can expect to always match with an active user. This however, may slightly affect usability as the user will have to ensure that he leaves another match or queue that he is in before joining another one.
+
+### Using Terraform for Infrastructure-as-Code (IaC)
+
+In our development process, the team relied on Terraform to [deploy new features to production](#infrastructure-as-code).
+
+However, Terraform is only one of the many IaC tools currently available. When deciding which one to use for the project, we had two options: either
+
+- use a cloud-native IaC tool
+  - which in our case would be [Google Cloud Deployment Manager](https://cloud.google.com/deployment-manager/docs), since our team's infrastructure is completely on GCP
+  - cloud providers such as AWS and Microsoft Azure also provide their own IaC tools, which are [Cloudformation](https://aws.amazon.com/cloudformation/) and [Azure Resource Manager](https://azure.microsoft.com/en-us/features/resource-manager/) respectively
+- use a cloud-agnostic IaC tool such as Terraform
+  - which allows the specification of infrastructure involving multiple cloud-providers
+
+Even though our team is currently only using GCP for infrastructure, we felt that using a cloud-agnostic solution would be more flexible and allow services from other cloud providers to be easily integrated in the future.
 
 # Design Patterns
 
@@ -542,7 +584,7 @@ TODO
   - Infrastructure as Code
 - Documented design decisions made:
   - API Gateway as Reverse Proxy
-    - Created a sequence diagram that shows the interactions between the user, API Gateway, and microservices
+  - Using Terraform for Infrastructure-as-Code (IaC)
 - Documented prioritisation of non-functional requirements in a table
   - justified the use of an API gateway and the trade-off between Security and Performance
 - Documented the use of the Observer design pattern
