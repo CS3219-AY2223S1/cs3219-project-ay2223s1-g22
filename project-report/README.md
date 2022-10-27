@@ -310,7 +310,7 @@ For example, if the team has just merged a pull-request that adds a feature to t
 
 Thus, using Terraform gives the team an automated way to deploy updates and saves us the time spent on having to log on the GCP console and manually shutting down and creating the containers.
 
-More importantly, this allows us to rapidly deploy updates by simply triggering [a single GitHub workflow](#partial-re-deployment) and increase developer productivity.
+More importantly, this allows us to rapidly deploy updates by simply triggering [a single GitHub workflow](#partial-re-deployment).
 
 ### Increase reliability
 
@@ -415,7 +415,7 @@ Matching-service prevents users from being able to join more than one queue or r
 
 In our development process, the team relied on Terraform to [deploy new features to production](#infrastructure-as-code).
 
-However, Terraform is only one of the many IaC tools currently available. When deciding which one to use for the project, we had two options: either
+However, Terraform is only one of the many IaC tools currently available. When deciding which to use, we had two options:
 
 - use a cloud-native IaC tool
   - which in our case would be [Google Cloud Deployment Manager](https://cloud.google.com/deployment-manager/docs), since our team's infrastructure is completely on GCP
