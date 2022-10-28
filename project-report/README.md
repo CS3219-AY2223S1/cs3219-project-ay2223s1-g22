@@ -51,6 +51,9 @@
       - [Sticky Load balancing](#sticky-load-balancing)
       - [Tradeoffs](#tradeoffs)
       - [Usability for Reliability](#usability-for-reliability)
+    - [MongoDB for questions-service](#mongodb-for-questions-service)
+      - [Advantages for MongoDB over Firebase](#advantages-for-mongodb-over-firebase)
+      - [Use case for choice of database](#use-case-for-choice-of-database)
     - [Using Terraform for Infrastructure-as-Code (IaC)](#using-terraform-for-infrastructure-as-code-iac)
 - [Design Patterns](#design-patterns)
   - [Observer](#observer)
@@ -381,7 +384,7 @@ In Firebase, here is an in-built realtime database that we can use to store our 
 
 #### Enforcing email verification
 
-For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep. 
+For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep. This is to prevent potential bots from performing DOS attacks on our web application and causing uneccessary performance issues. 
 
 ---
 
@@ -406,6 +409,24 @@ Socket.IO allows us to scale to multiple servers if we need to by using sticky-s
 #### Tradeoffs
 
 Socket.IO has a much higher memory requirement compared to WebSockets. There is a significant difference in the amount of memory required to handle the same amount of clients, and this could affect the scaling of Socket.IO with high concurrency. This tradeoff can be overlooked as Socket.IO is a much more complex solution as compared to WebSockets or SockJS.
+
+---
+
+### MongoDB for questions-service
+
+We decided to use MongoDB instead of Firebase as the features used for our user-service are not required for questions-service. MongoDB is's primary focus is on data storage. Both Firebase and MongoDB are built to scale. However, MongoDB edges out in terms of robustness and customizability.  
+
+### Advantages for MongoDB over Firebase
+
+- Efficient handling of queries and indexing
+- Easier manipulation of the document model data structure
+- Ideal option for instant access to enormous amounts of data
+
+### Use case for choice of database
+
+For our questions-service requirements, we want a simple database that store large amounts of data (questions) and can be queried quickly. We do not need authentication features as questions-service will only be accessed by matching-service which already has authentication checks. With that in mind, MongoDB is better choice to store our questions data in. 
+
+---
 
 #### Usability for Reliability
 
@@ -562,9 +583,6 @@ TODO
   - included the tradeoffs
 - Documented the possible enhancements for match history
   - created an architecture diagram
-- Helped to create the sequence diagrams
-  - Question service
-  - Matching service
 - Create user-service and frontend issues
 
 ## Yeap Yi Sheng James
