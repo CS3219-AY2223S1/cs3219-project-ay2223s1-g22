@@ -381,7 +381,7 @@ In Firebase, here is an in-built realtime database that we can use to store our 
 
 #### Enforcing email verification
 
-For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep.
+For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep. 
 
 ---
 
@@ -518,11 +518,19 @@ TODO
 
 ### Technical Contributions
 
-TODO
+- Implemented questions-service
+  - created API calls
+  - set up MongoDB Atlas to store questions
+- Implemented the frontend UI
+  - Log in and sign up page
+  - Match room page
+  - Light/Dark mode button in Navbar
 
 ### Non-Technical Contributions
 
-TODO
+- Designed the frontend UI using Figma
+- Set up project board on Github
+- Create issues for Milestone 1
 
 ## Ryan Low Bing Heng
 
@@ -546,7 +554,7 @@ TODO
 - Implemented reset password functionality
 - Used firebase realtime database to store basic user information
 - Implemented form validation for the frontend of signup page
-- Worked on the frontend ui and logic
+- Worked on the frontend UI and logic
 
 ### Non-Technical Contributions
 
