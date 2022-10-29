@@ -21,7 +21,7 @@ box Questions Service
 	participant "Questions Service" as QuestionsService
 end box
 
-User -> APIGateway: requestMatch(difficulty)
+User -> APIGateway: requestMatch(difficulty, accessToken)
 ref over User, APIGateway, UserService: API Gateway Authentication
 APIGateway -> MatchingService: requestMatch(difficulty)
 
