@@ -26,7 +26,7 @@ ref over User, APIGateway, UserService: API Gateway Authentication
 APIGateway -> MatchingService: requestMatch(difficulty)
 
 activate MatchingService
-MatchingService -> MatchingService: Find partner
+MatchingService -> MatchingService: Find peer
 MatchingService -> MatchingService: makeRoom(difficulty)
 activate MatchingService
 MatchingService -> QuestionsService: getQuestion(difficulty)
