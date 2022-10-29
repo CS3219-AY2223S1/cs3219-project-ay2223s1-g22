@@ -426,6 +426,8 @@ We decided to use MongoDB instead of Firebase as the features used for our user-
 
 For our questions-service requirements, we want a simple database that store large amounts of data (questions) and can be queried quickly. We do not need authentication features as questions-service will only be accessed by matching-service which already has authentication checks. With that in mind, MongoDB is better choice to store our questions data in. 
 
+![matching-questions-service](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/matching-questions-service.png?raw=true)
+
 ---
 
 #### Usability for Reliability

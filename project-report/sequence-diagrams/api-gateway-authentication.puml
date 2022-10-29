@@ -1,6 +1,8 @@
 @startuml abc
 !include style.puml
 
+mainframe sd **API Gateway Authentication**
+
 actor "User" as User
 
 box API Gateway API_GATEWAY_COLOR_T1

@@ -1,0 +1,42 @@
+@startuml abc
+!include style.puml
+
+skinparam BoxPadding 10
+
+actor "User" as User
+
+box API Gateway API_GATEWAY_COLOR_T1
+	participant "API Gateway" as APIGateway
+end box
+
+box User Service USER_SERVICE_COLOR_T1
+	participant "User Service" as UserService
+end box
+
+box Matching Service MATCHING_SERVICE_COLOR_T1
+	participant "Matching Service" as MatchingService
+end box
+
+box Questions Service
+	participant "Questions Service" as QuestionsService
+end box
+
+User -> APIGateway: requestMatch(difficulty)
+ref over User, APIGateway, UserService: API Gateway Authentication
+APIGateway -> MatchingService: requestMatch(difficulty)
+
+activate MatchingService
+MatchingService -> MatchingService: Find partner
+MatchingService -> MatchingService: makeRoom(difficulty)
+activate MatchingService
+MatchingService -> QuestionsService: getQuestion(difficulty)
+
+activate QuestionsService
+QuestionsService -> MatchingService: Random question
+deactivate QuestionsService
+return Room
+
+MatchingService --> User: Move user into Room with partner
+deactivate MatchingService
+
+@enduml
