@@ -36,7 +36,7 @@ QuestionsService -> MatchingService: Random question
 deactivate QuestionsService
 return Room
 
-MatchingService --> User: Move user into Room with partner
+MatchingService --> User: Move user into Room with peer
 deactivate MatchingService
 
 @enduml
