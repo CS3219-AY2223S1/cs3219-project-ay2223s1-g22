@@ -427,6 +427,31 @@ Even though our team is currently only using GCP for infrastructure, we felt tha
 
 # Design Patterns
 
+## Singleton
+
+The singleton pattern is used to ensure that there is only one instance of the client socket created.
+
+#### Why we use the singleton pattern:
+
+- Each client instance should only need one client socket
+- The same socket instance needs to be accessible by multiple pages (e.g. match selection and match room page)
+
+
+`SocketContext.js`
+```javascript
+const getSocket = (accessToken, uuid) => {
+  if (!socket && accessToken) {
+    socket = initSocket(accessToken);
+    socket["uuid"] = uuid;
+  }
+  return socket;
+};
+```
+In the code snippet, the socket is only initialized if there isn't already an existing socket, and if there is, `getSocket' returns that socket. 
+This makes it so that every client will only have a single socket instance, and that every page will have access to the same socket instance.
+Although the sockets are identified by the unique ID provided by firebase, having multiple sockets for a single client will likely 
+create many bugs and inconsistencies in the matching of peers on the server socket.
+
 ## Observer
 
 Our team used the WebSocket protocol extensively for asynchronous communication [between the frontend and microservices](#socketio-for-matching-service).
