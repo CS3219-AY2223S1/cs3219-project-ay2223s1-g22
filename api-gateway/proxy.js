@@ -10,13 +10,13 @@ import {
 
 export const setupHttpProxies = (app) => {
   UNAUTHENTICATED_HTTP_ROUTES.forEach((r) => {
-    const proxy = createProxyMiddleware(r.url, r.proxy);
-    app.use(proxy);
+    const proxy = createProxyMiddleware(r.proxy);
+    app.use(r.url, proxy);
   });
 
   AUTHENTICATED_HTTP_ROUTES.forEach((r) => {
-    const proxy = createProxyMiddleware(r.url, r.proxy);
-    app.use(checkAuthentication, proxy);
+    const proxy = createProxyMiddleware(r.proxy);
+    app.use(r.url, checkAuthentication, proxy);
   });
 };
 
@@ -53,6 +53,8 @@ export const setupWebSocketProxies = (
 const checkAuthentication = async (req, res, next) => {
   // this header will have the format 'Bearer <ACCESS_TOKEN>'
   const authHeader = req.headers["authorization"];
+
+  console.log(authHeader);
 
   if (!authHeader) {
     return res.sendStatus(401);

@@ -6,7 +6,6 @@ export const COLLABORATION_SERVICE_URL = config.collaborationServiceUrl;
 
 export const UNAUTHENTICATED_HTTP_ROUTES = [
   {
-    auth: false,
     url: "/signup",
     proxy: {
       target: USER_SERVICE_URL + "/signup",
@@ -17,7 +16,6 @@ export const UNAUTHENTICATED_HTTP_ROUTES = [
     },
   },
   {
-    auth: false,
     url: "/login",
     proxy: {
       target: USER_SERVICE_URL + "/login",
@@ -28,18 +26,16 @@ export const UNAUTHENTICATED_HTTP_ROUTES = [
     },
   },
   {
-    auth: false,
-    url: "/health-matching-service",
+    url: "/logout",
     proxy: {
-      target: MATCHING_SERVICE_URL,
+      target: USER_SERVICE_URL + "/revokeRefreshToken",
       changeOrigin: true,
       pathRewrite: {
-        [`^/health-matching-service`]: "",
+        [`^/logout`]: "",
       },
     },
   },
   {
-    auth: false,
     url: "/refreshToken",
     proxy: {
       target: USER_SERVICE_URL + "/refreshToken",
@@ -50,7 +46,6 @@ export const UNAUTHENTICATED_HTTP_ROUTES = [
     },
   },
   {
-    auth: false,
     url: "/sendEmailVerification",
     proxy: {
       target: USER_SERVICE_URL + "/sendEmailVerification",
@@ -61,7 +56,6 @@ export const UNAUTHENTICATED_HTTP_ROUTES = [
     },
   },
   {
-    auth: true,
     url: "/authenticate",
     proxy: {
       target: USER_SERVICE_URL + "/authenticate",
@@ -72,7 +66,6 @@ export const UNAUTHENTICATED_HTTP_ROUTES = [
     },
   },
   {
-    auth: true,
     url: "/getuser",
     proxy: {
       target: USER_SERVICE_URL + "/getuser",
@@ -83,7 +76,6 @@ export const UNAUTHENTICATED_HTTP_ROUTES = [
     },
   },
   {
-    auth: true,
     url: "/getname",
     proxy: {
       target: USER_SERVICE_URL + "/getname",
@@ -94,18 +86,6 @@ export const UNAUTHENTICATED_HTTP_ROUTES = [
     },
   },
   {
-    auth: false,
-    url: "/logout",
-    proxy: {
-      target: USER_SERVICE_URL + "/revokeRefreshToken",
-      changeOrigin: true,
-      pathRewrite: {
-        [`^/logout`]: "",
-      },
-    },
-  },
-  {
-    auth: false,
     url: "/resetpassword",
     proxy: {
       target: USER_SERVICE_URL + "/resetpassword",
@@ -116,13 +96,12 @@ export const UNAUTHENTICATED_HTTP_ROUTES = [
     },
   },
   {
-    auth: true,
-    url: "/deleteuser",
+    url: "/health-matching-service",
     proxy: {
-      target: USER_SERVICE_URL + "/deleteuser",
+      target: MATCHING_SERVICE_URL,
       changeOrigin: true,
       pathRewrite: {
-        [`^/deleteuser`]: "",
+        [`^/health-matching-service`]: "",
       },
     },
   },
@@ -130,40 +109,6 @@ export const UNAUTHENTICATED_HTTP_ROUTES = [
 
 export const AUTHENTICATED_HTTP_ROUTES = [
   {
-    auth: true,
-    url: "/authenticate",
-    proxy: {
-      target: USER_SERVICE_URL + "/authenticate",
-      changeOrigin: true,
-      pathRewrite: {
-        [`^/authenticate`]: "",
-      },
-    },
-  },
-  {
-    auth: true,
-    url: "/getuser",
-    proxy: {
-      target: USER_SERVICE_URL + "/getuser",
-      changeOrigin: true,
-      pathRewrite: {
-        [`^/getuser`]: "",
-      },
-    },
-  },
-  {
-    auth: false,
-    url: "/logout",
-    proxy: {
-      target: USER_SERVICE_URL + "/revokeRefreshToken",
-      changeOrigin: true,
-      pathRewrite: {
-        [`^/logout`]: "",
-      },
-    },
-  },
-  {
-    auth: true,
     url: "/deleteuser",
     proxy: {
       target: USER_SERVICE_URL + "/deleteuser",
