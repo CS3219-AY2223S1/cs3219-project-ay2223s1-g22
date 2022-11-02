@@ -579,6 +579,9 @@ TODO
 - Designed the frontend UI using Figma
 - Set up project board on Github
 - Create issues for Milestone 1
+- Documentation for questions-service
+  - Documented the choice of MongoDB over Firebase
+  - Created sequence diagram for matching-service and questions-service
 
 ## Ryan Low Bing Heng
 
