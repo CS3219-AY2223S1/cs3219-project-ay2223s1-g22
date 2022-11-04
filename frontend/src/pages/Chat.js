@@ -13,11 +13,7 @@ function Chat({ roomProps }) {
   const [messages, setMessages] = useState([
     {
       from: "matching_service",
-      text: "Welcome everyone!",
-    },
-    {
-      from: "matching_service",
-      text: `Your room number is: ${roomProps.roomNumber}`,
+      text: "Welcome everyone! Feel free to use this chat box for discussion.",
     },
     {
       from: "matching_service",
@@ -30,16 +26,16 @@ function Chat({ roomProps }) {
   const { idToken } = useContext(UserContext);
   const { getSocket, rejoinRoom } = useContext(SocketContext);
   const socketRef = useRef(getSocket(idToken));
-  
+
   useEffect(() => {
     const socket = socketRef.current;
     const promise = getName(roomProps.opponentUid);
-    promise.then(res => {
+    promise.then((res) => {
       console.log(res);
       if (res) {
         setOpponentName(res.data.name);
       }
-    })
+    });
 
     socket.on("connect", () => {
       rejoinRoom(roomProps.roomNumber);
