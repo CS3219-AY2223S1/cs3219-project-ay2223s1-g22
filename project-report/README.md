@@ -34,6 +34,10 @@
     - [Increase developer productivity](#increase-developer-productivity)
     - [Increase reliability](#increase-reliability)
   - [Design Decisions](#design-decisions)
+    - [Using `y-websocket` for concurrent code editing](#using-y-websocket-for-concurrent-code-editing)
+      - [Lower latency](#lower-latency)
+      - [Frequency of updates](#frequency-of-updates)
+      - [Incompatibility issues with `firepad`](#incompatibility-issues-with-firepad)
     - [API Gateway as Reverse Proxy](#api-gateway-as-reverse-proxy)
       - [Better security for microservices](#better-security-for-microservices)
       - [Increased cohesion](#increased-cohesion)
@@ -50,12 +54,14 @@
       - [Socket.IO broadcasting and rooms](#socketio-broadcasting-and-rooms)
       - [Sticky Load balancing](#sticky-load-balancing)
       - [Tradeoffs](#tradeoffs)
-      - [Usability for Reliability](#usability-for-reliability)
     - [MongoDB for questions-service](#mongodb-for-questions-service)
-      - [Advantages for MongoDB over Firebase](#advantages-for-mongodb-over-firebase)
-      - [Use case for choice of database](#use-case-for-choice-of-database)
+    - [Advantages for MongoDB over Firebase](#advantages-for-mongodb-over-firebase)
+    - [Use case for choice of database](#use-case-for-choice-of-database)
+      - [Usability for Reliability](#usability-for-reliability)
     - [Using Terraform for Infrastructure-as-Code (IaC)](#using-terraform-for-infrastructure-as-code-iac)
 - [Design Patterns](#design-patterns)
+  - [Singleton](#singleton)
+    - [Why we use the singleton pattern:](#why-we-use-the-singleton-pattern)
   - [Observer](#observer)
 - [Possible Enhancements](#possible-enhancements)
   - [Code compilation and execution](#code-compilation-and-execution)
@@ -323,6 +329,60 @@ It also allows us to quickly spin up a replica of our infrastructure if any unfo
 
 ## Design Decisions
 
+### Using `y-websocket` for concurrent code editing
+
+A key feature of PeerPrep is the collaborative code editor, which allows users in the same match to work together on a solution to the problem sets.
+
+In short, we had to synchronize the code in the editors of all users in the match:
+
+- When a user edits the code (i.e. by adding or deleting a word), other users' editors should be notified of this change.
+- Once a change notification has been received, the editor should update the code.
+
+To improve the user experience, we could also show the current position of other users' cursors and any text highlighted. This would make updates to the code editor less jarring, as users can anticipate changes made by others.
+
+To implement these features, we had two options:
+
+- Option 1: Start with a framework that provides the implementation for these features, or
+- Option 2: Write our own synchronization logic
+
+To help us iterate faster, we decided to go with the first option, and searched for open-sourced frameworks that could help us deliver these features to our users.
+
+In our search, we found two promising frameworks:
+
+- [`firepad`](https://github.com/FirebaseExtended/firepad)
+- [`y-websocket`](https://github.com/yjs/y-websocket)
+
+These two frameworks had different approaches towards synchronizing data:
+
+- `firepad` works extensively with Google's [Firebase Realtime Database](https://firebase.google.com/docs/database) (a NoSQL database):
+  - when a change is made to the code editor, the change is captured in the form of a [`TextOperation`](https://github.com/FirebaseExtended/firepad#database-structure) and added to the database table
+  - any clients that are subscribed to updates to this database table would be notified, and would fetch this change in order to update the code editor
+- `y-websocket` on the other hand, provides an option to synchronize data using only WebSockets:
+  - when a change is made to the code editor, the details of the change operation is sent as a message to a [`y-websocket` server](https://github.com/yjs/y-websocket/tree/master/bin), along with a `room-id` attribute
+  - this would trigger to server to send message(s) to all clients sharing the same `room-id` attribute, thereby propagating the change
+
+In short, using `firepad` would involve reading or writing from a NoSQL database, while using `y-websocket` would not.
+
+We decided to use `y-websocket` for the following reasons:
+
+- Lower latency
+- Frequency of updates
+- Incompatibility issues with `firepad`
+
+#### Lower latency
+
+As `y-websocket` eliminates the need to read and write from a database, latency is reduced, allowing our users to receive faster updates and get a better experience.
+
+#### Frequency of updates
+
+The `firepad` framework is [no longer under active development](https://github.com/FirebaseExtended/firepad#status), with the last update being made on 12 May 2021.
+
+In comparison, the `y-websocket` framework is still actively maintained, which would in turn make maintenance of PeerPrep easier.
+
+#### Incompatibility issues with `firepad`
+
+In our testing, the team found that `firepad` only supported firebase servers in the North American region, which would increase the latency for users in the Asia Pacific region.
+
 ### API Gateway as Reverse Proxy
 
 Instead of interacting with the microservices directly, the frontend sends requests to an API gateway, which forwards requests to the relevant microservices.
@@ -384,7 +444,7 @@ In Firebase, here is an in-built realtime database that we can use to store our 
 
 #### Enforcing email verification
 
-For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep. This is to prevent potential bots from performing DOS attacks on our web application and causing uneccessary performance issues. 
+For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep. This is to prevent potential bots from performing DOS attacks on our web application and causing uneccessary performance issues.
 
 ---
 
@@ -414,7 +474,7 @@ Socket.IO has a much higher memory requirement compared to WebSockets. There is 
 
 ### MongoDB for questions-service
 
-We decided to use MongoDB instead of Firebase as the features used for our user-service are not required for questions-service. MongoDB is's primary focus is on data storage. Both Firebase and MongoDB are built to scale. However, MongoDB edges out in terms of robustness and customizability.  
+We decided to use MongoDB instead of Firebase as the features used for our user-service are not required for questions-service. MongoDB is's primary focus is on data storage. Both Firebase and MongoDB are built to scale. However, MongoDB edges out in terms of robustness and customizability.
 
 ### Advantages for MongoDB over Firebase
 
@@ -424,7 +484,7 @@ We decided to use MongoDB instead of Firebase as the features used for our user-
 
 ### Use case for choice of database
 
-For our questions-service requirements, we want a simple database that store large amounts of data (questions) and can be queried quickly. We do not need authentication features as questions-service will only be accessed by matching-service which already has authentication checks. With that in mind, MongoDB is better choice to store our questions data in. 
+For our questions-service requirements, we want a simple database that store large amounts of data (questions) and can be queried quickly. We do not need authentication features as questions-service will only be accessed by matching-service which already has authentication checks. With that in mind, MongoDB is better choice to store our questions data in.
 
 ![matching-questions-service](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/matching-questions-service.png?raw=true)
 
@@ -459,8 +519,8 @@ The singleton pattern is used to ensure that there is only one instance of the c
 - Each client instance should only need one client socket
 - The same socket instance needs to be accessible by multiple pages (e.g. match selection and match room page)
 
-
 `SocketContext.js`
+
 ```javascript
 const getSocket = (accessToken, uuid) => {
   if (!socket && accessToken) {
@@ -470,9 +530,10 @@ const getSocket = (accessToken, uuid) => {
   return socket;
 };
 ```
-In the code snippet, the socket is only initialized if there isn't already an existing socket, and if there is, `getSocket' returns that socket. 
+
+In the code snippet, the socket is only initialized if there isn't already an existing socket, and if there is, `getSocket' returns that socket.
 This makes it so that every client will only have a single socket instance, and that every page will have access to the same socket instance.
-Although the sockets are identified by the unique ID provided by firebase, having multiple sockets for a single client will likely 
+Although the sockets are identified by the unique ID provided by firebase, having multiple sockets for a single client will likely
 create many bugs and inconsistencies in the matching of peers on the server socket.
 
 ## Observer
