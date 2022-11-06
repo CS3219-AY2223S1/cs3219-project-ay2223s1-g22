@@ -309,14 +309,14 @@ Our team decided on this approach for two main reasons:
 
 Access to microservices is protected by an API gateway in the following manner:
 
-- if the requested endpoint is unprotected, the API gateway will forward it to the microservice(s) that are responsible for fulfilling the request
-- however, if the requested endpoint is protected, the request must provide some credentials for authentication:
-  - when the user successfully logs in, an `access token` and `refresh token` will be provided:
+- If the requested endpoint is unprotected, the API gateway will forward it to the microservice(s) that are responsible for fulfilling the request
+- However, if the requested endpoint is protected, the request must provide some credentials for authentication:
+  - When the user successfully logs in, an `access token` and `refresh token` will be provided:
     - the `access token` is valid for an hour
     - the `refresh token` will remain valid for an indefinite period of time until either of the following occur:
       - the user logs out
       - the user deletes the account
-  - to access protected endpoint, the `access token` must be included in the `Authorization` header as a `bearer token`
+  - To access protected endpoints, the `access token` must be included in the `Authorization` header as a `bearer token`
     - upon receiving the request, the API gateway will send the `access token` to the User service to verify that the `access token`:
       - has not been tampered with
       - has not expired
@@ -405,10 +405,10 @@ In our development process, the team relied on Terraform to [deploy new features
 
 However, Terraform is only one of the many IaC tools currently available. When deciding which to use, we had two options:
 
-- use a cloud-native IaC tool
+- Use a cloud-native IaC tool
   - which in our case would be [Google Cloud Deployment Manager](https://cloud.google.com/deployment-manager/docs), since our team's infrastructure is completely on GCP
   - cloud providers such as AWS and Microsoft Azure also provide their own IaC tools, which are [Cloudformation](https://aws.amazon.com/cloudformation/) and [Azure Resource Manager](https://azure.microsoft.com/en-us/features/resource-manager/) respectively
-- use a cloud-agnostic IaC tool such as Terraform
+- Use a cloud-agnostic IaC tool such as Terraform
   - which allows the specification of infrastructure involving multiple cloud-providers
 
 Even though our team is currently only using GCP for infrastructure, we felt that using a cloud-agnostic solution would be more flexible and allow services from other cloud providers to be easily integrated in the future.
@@ -447,18 +447,18 @@ Our team used the WebSocket protocol extensively for asynchronous communication 
 
 These features are implemented using the Observer pattern in the following manner:
 
-- a WebSocket object that receives messages from a microservice is instantiated
+- A WebSocket object that receives messages from a microservice is instantiated
   - this object is the `Observable`
-- a component registers interest in a particular type of message that is received by the WebSocket
+- A component registers interest in a particular type of message that is received by the WebSocket
   - the component acts as the `Observer` of the WebSocket object
 
 For example, in the page where the user submits requests for a match, we want to look out for notifications from the matching service when a match has been found so that the user can be redirected to the match room page to begin the match.
 
 A code snippet from the frontend implementing this feature is included below:
 
-```javascript
-/* code snippet from MatchRoomPage.js */
+`MatchRoomPage.js`
 
+```javascript
 socket.on("room-number", (roomNumber, question, opponent) => {
   // ... code omitted for brevity
 
@@ -477,9 +477,9 @@ Within the match selection page component, we listen for any incoming messages c
 
 When this message is received, two actions are performed:
 
-- a popup notification is displayed to inform the user that a match has been found
+- A popup notification is displayed to inform the user that a match has been found
   - done using the `showMatchFoundToast()` method call
-- the user is redirected to the match room page
+- The user is redirected to the match room page
   - done using the `navigate("/matchroom", ...)` method call
 
 # Development Process
@@ -490,9 +490,9 @@ The project uses a workflow script to perform testing using GitHub Actions.
 
 When a pull-request to the `main` branch is created, the workflow will run unit tests for each of the services by:
 
-- building a Docker image from the `test` stage of the service's Dockerfile
-- starting a container from the image
-- invoking the command to execute the unit tests for the service
+- Building a Docker image from the `test` stage of the service's Dockerfile
+- Starting a container from the image
+- Invoking the command to execute the unit tests for the service
 
 When all unit tests have been executed without any failures, the workflow ends with a `completed` status.
 
@@ -544,7 +544,7 @@ We did this for two reasons:
 
 For each service, we have defined the infrastructure components required in separate Terraform module configuration files:
 
-- to add, modify or remove a component for a service, the team would modify its module configuration file
+- To add, modify or remove a component for a service, the team would modify its module configuration file
 - A request would then be made to Terraform to update the infrastructure:
   - deploy component(s) added to the configuration file.
   - re-deploy any component(s) whose configurations have been modified
@@ -553,9 +553,9 @@ For each service, we have defined the infrastructure components required in sepa
 
 For example, if the team has just merged a pull-request that adds a feature to the user service and wants to increase the number of containers running in production to 3 (perhaps in anticipation of increased user traffic), we can:
 
-1. update the Terraform module configuration file for the user service to specify a minimum of 3 containers running
-2. build a Docker image from the latest version of the user service and upload it to Google Container Registry (GCR)
-3. trigger Terraform to update the infrastructure, which will:
+1. Update the Terraform module configuration file for the user service to specify a minimum of 3 containers running
+2. Build a Docker image from the latest version of the user service and upload it to Google Container Registry (GCR)
+3. Trigger Terraform to update the infrastructure, which will:
    - shut down all old containers running the user service
    - create 3 new containers running the latest Docker image of the user service
 
