@@ -27,7 +27,7 @@
   - [Service Instance per Container](#service-instance-per-container)
 - [Design Decisions](#design-decisions)
   - [Using `y-websocket` for concurrent code editing](#using-y-websocket-for-concurrent-code-editing)
-    - [Implementation](#implementation)
+    - [Implementation details](#implementation-details)
       - [Usage in frontend](#usage-in-frontend)
       - [Usage in collaboration service](#usage-in-collaboration-service)
   - [API Gateway as Reverse Proxy](#api-gateway-as-reverse-proxy)
@@ -292,9 +292,11 @@ We decided to use `y-websocket` for the following reasons:
 - Incompatibility issues with `firepad`
   - In our testing, the team found that `firepad` only supported firebase servers in the North American region, which would increase the latency for users in the Asia Pacific region.
 
-### Implementation
+### Implementation details
 
-`y-websocket` is used in the frontend and collaboration service.
+`y-websocket` is used in both the frontend and collaboration service.
+
+![frontend-collaborationservice-interaction-diagram](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/frontend_collaborationservice_interaction_diagram.jpg?raw=true)
 
 #### Usage in frontend
 
@@ -302,7 +304,7 @@ When the user begins a match, the code editor is initialized and rendered. Durin
 
 When the user interacts with the code editor by modifying the code or changing the cursor's position, these updates are sent to the collaboration service through the WebSocket connection.
 
-`y-websocket` also listens for messages from the collaboration service and updates the code editor with updates on interactions from other users.
+`y-websocket` also listens for messages from the collaboration service and updates the code editor with changes made and the activities of other users.
 
 #### Usage in collaboration service
 
@@ -538,6 +540,8 @@ When this message is received, two actions are performed:
   - done using the `showMatchFoundToast()` method call
 - The user is redirected to the match room page
   - done using the `navigate("/matchroom", ...)` method call
+
+More details on the matching process can be found [here](#matching-peers).
 
 # Development Process
 
