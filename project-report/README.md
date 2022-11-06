@@ -42,6 +42,9 @@
     - [Realtime database](#realtime-database)
     - [Enforcing email verification](#enforcing-email-verification)
   - [Socket.IO for matching-service](#socketio-for-matching-service)
+    - [Matching peers](#matching-peers)
+    - [Communicating in a room](#communicating-in-a-room)
+    - [Why socket.IO?](#why-socketio)
     - [Abstraction layer on top of WebSockets](#abstraction-layer-on-top-of-websockets)
     - [Receiving acknowledgment](#receiving-acknowledgment)
     - [Socket.IO broadcasting and rooms](#socketio-broadcasting-and-rooms)
@@ -377,34 +380,36 @@ For every new user, we made use of Firebase's email verification to ensure every
 
 ![](images/matchingservicesocketioimage.jpg)
 
-A client will queue up for a room by emitting the `level` event, with the difficulty level they wish to queue up for. Referring to the example above, both clients have queued up for the easy difficulty 
-match. 
+A client will queue up for a room by emitting the `level` event, with the difficulty level they wish to queue up for. Referring to the example above, both clients have queued up for the easy difficulty
+match.
 
 The server socket will be listening on the `level` event, and upon finding 2 compatible clients, will add them into a room. The `room-number` event will be emitted by the server,
 to all clients in the room, letting them know that they have successfully joined a room, and with what room number.
 
 [`MatchSelectionPage.js`](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/d174eb58e29f564b852e3c22a8ffdee4fb84d83c/frontend/src/pages/matching-service/MatchSelectionPage.js#L114)
+
 ```javascript
 const handleRequestMatch = (difficulty) => {
-    socketRef.current.emit("level", difficulty, inQueue => {
-      if (inQueue) {
-        showAlreadyQueuedToast();
-      } else {
-        showFindingMatchModal();
-      }
-    })
-  };
+  socketRef.current.emit("level", difficulty, (inQueue) => {
+    if (inQueue) {
+      showAlreadyQueuedToast();
+    } else {
+      showFindingMatchModal();
+    }
+  });
+};
 ```
 
 ### Communicating in a room
 
 ![](images/chatservice.jpg)
 
-If 2 clients are already in the same room, they can communicate using the chat. This chat-service is also done using `socket.IO`. 
+If 2 clients are already in the same room, they can communicate using the chat. This chat-service is also done using `socket.IO`.
 If `client1` wants to send a message to `client2`, `client1` will emit the `send` event to the server, together with the message and the room number.
 The server will be listening on the `send` event, then use the socket to relay the message.
 
 [`index.js`](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/d174eb58e29f564b852e3c22a8ffdee4fb84d83c/matching-service/index.js#L71)
+
 ```javascript
 socket.on("send", (message, room) => {
   console.info("sending message to room " + room);
@@ -495,8 +500,6 @@ create many bugs and inconsistencies in the matching of peers on the server sock
 
 - Each client instance should only need one client socket
 - The same socket instance needs to be accessible by multiple pages (e.g. match selection and match room page)
-
-
 
 ## Observer
 
@@ -698,6 +701,7 @@ TODO
 ### Technical Contributions
 
 - Implemented `matching-service` using `Socket.IO`
+
   - Server
     - matching users based on difficulty level
     - communication service between client sockets
@@ -714,7 +718,7 @@ TODO
 - Documented the use of `socket.IO` in
   - Design decisions
     - How `socket.IO` was used for `matching-service` and for the chat feature
-    - Why `socket.IO` was chosen 
+    - Why `socket.IO` was chosen
   - Design patterns:
     - Singleton
       - How and why the pattern was used.
@@ -765,6 +769,7 @@ TODO
   - Manual Deployment
   - Infrastructure as Code
 - Documented design decisions made:
+  - Using `y-websocket` for concurrent code editing
   - API Gateway as Reverse Proxy
   - Using Terraform for Infrastructure-as-Code (IaC)
 - Documented prioritisation of non-functional requirements in a table
