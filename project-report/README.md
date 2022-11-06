@@ -683,11 +683,27 @@ TODO
 
 ### Technical Contributions
 
-TODO
+- Implemented `matching-service` using `Socket.IO`
+  - Server
+    - matching users based on difficulty level
+    - communication service between client sockets
+    - retrieval and sending of question from `question-service` to client
+  - Client (frontend)
+    - allowing user to only queue up/join one room
+
+- Implemented API in `questions-service` to get a random question from MongoDB Atlas
 
 ### Non-Technical Contributions
 
-TODO
+- Designed the frontend UI using Figma
+- Created the tables for Non-functional requirements and functional requirements
+- Documented the use of `socket.IO` in
+  - Design decisions
+    - How `socket.IO` was used for `matching-service` and for the chat feature
+    - Why `socket.IO` was chosen 
+  - Design patterns:
+    - Singleton
+      - How and why the pattern was used.
 
 ## Tang Wei Teck Frederick
 
