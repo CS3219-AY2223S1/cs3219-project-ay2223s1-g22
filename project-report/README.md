@@ -30,7 +30,6 @@
     - [Implementation](#implementation)
       - [Usage in frontend](#usage-in-frontend)
       - [Usage in collaboration service](#usage-in-collaboration-service)
-  - [When messages are received by the collaboration service, `y-websocket` re-broadcasts these messages to](#when-messages-are-received-by-the-collaboration-service-y-websocket-re-broadcasts-these-messages-to)
   - [API Gateway as Reverse Proxy](#api-gateway-as-reverse-proxy)
     - [Better security for microservices](#better-security-for-microservices)
     - [Increased cohesion](#increased-cohesion)
@@ -310,8 +309,6 @@ When the user interacts with the code editor by modifying the code or changing t
 On the collaboration service, `y-websocket` listens for messages sent through WebSocket connections with frontend clients.
 
 When a message is received, `y-websocket` reads the `room-number` attribute in the message and relays it to other frontend clients in the same match. This ensures that users' code editors are only synced if they are in the same match.
-
-## When messages are received by the collaboration service, `y-websocket` re-broadcasts these messages to
 
 ## API Gateway as Reverse Proxy
 
