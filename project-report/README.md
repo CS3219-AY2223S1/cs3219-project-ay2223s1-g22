@@ -355,7 +355,7 @@ In Firebase, here is an in-built realtime database that we can use to store our 
 
 ### Enforcing email verification
 
-For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep. This is to prevent potential bots from performing DOS attacks on our web application and causing uneccessary performance issues.
+For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep. This is to prevent potential bots from performing DOS attacks on our web application and causing unnecessary performance issues.
 
 ## Socket.IO for matching-service
 
@@ -365,7 +365,7 @@ Socket.IO is built on top of the WebSocket protocol and provides additional guar
 
 ### Receiving acknowledgment
 
-Socket.IO provides a very convenient way to send an event and receive a response. This feature allows us to send acknowledgement to the client that the server as added them to the queue and have/are looking for a match for them.
+Socket.IO provides a very convenient way to send an event and receive a response. This feature allows us to send acknowledgement to the client that the server has added them to the queue and have/are looking for a match for them.
 
 ### Socket.IO broadcasting and rooms
 
@@ -381,7 +381,7 @@ Socket.IO has a much higher memory requirement compared to WebSockets. There is 
 
 ## MongoDB for questions-service
 
-We decided to use MongoDB instead of Firebase as the features used for our user-service are not required for questions-service. MongoDB is's primary focus is on data storage. Both Firebase and MongoDB are built to scale. However, MongoDB edges out in terms of robustness and customizability.
+We decided to use MongoDB instead of Firebase as the features used for our user-service are not required for questions-service. MongoDB's primary focus is on data storage. Both Firebase and MongoDB are built to scale. However, MongoDB edges out in terms of robustness and customizability.
 
 ## Advantages for MongoDB over Firebase
 
@@ -391,7 +391,7 @@ We decided to use MongoDB instead of Firebase as the features used for our user-
 
 ## Use case for choice of database
 
-For our questions-service requirements, we want a simple database that store large amounts of data (questions) and can be queried quickly. We do not need authentication features as questions-service will only be accessed by matching-service which already has authentication checks. With that in mind, MongoDB is better choice to store our questions data in.
+For our questions-service requirements, we want a simple database that stores large amounts of data (questions) and can be queried quickly. We do not need authentication features as questions-service will only be accessed by matching-service which already has authentication checks. With that in mind, MongoDB is a better choice to store our questions data in.
 
 ![matching-questions-service](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/matching-questions-service.png?raw=true)
 
