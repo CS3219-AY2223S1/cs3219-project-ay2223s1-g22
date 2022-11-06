@@ -25,6 +25,36 @@
 - [Solution Architecture](#solution-architecture)
   - [Overview](#overview)
   - [Service Instance per Container](#service-instance-per-container)
+- [Design Decisions](#design-decisions)
+  - [Using `y-websocket` for concurrent code editing](#using-y-websocket-for-concurrent-code-editing)
+    - [Lower latency](#lower-latency)
+    - [Frequency of updates](#frequency-of-updates)
+    - [Incompatibility issues with `firepad`](#incompatibility-issues-with-firepad)
+  - [API Gateway as Reverse Proxy](#api-gateway-as-reverse-proxy)
+    - [Better security for microservices](#better-security-for-microservices)
+    - [Increased cohesion](#increased-cohesion)
+  - [Firebase as authenticator for user-service](#firebase-as-authenticator-for-user-service)
+    - [Easy sign-in with any platform](#easy-sign-in-with-any-platform)
+    - [Comprehensive security](#comprehensive-security)
+    - [In-built features](#in-built-features)
+    - [Fast implementation](#fast-implementation)
+    - [Realtime database](#realtime-database)
+    - [Enforcing email verification](#enforcing-email-verification)
+  - [Socket.IO for matching-service](#socketio-for-matching-service)
+    - [Abstraction layer on top of WebSockets](#abstraction-layer-on-top-of-websockets)
+    - [Receiving acknowledgment](#receiving-acknowledgment)
+    - [Socket.IO broadcasting and rooms](#socketio-broadcasting-and-rooms)
+    - [Sticky Load balancing](#sticky-load-balancing)
+    - [Tradeoffs](#tradeoffs)
+  - [MongoDB for questions-service](#mongodb-for-questions-service)
+  - [Advantages for MongoDB over Firebase](#advantages-for-mongodb-over-firebase)
+  - [Use case for choice of database](#use-case-for-choice-of-database)
+    - [Usability for Reliability](#usability-for-reliability)
+  - [Using Terraform for Infrastructure-as-Code (IaC)](#using-terraform-for-infrastructure-as-code-iac)
+- [Design Patterns](#design-patterns)
+  - [Singleton](#singleton)
+      - [Why we use the singleton pattern:](#why-we-use-the-singleton-pattern)
+  - [Observer](#observer)
 - [Development Process](#development-process)
   - [Continuous Integration](#continuous-integration)
   - [Manual Re-Deployment](#manual-re-deployment)
@@ -33,36 +63,6 @@
   - [Infrastructure as Code](#infrastructure-as-code)
     - [Increase developer productivity](#increase-developer-productivity)
     - [Increase reliability](#increase-reliability)
-  - [Design Decisions](#design-decisions)
-    - [Using `y-websocket` for concurrent code editing](#using-y-websocket-for-concurrent-code-editing)
-      - [Lower latency](#lower-latency)
-      - [Frequency of updates](#frequency-of-updates)
-      - [Incompatibility issues with `firepad`](#incompatibility-issues-with-firepad)
-    - [API Gateway as Reverse Proxy](#api-gateway-as-reverse-proxy)
-      - [Better security for microservices](#better-security-for-microservices)
-      - [Increased cohesion](#increased-cohesion)
-    - [Firebase as authenticator for user-service](#firebase-as-authenticator-for-user-service)
-      - [Easy sign-in with any platform](#easy-sign-in-with-any-platform)
-      - [Comprehensive security](#comprehensive-security)
-      - [In-built features](#in-built-features)
-      - [Fast implementation](#fast-implementation)
-      - [Realtime database](#realtime-database)
-      - [Enforcing email verification](#enforcing-email-verification)
-    - [Socket.IO for matching-service](#socketio-for-matching-service)
-      - [Abstraction layer on top of WebSockets](#abstraction-layer-on-top-of-websockets)
-      - [Receiving acknowledgment](#receiving-acknowledgment)
-      - [Socket.IO broadcasting and rooms](#socketio-broadcasting-and-rooms)
-      - [Sticky Load balancing](#sticky-load-balancing)
-      - [Tradeoffs](#tradeoffs)
-    - [MongoDB for questions-service](#mongodb-for-questions-service)
-    - [Advantages for MongoDB over Firebase](#advantages-for-mongodb-over-firebase)
-    - [Use case for choice of database](#use-case-for-choice-of-database)
-      - [Usability for Reliability](#usability-for-reliability)
-    - [Using Terraform for Infrastructure-as-Code (IaC)](#using-terraform-for-infrastructure-as-code-iac)
-- [Design Patterns](#design-patterns)
-  - [Singleton](#singleton)
-    - [Why we use the singleton pattern:](#why-we-use-the-singleton-pattern)
-  - [Observer](#observer)
 - [Possible Enhancements](#possible-enhancements)
   - [Code compilation and execution](#code-compilation-and-execution)
   - [History service](#history-service)
@@ -240,6 +240,248 @@ By deploying service instances in separate containers, each microservice can be 
 
 Also, by deploying the service instances in containers instead of virtual machines, start up time is reduced.
 
+# Design Decisions
+
+## Using `y-websocket` for concurrent code editing
+
+A key feature of PeerPrep is the collaborative code editor, which allows users in the same match to work together on a solution to the problem sets.
+
+In short, we had to synchronize the code in the editors of all users in the match:
+
+- When a user edits the code (i.e. by adding or deleting a word), other users' editors should be notified of this change.
+- Once a change notification has been received, the editor should update the code.
+
+To improve the user experience, we could also show the current position of other users' cursors and any text highlighted. This would make updates to the code editor less jarring, as users can anticipate changes made by others.
+
+To implement these features, we had two options:
+
+- Option 1: Start with a framework that provides the implementation for these features, or
+- Option 2: Write our own synchronization logic
+
+To help us iterate faster, we decided to go with the first option, and searched for open-sourced frameworks that could help us deliver these features to our users.
+
+In our search, we found two promising frameworks:
+
+- [`firepad`](https://github.com/FirebaseExtended/firepad)
+- [`y-websocket`](https://github.com/yjs/y-websocket)
+
+These two frameworks had different approaches towards synchronizing data:
+
+- `firepad` works extensively with Google's [Firebase Realtime Database](https://firebase.google.com/docs/database) (a NoSQL database):
+  - when a change is made to the code editor, the change is captured in the form of a [`TextOperation`](https://github.com/FirebaseExtended/firepad#database-structure) and added to the database table
+  - any clients that are subscribed to updates to this database table would be notified, and would fetch this change in order to update the code editor
+- `y-websocket` on the other hand, provides an option to synchronize data using only WebSockets:
+  - when a change is made to the code editor, the details of the change operation is sent as a message to a [`y-websocket` server](https://github.com/yjs/y-websocket/tree/master/bin), along with a `room-id` attribute
+  - this would trigger to server to send message(s) to all clients sharing the same `room-id` attribute, thereby propagating the change
+
+In short, using `firepad` would involve reading or writing from a NoSQL database, while using `y-websocket` would not.
+
+We decided to use `y-websocket` for the following reasons:
+
+- Lower latency
+- Frequency of updates
+- Incompatibility issues with `firepad`
+
+### Lower latency
+
+As `y-websocket` eliminates the need to read and write from a database, latency is reduced, allowing our users to receive faster updates and get a better experience.
+
+### Frequency of updates
+
+The `firepad` framework is [no longer under active development](https://github.com/FirebaseExtended/firepad#status), with the last update being made on 12 May 2021.
+
+In comparison, the `y-websocket` framework is still actively maintained, which would in turn make maintenance of PeerPrep easier.
+
+### Incompatibility issues with `firepad`
+
+In our testing, the team found that `firepad` only supported firebase servers in the North American region, which would increase the latency for users in the Asia Pacific region.
+
+## API Gateway as Reverse Proxy
+
+Instead of interacting with the microservices directly, the frontend sends requests to an API gateway, which forwards requests to the relevant microservices.
+
+Our team decided on this approach for two main reasons:
+
+- Better security for microservices
+- Increased cohesion
+
+### Better security for microservices
+
+Access to microservices is protected by an API gateway in the following manner:
+
+- if the requested endpoint is unprotected, the API gateway will forward it to the microservice(s) that are responsible for fulfilling the request
+- however, if the requested endpoint is protected, the request must provide some credentials for authentication:
+  - when the user successfully logs in, an `access token` and `refresh token` will be provided:
+    - the `access token` is valid for an hour
+    - the `refresh token` will remain valid for an indefinite period of time until either of the following occur:
+      - the user logs out
+      - the user deletes the account
+  - to access protected endpoint, the `access token` must be included in the `Authorization` header as a `bearer token`
+    - upon receiving the request, the API gateway will send the `access token` to the User service to verify that the `access token`:
+      - has not been tampered with
+      - has not expired
+    - once the `access token` has been authenticated by the User service, the request will be forwarded to the relevant microservice(s)
+      - otherwise, the request will be refused by the API gateway
+
+![api-gateway-authentication](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/api-gateway-authentication.png?raw=true)
+
+### Increased cohesion
+
+Implementing the authentication logic in the API gateway removes this responsibility from the microservices.
+
+This reduces the need for each microservice to implement its own authentication logic and allows it to focus on fulfilling its core function, increasing cohesion and reducing duplication of code.
+
+## Firebase as authenticator for user-service
+
+### Easy sign-in with any platform
+
+Provides end-to-end identity solution supporting different methods of authentication such as the basic email and password accounts, Google, Twitter, Facebook, Github login etc.
+
+### Comprehensive security
+
+Firebase uses a modified Firebase version of the scrypt hashing algorithm to store passwords. This version is more secure against hardware brute-force attacks than alternative functions such as PBKDF2 or bcrypt. Also, scrypt automatically does password salting on top of password hashing.
+
+### In-built features
+
+Firebase has many in-built features for their authentication system. Some of these useful features that we used were the email address verification and password reset. These allowed us to easily implement an authentication system with all the necessary in-built features that are essential to us.
+
+### Fast implementation
+
+We figured that it can take quite a long time to develop our own authentication system that is reasonably secure and not to mention the need to maintain it in future. Hence, we decided to use Firebase Authentication that is already developed by Google which will allow us to implement a secure auth system quickly and without much hassle.
+
+### Realtime database
+
+In Firebase, here is an in-built realtime database that we can use to store our essential user data. With the integration of Firebase Authentication, it helps to deal with security concerns of users. Also, with Firebase's realtime database, we have the ability to set data permissions as well.
+
+### Enforcing email verification
+
+For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep. This is to prevent potential bots from performing DOS attacks on our web application and causing uneccessary performance issues.
+
+## Socket.IO for matching-service
+
+### Abstraction layer on top of WebSockets
+
+Socket.IO is built on top of the WebSocket protocol and provides additional guarantees like fallback to HTTP long-polling and automatic reconnection.
+
+### Receiving acknowledgment
+
+Socket.IO provides a very convenient way to send an event and receive a response. This feature allows us to send acknowledgement to the client that the server as added them to the queue and have/are looking for a match for them.
+
+### Socket.IO broadcasting and rooms
+
+Rooms are arbitrary channels that sockets can join and leave. We used this in conjunction with the broadcasting feature that is also another functionality provided by Socket.IO. When 2 clients have been matched, they are added to the same room. This feature was used to implement our chat service, as messages from the server/another client in the room can easily be broadcast to all sockets in the room.
+
+### Sticky Load balancing
+
+Socket.IO allows us to scale to multiple servers if we need to by using sticky-sessions.
+
+### Tradeoffs
+
+Socket.IO has a much higher memory requirement compared to WebSockets. There is a significant difference in the amount of memory required to handle the same amount of clients, and this could affect the scaling of Socket.IO with high concurrency. This tradeoff can be overlooked as Socket.IO is a much more complex solution as compared to WebSockets or SockJS.
+
+## MongoDB for questions-service
+
+We decided to use MongoDB instead of Firebase as the features used for our user-service are not required for questions-service. MongoDB is's primary focus is on data storage. Both Firebase and MongoDB are built to scale. However, MongoDB edges out in terms of robustness and customizability.
+
+## Advantages for MongoDB over Firebase
+
+- Efficient handling of queries and indexing
+- Easier manipulation of the document model data structure
+- Ideal option for instant access to enormous amounts of data
+
+## Use case for choice of database
+
+For our questions-service requirements, we want a simple database that store large amounts of data (questions) and can be queried quickly. We do not need authentication features as questions-service will only be accessed by matching-service which already has authentication checks. With that in mind, MongoDB is better choice to store our questions data in.
+
+![matching-questions-service](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/matching-questions-service.png?raw=true)
+
+### Usability for Reliability
+
+Matching-service prevents users from being able to join more than one queue or room, which makes it more reliable, as users can expect to always match with an active user. This however, may slightly affect usability as the user will have to ensure that he leaves another match or queue that he is in before joining another one.
+
+## Using Terraform for Infrastructure-as-Code (IaC)
+
+In our development process, the team relied on Terraform to [deploy new features to production](#infrastructure-as-code).
+
+However, Terraform is only one of the many IaC tools currently available. When deciding which to use, we had two options:
+
+- use a cloud-native IaC tool
+  - which in our case would be [Google Cloud Deployment Manager](https://cloud.google.com/deployment-manager/docs), since our team's infrastructure is completely on GCP
+  - cloud providers such as AWS and Microsoft Azure also provide their own IaC tools, which are [Cloudformation](https://aws.amazon.com/cloudformation/) and [Azure Resource Manager](https://azure.microsoft.com/en-us/features/resource-manager/) respectively
+- use a cloud-agnostic IaC tool such as Terraform
+  - which allows the specification of infrastructure involving multiple cloud-providers
+
+Even though our team is currently only using GCP for infrastructure, we felt that using a cloud-agnostic solution would be more flexible and allow services from other cloud providers to be easily integrated in the future.
+
+# Design Patterns
+
+## Singleton
+
+The singleton pattern is used to ensure that there is only one instance of the client socket created.
+
+#### Why we use the singleton pattern:
+
+- Each client instance should only need one client socket
+- The same socket instance needs to be accessible by multiple pages (e.g. match selection and match room page)
+
+`SocketContext.js`
+
+```javascript
+const getSocket = (accessToken, uuid) => {
+  if (!socket && accessToken) {
+    socket = initSocket(accessToken);
+    socket["uuid"] = uuid;
+  }
+  return socket;
+};
+```
+
+In the code snippet, the socket is only initialized if there isn't already an existing socket, and if there is, `getSocket' returns that socket.
+This makes it so that every client will only have a single socket instance, and that every page will have access to the same socket instance.
+Although the sockets are identified by the unique ID provided by firebase, having multiple sockets for a single client will likely
+create many bugs and inconsistencies in the matching of peers on the server socket.
+
+## Observer
+
+Our team used the WebSocket protocol extensively for asynchronous communication [between the frontend and microservices](#socketio-for-matching-service).
+
+These features are implemented using the Observer pattern in the following manner:
+
+- a WebSocket object that receives messages from a microservice is instantiated
+  - this object is the `Observable`
+- a component registers interest in a particular type of message that is received by the WebSocket
+  - the component acts as the `Observer` of the WebSocket object
+
+For example, in the page where the user submits requests for a match, we want to look out for notifications from the matching service when a match has been found so that the user can be redirected to the match room page to begin the match.
+
+A code snippet from the frontend implementing this feature is included below:
+
+```javascript
+/* code snippet from MatchRoomPage.js */
+
+socket.on("room-number", (roomNumber, question, opponent) => {
+  // ... code omitted for brevity
+
+  showMatchFoundToast();
+  navigate("/matchroom", {
+    state: {
+      roomNumber,
+      question,
+      opponentUid,
+    },
+  });
+});
+```
+
+Within the match selection page component, we listen for any incoming messages containing the `room-number`, which the matching service will send to the frontend once a match has been found.
+
+When this message is received, two actions are performed:
+
+- a popup notification is displayed to inform the user that a match has been found
+  - done using the `showMatchFoundToast()` method call
+- the user is redirected to the match room page
+  - done using the `navigate("/matchroom", ...)` method call
+
 # Development Process
 
 ## Continuous Integration
@@ -326,256 +568,6 @@ More importantly, this allows us to rapidly deploy updates by simply triggering 
 Having our entire infrastructure documented in code lets us easily revert any changes made, which is handy if we run into any technical issues.
 
 It also allows us to quickly spin up a replica of our infrastructure if any unforeseen event such as a regional service outage happens.
-
-## Design Decisions
-
-### Using `y-websocket` for concurrent code editing
-
-A key feature of PeerPrep is the collaborative code editor, which allows users in the same match to work together on a solution to the problem sets.
-
-In short, we had to synchronize the code in the editors of all users in the match:
-
-- When a user edits the code (i.e. by adding or deleting a word), other users' editors should be notified of this change.
-- Once a change notification has been received, the editor should update the code.
-
-To improve the user experience, we could also show the current position of other users' cursors and any text highlighted. This would make updates to the code editor less jarring, as users can anticipate changes made by others.
-
-To implement these features, we had two options:
-
-- Option 1: Start with a framework that provides the implementation for these features, or
-- Option 2: Write our own synchronization logic
-
-To help us iterate faster, we decided to go with the first option, and searched for open-sourced frameworks that could help us deliver these features to our users.
-
-In our search, we found two promising frameworks:
-
-- [`firepad`](https://github.com/FirebaseExtended/firepad)
-- [`y-websocket`](https://github.com/yjs/y-websocket)
-
-These two frameworks had different approaches towards synchronizing data:
-
-- `firepad` works extensively with Google's [Firebase Realtime Database](https://firebase.google.com/docs/database) (a NoSQL database):
-  - when a change is made to the code editor, the change is captured in the form of a [`TextOperation`](https://github.com/FirebaseExtended/firepad#database-structure) and added to the database table
-  - any clients that are subscribed to updates to this database table would be notified, and would fetch this change in order to update the code editor
-- `y-websocket` on the other hand, provides an option to synchronize data using only WebSockets:
-  - when a change is made to the code editor, the details of the change operation is sent as a message to a [`y-websocket` server](https://github.com/yjs/y-websocket/tree/master/bin), along with a `room-id` attribute
-  - this would trigger to server to send message(s) to all clients sharing the same `room-id` attribute, thereby propagating the change
-
-In short, using `firepad` would involve reading or writing from a NoSQL database, while using `y-websocket` would not.
-
-We decided to use `y-websocket` for the following reasons:
-
-- Lower latency
-- Frequency of updates
-- Incompatibility issues with `firepad`
-
-#### Lower latency
-
-As `y-websocket` eliminates the need to read and write from a database, latency is reduced, allowing our users to receive faster updates and get a better experience.
-
-#### Frequency of updates
-
-The `firepad` framework is [no longer under active development](https://github.com/FirebaseExtended/firepad#status), with the last update being made on 12 May 2021.
-
-In comparison, the `y-websocket` framework is still actively maintained, which would in turn make maintenance of PeerPrep easier.
-
-#### Incompatibility issues with `firepad`
-
-In our testing, the team found that `firepad` only supported firebase servers in the North American region, which would increase the latency for users in the Asia Pacific region.
-
-### API Gateway as Reverse Proxy
-
-Instead of interacting with the microservices directly, the frontend sends requests to an API gateway, which forwards requests to the relevant microservices.
-
-Our team decided on this approach for two main reasons:
-
-- Better security for microservices
-- Increased cohesion
-
-#### Better security for microservices
-
-Access to microservices is protected by an API gateway in the following manner:
-
-- if the requested endpoint is unprotected, the API gateway will forward it to the microservice(s) that are responsible for fulfilling the request
-- however, if the requested endpoint is protected, the request must provide some credentials for authentication:
-  - when the user successfully logs in, an `access token` and `refresh token` will be provided:
-    - the `access token` is valid for an hour
-    - the `refresh token` will remain valid for an indefinite period of time until either of the following occur:
-      - the user logs out
-      - the user deletes the account
-  - to access protected endpoint, the `access token` must be included in the `Authorization` header as a `bearer token`
-    - upon receiving the request, the API gateway will send the `access token` to the User service to verify that the `access token`:
-      - has not been tampered with
-      - has not expired
-    - once the `access token` has been authenticated by the User service, the request will be forwarded to the relevant microservice(s)
-      - otherwise, the request will be refused by the API gateway
-
-![api-gateway-authentication](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/api-gateway-authentication.png?raw=true)
-
-#### Increased cohesion
-
-Implementing the authentication logic in the API gateway removes this responsibility from the microservices.
-
-This reduces the need for each microservice to implement its own authentication logic and allows it to focus on fulfilling its core function, increasing cohesion and reducing duplication of code.
-
----
-
-### Firebase as authenticator for user-service
-
-#### Easy sign-in with any platform
-
-Provides end-to-end identity solution supporting different methods of authentication such as the basic email and password accounts, Google, Twitter, Facebook, Github login etc.
-
-#### Comprehensive security
-
-Firebase uses a modified Firebase version of the scrypt hashing algorithm to store passwords. This version is more secure against hardware brute-force attacks than alternative functions such as PBKDF2 or bcrypt. Also, scrypt automatically does password salting on top of password hashing.
-
-#### In-built features
-
-Firebase has many in-built features for their authentication system. Some of these useful features that we used were the email address verification and password reset. These allowed us to easily implement an authentication system with all the necessary in-built features that are essential to us.
-
-#### Fast implementation
-
-We figured that it can take quite a long time to develop our own authentication system that is reasonably secure and not to mention the need to maintain it in future. Hence, we decided to use Firebase Authentication that is already developed by Google which will allow us to implement a secure auth system quickly and without much hassle.
-
-#### Realtime database
-
-In Firebase, here is an in-built realtime database that we can use to store our essential user data. With the integration of Firebase Authentication, it helps to deal with security concerns of users. Also, with Firebase's realtime database, we have the ability to set data permissions as well.
-
-#### Enforcing email verification
-
-For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep. This is to prevent potential bots from performing DOS attacks on our web application and causing uneccessary performance issues.
-
----
-
-### Socket.IO for matching-service
-
-#### Abstraction layer on top of WebSockets
-
-Socket.IO is built on top of the WebSocket protocol and provides additional guarantees like fallback to HTTP long-polling and automatic reconnection.
-
-#### Receiving acknowledgment
-
-Socket.IO provides a very convenient way to send an event and receive a response. This feature allows us to send acknowledgement to the client that the server as added them to the queue and have/are looking for a match for them.
-
-#### Socket.IO broadcasting and rooms
-
-Rooms are arbitrary channels that sockets can join and leave. We used this in conjunction with the broadcasting feature that is also another functionality provided by Socket.IO. When 2 clients have been matched, they are added to the same room. This feature was used to implement our chat service, as messages from the server/another client in the room can easily be broadcast to all sockets in the room.
-
-#### Sticky Load balancing
-
-Socket.IO allows us to scale to multiple servers if we need to by using sticky-sessions.
-
-#### Tradeoffs
-
-Socket.IO has a much higher memory requirement compared to WebSockets. There is a significant difference in the amount of memory required to handle the same amount of clients, and this could affect the scaling of Socket.IO with high concurrency. This tradeoff can be overlooked as Socket.IO is a much more complex solution as compared to WebSockets or SockJS.
-
----
-
-### MongoDB for questions-service
-
-We decided to use MongoDB instead of Firebase as the features used for our user-service are not required for questions-service. MongoDB is's primary focus is on data storage. Both Firebase and MongoDB are built to scale. However, MongoDB edges out in terms of robustness and customizability.
-
-### Advantages for MongoDB over Firebase
-
-- Efficient handling of queries and indexing
-- Easier manipulation of the document model data structure
-- Ideal option for instant access to enormous amounts of data
-
-### Use case for choice of database
-
-For our questions-service requirements, we want a simple database that store large amounts of data (questions) and can be queried quickly. We do not need authentication features as questions-service will only be accessed by matching-service which already has authentication checks. With that in mind, MongoDB is better choice to store our questions data in.
-
-![matching-questions-service](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/matching-questions-service.png?raw=true)
-
----
-
-#### Usability for Reliability
-
-Matching-service prevents users from being able to join more than one queue or room, which makes it more reliable, as users can expect to always match with an active user. This however, may slightly affect usability as the user will have to ensure that he leaves another match or queue that he is in before joining another one.
-
-### Using Terraform for Infrastructure-as-Code (IaC)
-
-In our development process, the team relied on Terraform to [deploy new features to production](#infrastructure-as-code).
-
-However, Terraform is only one of the many IaC tools currently available. When deciding which to use, we had two options:
-
-- use a cloud-native IaC tool
-  - which in our case would be [Google Cloud Deployment Manager](https://cloud.google.com/deployment-manager/docs), since our team's infrastructure is completely on GCP
-  - cloud providers such as AWS and Microsoft Azure also provide their own IaC tools, which are [Cloudformation](https://aws.amazon.com/cloudformation/) and [Azure Resource Manager](https://azure.microsoft.com/en-us/features/resource-manager/) respectively
-- use a cloud-agnostic IaC tool such as Terraform
-  - which allows the specification of infrastructure involving multiple cloud-providers
-
-Even though our team is currently only using GCP for infrastructure, we felt that using a cloud-agnostic solution would be more flexible and allow services from other cloud providers to be easily integrated in the future.
-
-# Design Patterns
-
-## Singleton
-
-The singleton pattern is used to ensure that there is only one instance of the client socket created.
-
-#### Why we use the singleton pattern:
-
-- Each client instance should only need one client socket
-- The same socket instance needs to be accessible by multiple pages (e.g. match selection and match room page)
-
-`SocketContext.js`
-
-```javascript
-const getSocket = (accessToken, uuid) => {
-  if (!socket && accessToken) {
-    socket = initSocket(accessToken);
-    socket["uuid"] = uuid;
-  }
-  return socket;
-};
-```
-
-In the code snippet, the socket is only initialized if there isn't already an existing socket, and if there is, `getSocket' returns that socket.
-This makes it so that every client will only have a single socket instance, and that every page will have access to the same socket instance.
-Although the sockets are identified by the unique ID provided by firebase, having multiple sockets for a single client will likely
-create many bugs and inconsistencies in the matching of peers on the server socket.
-
-## Observer
-
-Our team used the WebSocket protocol extensively for asynchronous communication [between the frontend and microservices](#socketio-for-matching-service).
-
-These features are implemented using the Observer pattern in the following manner:
-
-- a WebSocket object that receives messages from a microservice is instantiated
-  - this object is the `Observable`
-- a component registers interest in a particular type of message that is received by the WebSocket
-  - the component acts as the `Observer` of the WebSocket object
-
-For example, in the page where the user submits requests for a match, we want to look out for notifications from the matching service when a match has been found so that the user can be redirected to the match room page to begin the match.
-
-A code snippet from the frontend implementing this feature is included below:
-
-```javascript
-/* code snippet from MatchRoomPage.js */
-
-socket.on("room-number", (roomNumber, question, opponent) => {
-  // ... code omitted for brevity
-
-  showMatchFoundToast();
-  navigate("/matchroom", {
-    state: {
-      roomNumber,
-      question,
-      opponentUid,
-    },
-  });
-});
-```
-
-Within the match selection page component, we listen for any incoming messages containing the `room-number`, which the matching service will send to the frontend once a match has been found.
-
-When this message is received, two actions are performed:
-
-- a popup notification is displayed to inform the user that a match has been found
-  - done using the `showMatchFoundToast()` method call
-- the user is redirected to the match room page
-  - done using the `navigate("/matchroom", ...)` method call
 
 # Possible Enhancements
 
