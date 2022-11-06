@@ -27,9 +27,10 @@
   - [Service Instance per Container](#service-instance-per-container)
 - [Design Decisions](#design-decisions)
   - [Using `y-websocket` for concurrent code editing](#using-y-websocket-for-concurrent-code-editing)
-    - [Lower latency](#lower-latency)
-    - [Frequency of updates](#frequency-of-updates)
-    - [Incompatibility issues with `firepad`](#incompatibility-issues-with-firepad)
+    - [Implementation](#implementation)
+      - [Usage in frontend](#usage-in-frontend)
+      - [Usage in collaboration service](#usage-in-collaboration-service)
+  - [When messages are received by the collaboration service, `y-websocket` re-broadcasts these messages to](#when-messages-are-received-by-the-collaboration-service-y-websocket-re-broadcasts-these-messages-to)
   - [API Gateway as Reverse Proxy](#api-gateway-as-reverse-proxy)
     - [Better security for microservices](#better-security-for-microservices)
     - [Increased cohesion](#increased-cohesion)
@@ -279,22 +280,35 @@ In short, using `firepad` would involve reading or writing from a NoSQL database
 We decided to use `y-websocket` for the following reasons:
 
 - Lower latency
+  - As `y-websocket` eliminates the need to read and write from a database, latency is reduced, allowing our users to receive faster updates and get a better experience.
 - Frequency of updates
+
+  - The `firepad` framework is [no longer under active development](https://github.com/FirebaseExtended/firepad#status), with the last update being made on 12 May 2021.
+
+  - In comparison, the `y-websocket` framework is still actively being maintained, which would in turn make maintenance of PeerPrep easier.
+
 - Incompatibility issues with `firepad`
+  - In our testing, the team found that `firepad` only supported firebase servers in the North American region, which would increase the latency for users in the Asia Pacific region.
 
-### Lower latency
+### Implementation
 
-As `y-websocket` eliminates the need to read and write from a database, latency is reduced, allowing our users to receive faster updates and get a better experience.
+`y-websocket` is used in the frontend and collaboration service.
 
-### Frequency of updates
+#### Usage in frontend
 
-The `firepad` framework is [no longer under active development](https://github.com/FirebaseExtended/firepad#status), with the last update being made on 12 May 2021.
+When the user begins a match, the code editor is initialized and rendered. During the initialization, `y-websocket` initiates a WebSocket connection with the collaboration service.
 
-In comparison, the `y-websocket` framework is still actively maintained, which would in turn make maintenance of PeerPrep easier.
+When the user interacts with the code editor by modifying the code or changing the cursor's position, these updates are sent to the collaboration service through the WebSocket connection.
 
-### Incompatibility issues with `firepad`
+`y-websocket` also listens for messages from the collaboration service and updates the code editor with updates on interactions from other users.
 
-In our testing, the team found that `firepad` only supported firebase servers in the North American region, which would increase the latency for users in the Asia Pacific region.
+#### Usage in collaboration service
+
+On the collaboration service, `y-websocket` listens for messages sent through WebSocket connections with frontend clients.
+
+When a message is received, `y-websocket` reads the `room-number` attribute in the message and relays it to other frontend clients in the same match. This ensures that users' code editors are only synced if they are in the same match.
+
+## When messages are received by the collaboration service, `y-websocket` re-broadcasts these messages to
 
 ## API Gateway as Reverse Proxy
 
