@@ -349,6 +349,8 @@ This reduces the need for each microservice to implement its own authentication 
 
 ## Firebase as authenticator for user-service
 
+We used Firebase as our authenticator for user-service. All user services are handled by Firebase Authentication where API calls to the respective functions are made using axios.
+
 ### Easy sign-in with any platform
 
 Provides end-to-end identity solution supporting different methods of authentication such as the basic email and password accounts, Google, Twitter, Facebook, Github login etc.
