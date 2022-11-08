@@ -339,7 +339,9 @@ Access to microservices is protected by an API gateway in the following manner:
     - once the `access token` has been authenticated by the User service, the request will be forwarded to the relevant microservice(s)
       - otherwise, the request will be refused by the API gateway
 
-![api-gateway-authentication](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/api-gateway-authentication.png?raw=true)
+<p align="center">
+  <img src="https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/api-gateway-authentication.png?raw=true">
+</p>
 
 ### Increased cohesion
 
@@ -517,7 +519,7 @@ For example, in the page where the user submits requests for a match, we want to
 
 A code snippet from the frontend implementing this feature is included below:
 
-`MatchRoomPage.js`
+[`MatchSelectionPage.js`](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/3d94d17a1bb8e100574651e3013fd78e28b36073/frontend/src/pages/matching-service/MatchSelectionPage.js#L77-L90)
 
 ```javascript
 socket.on("room-number", (roomNumber, question, opponent) => {
