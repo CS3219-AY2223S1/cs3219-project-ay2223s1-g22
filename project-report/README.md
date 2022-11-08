@@ -215,7 +215,9 @@ In building PeerPrep, we seek to achieve the following objectives:
 
 ## Trade-Offs
 
-![Non-Functional-Requirements-Prioritisation-Table](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/requirement_prioritisation_table.PNG?raw=true)
+<p align="center">
+  <img src="https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/requirement_prioritisation_table.PNG?raw=true">
+</p>
 
 ### Security vs Performance
 
@@ -233,7 +235,9 @@ Requiring our users to verify their emails before giving them full access to our
 
 ## Overview
 
-![PeerPrep-Solution-Architecture](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/PeerPrep-Architecture-V2.png?raw=true)
+<p align="center" width="1800" height="1498">
+  <img src="https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/PeerPrep-Architecture-V2.png?raw=true">
+</p>
 
 ## Service Instance per Container
 
@@ -296,7 +300,9 @@ We decided to use `y-websocket` for the following reasons:
 
 `y-websocket` is used in both the frontend and collaboration service.
 
-![frontend-collaborationservice-interaction-diagram](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/frontend_collaborationservice_interaction_diagram.jpg?raw=true)
+<p align="center">
+  <img src="https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/frontend_collaborationservice_interaction_diagram.jpg?raw=true">
+</p>
 
 #### Usage in frontend
 
@@ -381,7 +387,9 @@ For every new user, we made use of Firebase's email verification to ensure every
 
 ### Matching peers
 
-![](images/matchingservicesocketioimage.jpg)
+<p align="center">
+  <img src="images/matchingservicesocketioimage.jpg">
+</p>
 
 A client will queue up for a room by emitting the `level` event, with the difficulty level they wish to queue up for. Referring to the example above, both clients have queued up for the easy difficulty
 match.
@@ -405,7 +413,9 @@ const handleRequestMatch = (difficulty) => {
 
 ### Communicating in a room
 
-![](images/chatservice.jpg)
+<p align="center">
+  <img src="images/chatservice.jpg">
+</p>
 
 If 2 clients are already in the same room, they can communicate using the chat. This chat-service is also done using `socket.IO`.
 If `client1` wants to send a message to `client2`, `client1` will emit the `send` event to the server, together with the message and the room number.
@@ -456,7 +466,9 @@ We decided to use MongoDB instead of Firebase as the features used for our user-
 
 For our questions-service requirements, we want a simple database that stores large amounts of data (questions) and can be queried quickly. We do not need authentication features as questions-service will only be accessed by matching-service which already has authentication checks. With that in mind, MongoDB is a better choice to store our questions data in.
 
-![matching-questions-service](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/matching-questions-service.png?raw=true)
+<p align="center">
+  <img src="https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/matching-questions-service.png?raw=true">
+</p>
 
 ### Usability for Reliability
 
@@ -650,7 +662,9 @@ Currently, users are unable to see their past collaborations with other matched 
 
 Below is the architecture diagram to illustrate the implementation of a history service.
 
-![PeerPrep-History-Service-Solution-Architecture](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/possible_enhancements_history_service_architecture.png?raw=true)
+<p width="1800" height="1498" align="center">
+  <img src="https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/possible_enhancements_history_service_architecture.png?raw=true">
+</p>
 
 ### Using Firebase's realtime database to store history
 
