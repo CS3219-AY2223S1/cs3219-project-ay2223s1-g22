@@ -690,6 +690,22 @@ The frontend for history service would display the 50 most recent collaborations
 2. Matched user
 3. Keywords of the question
 
+# Reflections and Learning Points
+
+## Microservices
+
+As we went through the module and did the project, we learnt how the features in an application can be decoupled into several microservices. We learned the importance of the microservices architecture which helps an application with scalability and optimizes usage of resources. 
+
+## Deployment
+
+Before the project, we have no prior experience with CI/CD and Docker containerisation. We discovered the importance of CI/CD and how it helps in ensuring any changes made to the live version of our application do not get negatively affected. 
+
+## New Technologies 
+
+The new technologies we used for the first time in this project are: React.js, Node.js, Socket.IO, Firebase, MongoDB, Docker, yjs, Github Actions, GCP and Terraform. It was a tough challenge to learn them all from scratch but nevertheless, it was satisfying and rewarding to see how everything worked together in tandem. 
+
+Some of us had some prior experience with Firebase and React. We used that experience in our project whenever we could and to expedite the learning process of learning Firebase and React for the members without prior experience. 
+
 # Individual Contributions
 
 ## Ong Kim Lai
