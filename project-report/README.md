@@ -71,6 +71,7 @@
     - [Using Firebase's realtime database to store history](#using-firebases-realtime-database-to-store-history)
     - [Reading and writing data](#reading-and-writing-data)
     - [Using React for the frontend](#using-react-for-the-frontend)
+- [Reflections and Learning Points](#reflections-and-learning-points)
 - [Individual Contributions](#individual-contributions)
   - [Ong Kim Lai](#ong-kim-lai)
     - [Technical Contributions](#technical-contributions)
