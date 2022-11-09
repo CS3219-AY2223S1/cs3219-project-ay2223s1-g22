@@ -413,7 +413,7 @@ const handleRequestMatch = (difficulty) => {
 
 ### Communicating in a room
 
-<p align="center" width="853" height="610">
+<p align="center" width="427" height="305">
   <img src="images/chatservice.jpg">
 </p>
 
