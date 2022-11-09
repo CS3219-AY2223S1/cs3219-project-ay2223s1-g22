@@ -300,7 +300,7 @@ We decided to use `y-websocket` for the following reasons:
 
 `y-websocket` is used in both the frontend and collaboration service.
 
-<p align="center">
+<p align="center" width="2832" height="1428">
   <img src="https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/frontend_collaborationservice_interaction_diagram.png?raw=true">
 </p>
 
