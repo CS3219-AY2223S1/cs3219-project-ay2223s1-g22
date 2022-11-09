@@ -56,7 +56,6 @@
   - [Using Terraform for Infrastructure-as-Code (IaC)](#using-terraform-for-infrastructure-as-code-iac)
 - [Design Patterns](#design-patterns)
   - [Singleton](#singleton)
-      - [Why we use the singleton pattern:](#why-we-use-the-singleton-pattern)
   - [Observer](#observer)
 - [Development Process](#development-process)
   - [Continuous Integration](#continuous-integration)
@@ -72,7 +71,6 @@
     - [Using Firebase's realtime database to store history](#using-firebases-realtime-database-to-store-history)
     - [Reading and writing data](#reading-and-writing-data)
     - [Using React for the frontend](#using-react-for-the-frontend)
-- [Reflections and Learning Points](#reflections-and-learning-points)
 - [Individual Contributions](#individual-contributions)
   - [Ong Kim Lai](#ong-kim-lai)
     - [Technical Contributions](#technical-contributions)
@@ -513,7 +511,7 @@ This makes it so that every client will only have a single socket instance, and 
 Although the sockets are identified by the unique ID provided by firebase, having multiple sockets for a single client will likely
 create many bugs and inconsistencies in the matching of peers on the server socket.
 
-#### Why we use the singleton pattern:
+We decided on this approach for two reasons:
 
 - Each client instance should only need one client socket
 - The same socket instance needs to be accessible by multiple pages (e.g. match selection and match room page)
@@ -691,10 +689,6 @@ The frontend for history service would display the 50 most recent collaborations
 1. Difficulty of the question
 2. Matched user
 3. Keywords of the question
-
-# Reflections and Learning Points
-
-TODO
 
 # Individual Contributions
 
