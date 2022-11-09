@@ -56,7 +56,7 @@
   - [Using Terraform for Infrastructure-as-Code (IaC)](#using-terraform-for-infrastructure-as-code-iac)
 - [Design Patterns](#design-patterns)
   - [Singleton](#singleton)
-    - [Why we use the singleton pattern:](#why-we-use-the-singleton-pattern)
+      - [Why we use the singleton pattern:](#why-we-use-the-singleton-pattern)
   - [Observer](#observer)
 - [Development Process](#development-process)
   - [Continuous Integration](#continuous-integration)
@@ -413,7 +413,7 @@ const handleRequestMatch = (difficulty) => {
 
 ### Communicating in a room
 
-<p align="center">
+<p align="center" width="853" height="610">
   <img src="images/chatservice.jpg">
 </p>
 
@@ -593,7 +593,7 @@ When the deployment workflow runs, the following steps are taken:
   - Shuts down all containers in the production environment that are currently running the service
   - Creates new containers using the new Docker image
 
-<p align="center">
+<p align="center" height="622" width="600">
   <img src="https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/partial-redeployment-process.png?raw=true">
 </p>
 
