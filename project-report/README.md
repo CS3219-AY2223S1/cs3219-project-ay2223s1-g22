@@ -30,16 +30,6 @@
     - [Implementation details](#implementation-details)
       - [Usage in frontend](#usage-in-frontend)
       - [Usage in collaboration service](#usage-in-collaboration-service)
-  - [API Gateway as Reverse Proxy](#api-gateway-as-reverse-proxy)
-    - [Better security for microservices](#better-security-for-microservices)
-    - [Increased cohesion](#increased-cohesion)
-  - [Firebase as authenticator for user-service](#firebase-as-authenticator-for-user-service)
-    - [Easy sign-in with any platform](#easy-sign-in-with-any-platform)
-    - [Comprehensive security](#comprehensive-security)
-    - [In-built features](#in-built-features)
-    - [Fast implementation](#fast-implementation)
-    - [Realtime database](#realtime-database)
-    - [Enforcing email verification](#enforcing-email-verification)
   - [Socket.IO for matching-service](#socketio-for-matching-service)
     - [Matching peers](#matching-peers)
     - [Communicating in a room](#communicating-in-a-room)
@@ -53,6 +43,16 @@
   - [Advantages for MongoDB over Firebase](#advantages-for-mongodb-over-firebase)
   - [Use case for choice of database](#use-case-for-choice-of-database)
     - [Usability for Reliability](#usability-for-reliability)
+  - [API Gateway as Reverse Proxy](#api-gateway-as-reverse-proxy)
+    - [Better security for microservices](#better-security-for-microservices)
+    - [Increased cohesion](#increased-cohesion)
+  - [Firebase as authenticator for user-service](#firebase-as-authenticator-for-user-service)
+    - [Comprehensive security](#comprehensive-security)
+    - [Easy sign-in with any platform](#easy-sign-in-with-any-platform)
+    - [Fast implementation](#fast-implementation)
+    - [Realtime database](#realtime-database)
+    - [Enforcing email verification](#enforcing-email-verification)
+    - [Password reset functionality](#password-reset-functionality)
   - [Using Terraform for Infrastructure-as-Code (IaC)](#using-terraform-for-infrastructure-as-code-iac)
 - [Design Patterns](#design-patterns)
   - [Singleton](#singleton)
@@ -318,71 +318,6 @@ On the collaboration service, `y-websocket` listens for messages sent through We
 
 When a message is received, `y-websocket` reads the `room-number` attribute in the message and relays it to other frontend clients in the same match. This ensures that users' code editors are only synced if they are in the same match.
 
-## API Gateway as Reverse Proxy
-
-Instead of interacting with the microservices directly, the frontend sends requests to an API gateway, which forwards requests to the relevant microservices.
-
-Our team decided on this approach for two main reasons:
-
-- Better security for microservices
-- Increased cohesion
-
-### Better security for microservices
-
-Access to microservices is protected by an API gateway in the following manner:
-
-- If the requested endpoint is unprotected, the API gateway will forward it to the microservice(s) that are responsible for fulfilling the request
-- However, if the requested endpoint is protected, the request must provide some credentials for authentication:
-  - When the user successfully logs in, an `access token` and `refresh token` will be provided:
-    - the `access token` is valid for an hour
-    - the `refresh token` will remain valid for an indefinite period of time until either of the following occur:
-      - the user logs out
-      - the user deletes the account
-  - To access protected endpoints, the `access token` must be included in the `Authorization` header as a `bearer token`
-    - upon receiving the request, the API gateway will send the `access token` to the User service to verify that the `access token`:
-      - has not been tampered with
-      - has not expired
-    - once the `access token` has been authenticated by the User service, the request will be forwarded to the relevant microservice(s)
-      - otherwise, the request will be refused by the API gateway
-
-<p align="center">
-  <img src="https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/api-gateway-authentication.png?raw=true">
-</p>
-
-### Increased cohesion
-
-Implementing the authentication logic in the API gateway removes this responsibility from the microservices.
-
-This reduces the need for each microservice to implement its own authentication logic and allows it to focus on fulfilling its core function, increasing cohesion and reducing duplication of code.
-
-## Firebase as authenticator for user-service
-
-We used Firebase as our authenticator for user-service. All user services are handled by Firebase Authentication where API calls to the respective functions are made using axios.
-
-### Easy sign-in with any platform
-
-Provides end-to-end identity solution supporting different methods of authentication such as the basic email and password accounts, Google, Twitter, Facebook, Github login etc.
-
-### Comprehensive security
-
-Firebase uses a modified Firebase version of the scrypt hashing algorithm to store passwords. This version is more secure against hardware brute-force attacks than alternative functions such as PBKDF2 or bcrypt. Also, scrypt automatically does password salting on top of password hashing.
-
-### In-built features
-
-Firebase has many in-built features for their authentication system. Some of these useful features that we used were the email address verification and password reset. These allowed us to easily implement an authentication system with all the necessary in-built features that are essential to us.
-
-### Fast implementation
-
-We figured that it can take quite a long time to develop our own authentication system that is reasonably secure and not to mention the need to maintain it in future. Hence, we decided to use Firebase Authentication that is already developed by Google which will allow us to implement a secure auth system quickly and without much hassle.
-
-### Realtime database
-
-In Firebase, here is an in-built realtime database that we can use to store our essential user data. With the integration of Firebase Authentication, it helps to deal with security concerns of users. Also, with Firebase's realtime database, we have the ability to set data permissions as well.
-
-### Enforcing email verification
-
-For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep. This is to prevent potential bots from performing DOS attacks on our web application and causing unnecessary performance issues.
-
 ## Socket.IO for matching-service
 
 ### Matching peers
@@ -473,6 +408,73 @@ For our questions-service requirements, we want a simple database that stores la
 ### Usability for Reliability
 
 Matching-service prevents users from being able to join more than one queue or room, which makes it more reliable, as users can expect to always match with an active user. This however, may slightly affect usability as the user will have to ensure that he leaves another match or queue that he is in before joining another one.
+
+## API Gateway as Reverse Proxy
+
+Instead of interacting with the microservices directly, the frontend sends requests to an API gateway, which forwards requests to the relevant microservices.
+
+Our team decided on this approach for two main reasons:
+
+- Better security for microservices
+- Increased cohesion
+
+### Better security for microservices
+
+Access to microservices is protected by an API gateway in the following manner:
+
+- If the requested endpoint is unprotected, the API gateway will forward it to the microservice(s) that are responsible for fulfilling the request
+- However, if the requested endpoint is protected, the request must provide some credentials for authentication:
+  - When the user successfully logs in, an `access token` and `refresh token` will be provided:
+    - the `access token` is valid for an hour
+    - the `refresh token` will remain valid for an indefinite period of time until either of the following occur:
+      - the user logs out
+      - the user deletes the account
+  - To access protected endpoints, the `access token` must be included in the `Authorization` header as a `bearer token`
+    - upon receiving the request, the API gateway will send the `access token` to the User service to verify that the `access token`:
+      - has not been tampered with
+      - has not expired
+    - once the `access token` has been authenticated by the User service, the request will be forwarded to the relevant microservice(s)
+      - otherwise, the request will be refused by the API gateway
+
+<p align="center">
+  <img src="https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g22/blob/main/project-report/images/api-gateway-authentication.png?raw=true">
+</p>
+
+### Increased cohesion
+
+Implementing the authentication logic in the API gateway removes this responsibility from the microservices.
+
+This reduces the need for each microservice to implement its own authentication logic and allows it to focus on fulfilling its core function, increasing cohesion and reducing duplication of code.
+
+## Firebase as authenticator for user-service
+
+We used [Firebase Authentication](https://firebase.google.com/docs/auth) as our authenticator for user-service. All user services are handled by Firebase Authentication where API calls to the respective functions are made using axios.
+
+### Comprehensive security
+
+Firebase uses a modified version of the scrypt-hashing algorithm to store passwords. This version is more secure against hardware brute-force attacks than alternative functions such as PBKDF2 or bcrypt. Also, scrypt automatically does password salting on top of password hashing.
+
+### Easy sign-in with any platform
+
+Provides end-to-end identity solution supporting different methods of authentication such as the basic email and password accounts, Google, Twitter, Facebook, Github login etc.
+
+### Fast implementation
+
+We figured that it can take quite a long time to develop our own authentication system that is reasonably secure and not to mention the need to maintain it in future. Hence, we decided to use Firebase Authentication that is already developed by Google which will allow us to implement a secure authentication system quickly and without much hassle.
+
+### Realtime database
+
+Firebase provides an integrated [realtime database](https://firebase.google.com/docs/database) that we can use to store custom user data such as their first and last names.
+
+With the integration of Firebase Authentication, it helps the team deal with security concerns of users: since the Firebase Authentication and the realtime database are on the same platform, we can easily set data access permissions.
+
+### Enforcing email verification
+
+For every new user, we made use of Firebase's email verification to ensure every user verifies their account. If the user's email account is left unverified, he/she would not be able to use the matching service of PeerPrep. This is to prevent potential bots from performing DOS attacks on our web application and causing unnecessary performance issues.
+
+### Password reset functionality
+
+Using Firebase Authentication would allow our users to quickly and securely reset their passwords if they do forget their credentials, thus improving the user experience.
 
 ## Using Terraform for Infrastructure-as-Code (IaC)
 
