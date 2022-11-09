@@ -1,0 +1,7 @@
+terraform.tfstate
+terraform.tfstate.backup
+.terraform.lock.hcl
+.terraform
+
+node_modules
+gcp-service-account-keys.json

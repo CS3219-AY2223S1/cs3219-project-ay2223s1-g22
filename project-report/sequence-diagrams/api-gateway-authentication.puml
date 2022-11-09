@@ -1,0 +1,56 @@
+@startuml abc
+!include style.puml
+
+mainframe sd **API Gateway Authentication**
+
+actor "User" as User
+
+box API Gateway API_GATEWAY_COLOR_T1
+	participant "API Gateway" as APIGateway
+end box
+
+box User Service USER_SERVICE_COLOR_T1
+	participant "User Service" as UserService
+end box
+
+	activate APIGateway
+
+	note over User
+		Makes a request to an endpoint
+		of the API Gateway
+	end note
+
+alt endpoint is unprotected
+	
+	note over APIGateway
+		API Gateway simply forwards the
+		request to the relevant microservice,
+		without authentication
+	end note
+
+else endpoint is protected
+
+	
+	APIGateway -> UserService : verifyAccessToken(accessToken)
+
+	alt access token is valid
+		APIGateway <-- UserService : OK
+		note over APIGateway
+			If the access token provided is valid,
+			the API Gateway forwards the request
+		end note
+	else access token is not valid
+		APIGateway <-- UserService : Unauthenticated
+
+		note over APIGateway
+			If the access token is invalid,
+			the request is not forwarded
+		end note
+		User <-- APIGateway : Unauthenticated
+		
+		deactivate APIGateway
+	end
+
+end
+
+@enduml
